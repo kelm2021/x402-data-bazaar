@@ -152,9 +152,7 @@ const routeConfig = {
   },
 };
 
-// Use CDP facilitator for payment verification/settlement
-const { facilitator } = require("@coinbase/x402");
-const payment = paymentMiddleware(PAY_TO, routeConfig, facilitator);
+const payment = paymentMiddleware(PAY_TO, routeConfig);
 
 // --- Debug: test facilitator connectivity ---
 app.get("/debug/facilitator", async (req, res) => {
