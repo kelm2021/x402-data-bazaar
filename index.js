@@ -89,6 +89,23 @@ const paymentGate = async (req, res, next) => {
   }
 };
 
+// --- Debug: test CDP API connectivity ---
+app.get("/debug/cdp", async (req, res) => {
+  try {
+    const { createFacilitatorConfig } = await import("@coinbase/x402");
+    const config = createFacilitatorConfig(process.env.CDP_API_KEY_ID, process.env.CDP_API_KEY_SECRET);
+    const headers = await config.createAuthHeaders();
+    const supportedHeaders = headers.supported || {};
+    const r = await fetch("https://api.cdp.coinbase.com/platform/v2/x402/supported", {
+      headers: supportedHeaders,
+    });
+    const data = await r.text();
+    res.json({ status: r.status, envKeySet: !!process.env.CDP_API_KEY_ID, headers: Object.keys(supportedHeaders), body: data.substring(0, 500) });
+  } catch (err) {
+    res.json({ error: err.message, stack: err.stack?.substring(0, 300) });
+  }
+});
+
 // --- Health check (free) ---
 app.get("/", (req, res) => {
   const endpoints = Object.keys(routeConfig).map((key) => {
