@@ -2,7 +2,6 @@ const express = require("express");
 const { paymentMiddleware, x402ResourceServer } = require("@x402/express");
 const { HTTPFacilitatorClient } = require("@x402/core/server");
 const { ExactEvmScheme } = require("@x402/evm/exact/server");
-const { createFacilitatorConfig } = require("@coinbase/x402");
 
 const app = express();
 app.use(express.json());
@@ -12,16 +11,6 @@ app.set("trust proxy", 1);
 
 const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
 const NETWORK = "eip155:8453"; // Base mainnet (CAIP-2)
-
-// CDP facilitator for Base mainnet (authenticated via CDP API keys)
-const facilitatorConfig = createFacilitatorConfig(
-  process.env.CDP_API_KEY_ID,
-  process.env.CDP_API_KEY_SECRET,
-);
-const facilitatorClient = new HTTPFacilitatorClient(facilitatorConfig);
-
-const resourceServer = new x402ResourceServer(facilitatorClient)
-  .register(NETWORK, new ExactEvmScheme());
 
 // --- Helper to build a route config entry ---
 const route = (price, description) => ({
@@ -71,7 +60,34 @@ const routeConfig = {
     "FEC candidate search — name, party, office, state, district, incumbent status, election cycles. Query: ?name=smith&office=S&state=CA"),
 };
 
-const payment = paymentMiddleware(routeConfig, resourceServer);
+// --- Lazy-init: dynamic import of ESM-only @coinbase/x402 on first request ---
+let paymentReady = null;
+
+function getPaymentMiddleware() {
+  if (!paymentReady) {
+    paymentReady = import("@coinbase/x402").then(({ createFacilitatorConfig }) => {
+      const facilitatorConfig = createFacilitatorConfig(
+        process.env.CDP_API_KEY_ID,
+        process.env.CDP_API_KEY_SECRET,
+      );
+      const facilitatorClient = new HTTPFacilitatorClient(facilitatorConfig);
+      const resourceServer = new x402ResourceServer(facilitatorClient)
+        .register(NETWORK, new ExactEvmScheme());
+      return paymentMiddleware(routeConfig, resourceServer);
+    });
+  }
+  return paymentReady;
+}
+
+// Payment gate: waits for lazy init, then delegates to x402 middleware
+const paymentGate = async (req, res, next) => {
+  try {
+    const mw = await getPaymentMiddleware();
+    mw(req, res, next);
+  } catch (err) {
+    res.status(500).json({ error: "Payment middleware init failed", details: err.message });
+  }
+};
 
 // --- Health check (free) ---
 app.get("/", (req, res) => {
@@ -97,19 +113,19 @@ app.get("/", (req, res) => {
 });
 
 // --- Mount routes with payment middleware ---
-app.use(payment, require("./routes/vin"));
-app.use(payment, require("./routes/weather"));
-app.use(payment, require("./routes/holidays"));
-app.use(payment, require("./routes/exchange-rates"));
-app.use(payment, require("./routes/ip"));
-app.use(payment, require("./routes/food"));
-app.use(payment, require("./routes/nutrition"));
-app.use(payment, require("./routes/fda"));
-app.use(payment, require("./routes/census"));
-app.use(payment, require("./routes/bls"));
-app.use(payment, require("./routes/air-quality"));
-app.use(payment, require("./routes/congress"));
-app.use(payment, require("./routes/fec"));
+app.use(paymentGate, require("./routes/vin"));
+app.use(paymentGate, require("./routes/weather"));
+app.use(paymentGate, require("./routes/holidays"));
+app.use(paymentGate, require("./routes/exchange-rates"));
+app.use(paymentGate, require("./routes/ip"));
+app.use(paymentGate, require("./routes/food"));
+app.use(paymentGate, require("./routes/nutrition"));
+app.use(paymentGate, require("./routes/fda"));
+app.use(paymentGate, require("./routes/census"));
+app.use(paymentGate, require("./routes/bls"));
+app.use(paymentGate, require("./routes/air-quality"));
+app.use(paymentGate, require("./routes/congress"));
+app.use(paymentGate, require("./routes/fec"));
 
 const PORT = process.env.PORT || 4402;
 app.listen(PORT, () => console.log(`x402 Data Bazaar running on port ${PORT}`));
