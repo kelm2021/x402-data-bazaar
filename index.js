@@ -4,6 +4,9 @@ const { paymentMiddleware } = require("x402-express");
 const app = express();
 app.use(express.json());
 
+// Trust Vercel's proxy so req.protocol returns "https" instead of "http"
+app.set("trust proxy", 1);
+
 const PAY_TO = "0xC1ce2f3fc018EB304Fa178BDDFFf0E5664Fa6B64";
 
 // --- x402 route pricing & schemas ---
