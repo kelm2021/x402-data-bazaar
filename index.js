@@ -7,7 +7,7 @@ app.use(express.json());
 // Trust Vercel's proxy so req.protocol returns "https" instead of "http"
 app.set("trust proxy", 1);
 
-const PAY_TO = "0xC1ce2f3fc018EB304Fa178BDDFFf0E5664Fa6B64";
+const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
 
 // --- x402 route pricing & schemas ---
 const routeConfig = {
