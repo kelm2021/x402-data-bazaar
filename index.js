@@ -189,6 +189,35 @@ const paymentGate = async (req, res, next) => {
   }
 };
 
+// --- Debug: test settle with real facilitator ---
+app.get("/debug/settle-test", async (req, res) => {
+  try {
+    const { createFacilitatorConfig } = await import("@coinbase/x402");
+    const facilitator = createFacilitatorConfig(
+      process.env.CDP_API_KEY_ID,
+      process.env.CDP_API_KEY_SECRET,
+    );
+    const { useFacilitator } = require("x402/verify");
+    const { verify, settle, supported } = useFacilitator(facilitator);
+
+    // Just check what supported returns
+    const sup = await supported();
+
+    // Check if "base" network is in supported kinds
+    const baseKinds = sup.kinds.filter(k => k.network === "base" || k.network === "eip155:8453");
+
+    res.json({
+      facilitatorUrl: facilitator.url,
+      hasAuthHeaders: !!facilitator.createAuthHeaders,
+      supportedKinds: sup.kinds.map(k => `${k.network} (v${k.x402Version})`),
+      baseMainnetSupported: baseKinds,
+      totalKinds: sup.kinds.length,
+    });
+  } catch (err) {
+    res.json({ error: err.message, stack: err.stack?.substring(0, 500) });
+  }
+});
+
 // --- Health check (free) ---
 app.get("/", (req, res) => {
   const endpoints = Object.keys(routeConfig).map((key) => {
