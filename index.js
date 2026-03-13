@@ -14,7 +14,7 @@ const routeConfig = {
   // No-key APIs — use * wildcards for x402 route matching (not Express :params)
   "GET /api/vin/*": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Decode any 17-character VIN — returns year, make, model, trim, body class, drive type, fuel type, engine specs, transmission, and plant country. e.g. GET /api/vin/1HGCM82633A004352",
@@ -22,7 +22,7 @@ const routeConfig = {
   },
   "GET /api/weather/current": {
     price: ".003",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Current weather for any lat/lon — temperature (°F), feels-like, humidity, precipitation, wind speed/direction, and condition text. Query: ?lat=40.7&lon=-74.0",
@@ -30,7 +30,7 @@ const routeConfig = {
   },
   "GET /api/weather/forecast": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Daily weather forecast (1-16 days) for any lat/lon — high/low temps (°F), precipitation, chance of rain, max wind, condition. Query: ?lat=40.7&lon=-74.0&days=7",
@@ -38,7 +38,7 @@ const routeConfig = {
   },
   "GET /api/holidays/today/*": {
     price: ".002",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Is today a business day? Returns holiday status, weekend status, isBusinessDay flag, current holiday details, and next upcoming holiday. e.g. GET /api/holidays/today/US",
@@ -46,7 +46,7 @@ const routeConfig = {
   },
   "GET /api/holidays/*": {
     price: ".002",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Public holidays for any country and year. Use ISO 3166-1 alpha-2 country codes. e.g. GET /api/holidays/US/2026",
@@ -54,7 +54,7 @@ const routeConfig = {
   },
   "GET /api/exchange-rates/*": {
     price: ".003",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Currency exchange rates for 150+ currencies. e.g. GET /api/exchange-rates/USD?symbols=EUR,GBP,JPY. Updated daily.",
@@ -62,7 +62,7 @@ const routeConfig = {
   },
   "GET /api/ip/*": {
     price: ".003",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "IP geolocation — country, region, city, ZIP, lat/lon, timezone, ISP, org, and ASN. e.g. GET /api/ip/8.8.8.8",
@@ -70,7 +70,7 @@ const routeConfig = {
   },
   "GET /api/food/barcode/*": {
     price: ".003",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Product lookup by barcode/UPC — name, brand, ingredients, nutri-score, full nutrition facts per 100g, allergens, image. e.g. GET /api/food/barcode/737628064502",
@@ -80,7 +80,7 @@ const routeConfig = {
   // Keyed APIs
   "GET /api/nutrition/search": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Search USDA FoodData Central for nutrition data — calories, protein, fat, carbs, fiber, sugar, sodium, cholesterol per food. Query: ?query=chicken breast&limit=5",
@@ -88,7 +88,7 @@ const routeConfig = {
   },
   "GET /api/fda/recalls": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "FDA food recall enforcement actions — product description, reason, classification, company, status. Optional ?query=peanut&limit=10",
@@ -96,7 +96,7 @@ const routeConfig = {
   },
   "GET /api/fda/adverse-events": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "FDA drug adverse event reports — reactions, suspect drugs, seriousness. Query: ?drug=aspirin&limit=10",
@@ -104,7 +104,7 @@ const routeConfig = {
   },
   "GET /api/census/population": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "US Census population, median household income, and median age. Query by ZIP (?zip=20002), state FIPS (?state=06), or omit for all states. ACS 5-year estimates.",
@@ -112,7 +112,7 @@ const routeConfig = {
   },
   "GET /api/bls/cpi": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Consumer Price Index (CPI-U) — All Items, US City Average. Monthly values with history. Optional ?years=10 (default 5).",
@@ -120,7 +120,7 @@ const routeConfig = {
   },
   "GET /api/bls/unemployment": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "US unemployment rate (seasonally adjusted). Monthly values with history. Optional ?years=10 (default 5).",
@@ -128,7 +128,7 @@ const routeConfig = {
   },
   "GET /api/air-quality/*": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Current air quality index (AQI) by US ZIP code — PM2.5, ozone readings, category (Good/Moderate/Unhealthy), reporting area. e.g. GET /api/air-quality/20002",
@@ -136,7 +136,7 @@ const routeConfig = {
   },
   "GET /api/congress/bills": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "Recent Congressional bills — title, latest action, origin chamber, update date. Optional ?congress=119&limit=20. From Congress.gov.",
@@ -144,7 +144,7 @@ const routeConfig = {
   },
   "GET /api/fec/candidates": {
     price: ".005",
-    network: "base",
+    network: "base-sepolia",
     config: {
       description:
         "FEC candidate search — name, party, office, state, district, incumbent status, election cycles. Query: ?name=smith&office=S&state=CA",
@@ -153,28 +153,6 @@ const routeConfig = {
 };
 
 const payment = paymentMiddleware(PAY_TO, routeConfig);
-
-// --- Debug: test facilitator connectivity ---
-app.get("/debug/facilitator", async (req, res) => {
-  try {
-    const r = await fetch("https://x402.org/facilitator/supported");
-    const data = await r.json();
-    res.json({ status: r.status, data });
-  } catch (err) {
-    res.json({ error: err.message });
-  }
-});
-
-// --- Debug: manual payment test ---
-app.get("/debug/test-pay", async (req, res) => {
-  try {
-    const { useFacilitator } = require("x402/verify");
-    const { verify, settle } = useFacilitator();
-    res.json({ message: "Facilitator initialized, send a payment to /api/exchange-rates/USD to test" });
-  } catch (err) {
-    res.json({ error: err.message });
-  }
-});
 
 // --- Health check (free) ---
 app.get("/", (req, res) => {
@@ -190,11 +168,11 @@ app.get("/", (req, res) => {
 
   res.json({
     name: "x402 Data Bazaar",
-    description: "Real-world data APIs for AI agents — weather, nutrition, VIN, census, FDA, and more. Pay per request with USDC on Base.",
+    description: "Real-world data APIs for AI agents — weather, nutrition, VIN, census, FDA, and more. Pay per request with USDC on Base Sepolia.",
     version: "1.0.0",
     endpoints: endpoints.length,
     catalog: endpoints,
-    payment: { network: "Base", currency: "USDC", protocol: "x402" },
+    payment: { network: "Base Sepolia", currency: "USDC", protocol: "x402" },
   });
 });
 
