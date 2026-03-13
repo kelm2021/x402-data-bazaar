@@ -152,6 +152,12 @@ const routeConfig = {
   },
 };
 
+// Log x402 payment errors for debugging
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  originalConsoleError('[x402-debug]', ...args);
+};
+
 const payment = paymentMiddleware(PAY_TO, routeConfig);
 
 // --- Health check (free) ---
