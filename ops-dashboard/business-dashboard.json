@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-18T22:25:00Z",
-  "publishedAt": "2026-03-18T23:05:15.197Z",
+  "generatedAt": "2026-03-19 16:34:00 +0000",
+  "publishedAt": "2026-03-19T16:34:11.142Z",
   "mission": {
     "targetNetUsd": 1000,
     "deadline": "2026-03-31",
@@ -9,11 +9,11 @@
     "status": "tighten the lead wedge, prove demand, and only broaden if the evidence says so"
   },
   "process": {
-    "fidelity": "mixed pass",
-    "failureTrigger": null,
-    "dispatchedLaneCount": 9,
+    "fidelity": "fail",
+    "failureTrigger": "hit",
+    "dispatchedLaneCount": 6,
     "requiredLaneCount": 4,
-    "reason": "the dispatch minimum was met and real external action did occur through reachable public channels, but the proof stack still has logging gaps, one evidence-overclaim issue, and incomplete refresh-package verification"
+    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public routes already existed from the 2026-03-18 outreach wave. The referenced outreach execution log is also missing in this workspace."
   },
   "evidence": {
     "outreachSends": 0,
@@ -34,7 +34,7 @@
         "target": "Paul Valente",
         "title": "Chief Customer Officer & Co-Founder",
         "firm": "VISO TRUST",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -42,7 +42,7 @@
         "target": "Corentin Le Reun",
         "title": "Chief Executive Officer",
         "firm": "VISO TRUST",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -50,7 +50,7 @@
         "target": "Ajay Trehan",
         "title": "Founder & Chief Executive Officer",
         "firm": "AuthBridge",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -58,7 +58,7 @@
         "target": "Raviraj Singh Ghai",
         "title": "Chief Sales Officer & Founding Member",
         "firm": "AuthBridge",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -66,7 +66,7 @@
         "target": "Ryan Cimo",
         "title": "Founder & Chief Executive Officer",
         "firm": "Fraxtional",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -74,7 +74,7 @@
         "target": "Cloe Guidry-Reed",
         "title": "Chief Executive Officer",
         "firm": "OneCredential",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -82,7 +82,7 @@
         "target": "Sonja Crystal Williams",
         "title": "Head of Marketing & Customer Success",
         "firm": "OneCredential",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -90,7 +90,7 @@
         "target": "Gaurav Baheti",
         "title": "Founder & Chief Executive Officer",
         "firm": "Procol",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -98,7 +98,7 @@
         "target": "Salvatore Tirabassi",
         "title": "Managing Director",
         "firm": "CFO Pro Analytics",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "finance ops and AP"
       },
       {
@@ -126,12 +126,6 @@
       "role": "buyer shell",
       "status": "active",
       "promoteWhen": "it improves invocation or conversion"
-    },
-    {
-      "channel": "direct workflow desk",
-      "role": "bridge close path",
-      "status": "active",
-      "promoteWhen": "a buyer wants help on one live case faster than self-serve setup"
     },
     {
       "channel": "MCP Registry / Smithery",

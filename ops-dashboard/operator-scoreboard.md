@@ -21,7 +21,6 @@
 | --- | --- | --- | --- |
 | x402 | near-term payment rail | active | it is the simplest believable paid path |
 | Payments MCP | buyer shell | active | it improves invocation or conversion |
-| direct workflow desk | bridge close path | active | a buyer wants help on one live case faster than self-serve setup |
 | MCP Registry / Smithery | wrapper distribution | watch | tool installs or reuse appear |
 | ChatGPT apps | later distribution | watch | in-chat UX clearly matters |
 | ACP | later workflow rail | watch | workflow becomes stateful or escrow-worthy |
@@ -37,6 +36,7 @@
 | Repeat use | proves staying power | not yet proven in the workspace |
 | Discovery coverage | proves the service is findable | partial / conditional |
 | Telemetry trust | determines how much to trust the dashboard | medium, not fully trusted |
+| Focused distribution denominator | determines whether zero replies means execution gap or wedge failure | 0 qualified so far; follow-up plus time window not yet complete |
 | Bench usage | proves the blueprint is actually operating | improving, now tracked in dispatch ledger |
 | Chief of Staff solo exceptions | shows whether local execution is the exception instead of the norm | now tracked in dispatch ledger |
 
@@ -46,7 +46,6 @@
 - Treat social engagement as noise unless it creates downstream action.
 - Keep self-activity and external activity separated before making pricing or channel decisions.
 - If a metric cannot explain its source, do not let it steer strategy.
-- Unpaid live `402` checks are currently dependable proof; paid self-verification on this host is blocked until the wallet bridge starts cleanly again.
 
 ## This Week's Progress
 
@@ -65,6 +64,7 @@
 - Telemetry can still mislead if attribution is not cleaned up.
 - Pricing can drift toward fantasy if it is not anchored to real buyer behavior.
 - A weak wedge can look busy without producing revenue.
+- Raw send count can create false pivot pressure before reachable prospects have actually matured.
 - The org can still collapse into solo execution if dispatch discipline is not enforced every cycle.
 
 ## 5 PM CST Proof Package
@@ -73,19 +73,15 @@ This section is proof-capture only. Do not infer replies or revenue that have no
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Outreach sends | observed: 5 completed | VISO TRUST email, AuthBridge fallback sales email, OneCredential form submit with on-page success confirmation, Fraxtional form submit, CFO Pro Analytics email |
-| Moltbook publish | live | infrastructure post `7e99dc14-e4c5-4203-b746-a8b3496dca7e` |
-| Moltbook interaction | observed but weak | intro thread shows `4` notifications, `4` comments, `3` upvotes, and a follow to `taidarilla`; treat as promising signal only |
-| Remote refresh package | inferred | `progress.md` says `docs/remote-codex-runner/runner-refresh.zip` was rebuilt and records SHA256 `8D34249243501CE676945C8CA98DFFAF391125DDD240146B38C5A09AEFCD3F81`, but the zip is not present in this Linux workspace for direct verification |
-| Remote refresh tooling | observed | local runner docs include `package-runner-refresh.ps1`, `apply-runner-refresh.sh`, `run-business-lane.sh`, `install-lane-crons.sh`, and `lane-prompts/proof-check.md` |
-| Remote refresh hash | inferred | `progress.md` logs SHA256 `8D34249243501CE676945C8CA98DFFAF391125DDD240146B38C5A09AEFCD3F81`; not directly re-verified against a present zip here |
-| Remote runner state | observed | `~/ops/logs/eom-revenue.log` shows repeated `STARTING eom-revenue` entries on `2026-03-18` with multiple `EXITED:0` runs, and `tmux -S ~/.tmux/sock ls` currently reports `eom-revenue: 1 windows (created Wed Mar 18 17:43:57 2026)` |
-| Proof lane state | observed | `~/ops/logs/lanes/proof-check.log` shows `STARTING:proof-check` at `2026-03-18T17:47:03-05:00` and `STARTING:proof-check:publish-business-dashboard` at `2026-03-18T17:49:48-05:00` |
-| Response count | missing | no confirmed replies yet |
-| Paid attempts | missing | no confirmed payment attempts yet |
-| Bundle interest | missing | no confirmed bundle interest yet |
-| External probe evidence | missing | no verified non-self probe or inbound workflow request yet |
-| Process-fidelity weaknesses | logging failure + evidence overclaim + telemetry ambiguity | cited `revenue/outreach/outreach-execution-log.md` is missing in this workspace; some files still point to it as if it were available proof, and refresh-package verification still relies on recorded notes instead of a present artifact |
+| Focused distribution denominator | 0/5 qualified | 5 routes have prior verified delivery or submit state from 2026-03-18, but no follow-up is logged here yet and the 48-hour maturity window is not complete |
+| Moltbook publish | no new publish verified today | latest verified publish remains infrastructure post `7e99dc14-e4c5-4203-b746-a8b3496dca7e` from 2026-03-18 |
+| Remote refresh package | missing in inspected workspace | `docs/remote-codex-runner/runner-refresh.zip` is not present in this Linux workspace during this proof check |
+| Remote refresh hash | not re-verified today | prior hash claims exist in older artifacts, but no local zip was available to hash in this run |
+| Remote runner state | partially verified | runner docs and lane scripts are present locally; progress log records fresh unattended loop start at 2026-03-18 14:05 Central; no newer remote host log captured here |
+| Response count | pending | no confirmed replies yet |
+| Paid attempts | pending | no confirmed payment attempts yet |
+| Bundle interest | pending | no confirmed bundle interest yet |
+| External probe evidence | pending | no verified non-self probe or inbound workflow request yet |
 ## 14-Day Proof Scoreboard
 
 Use this as the daily decision sheet until the lead wedge is proven or falsified.
@@ -113,21 +109,60 @@ This section is for Hegel's evidence capture and should stay empty until real re
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| External sends | observed: five sent | VISO TRUST emailed, AuthBridge fallback email sent after form blocker, OneCredential form returned `Thank you! Your submission has been received!`, Fraxtional form submitted, and CFO Pro Analytics emailed |
-| Moltbook publish status | published | Tesla telemetry-honesty post live under `7e99dc14-e4c5-4203-b746-a8b3496dca7e` |
-| Remote runner state | observed | `~/ops/logs/eom-revenue.log` shows repeated runner starts on `2026-03-18` with multiple successful `EXITED:0` runs; `~/ops/logs/lanes/proof-check.log` shows the proof lane start and dashboard-publish start; `tmux -S ~/.tmux/sock ls` currently shows a live `eom-revenue` session |
-| Remote refresh package state | inferred | rebuild and SHA256 are recorded in `progress.md`, but `docs/remote-codex-runner/runner-refresh.zip` is not present here for direct verification |
-| Process fidelity | mixed pass | 9 distinct non-Chief lanes dispatched today across logged cycles and external action did occur, but evidence capture is weakened by a missing outreach execution log, overclaimed references to that missing file, and only partial runner verification |
-| Non-self probes | missing | none verified yet |
-| Direct outreach responses | missing | none verified yet |
-| Paid attempts | missing | none verified yet |
-| Bundle interest | missing | none verified yet |
-| Concrete evidence | boundary tightened | checkpoint distinguishes observed, inferred, and missing evidence instead of treating all proof items as equally strong |
+| External sends | zero verified today | no 2026-03-19 outreach send or follow-up is logged in the reviewed files |
+| Focused distribution denominator | 0/5 qualified | qualified means delivered or form-success plus follow-up plus >=48h since first touch; do not use raw sends as the pivot denominator |
+| Moltbook publish status | no new publish verified today | latest verified publish remains Tesla telemetry-honesty post `7e99dc14-e4c5-4203-b746-a8b3496dca7e` from 2026-03-18 |
+| Process fidelity | fail | dispatch threshold passed with 6 non-Chief lanes on 2026-03-19, but no external action is logged today despite five already reachable public routes; missing outreach-execution log also creates a logging failure |
+| Non-self probes | pending | none verified yet |
+| Direct outreach responses | pending | none verified yet |
+| Paid attempts | pending | none verified yet |
+| Bundle interest | pending | none verified yet |
+| Concrete evidence | constrained | checkpoint reflects only verified prior-day sends, current no-send status, Moltbook state, package inspection, and logged remote-runner evidence |
+
+## External Evidence Receipt
+
+Observed:
+- 0 verified outreach sends for 2026-03-19
+- no new Moltbook publish verified today
+- latest verified Moltbook publish remains post `7e99dc14-e4c5-4203-b746-a8b3496dca7e`
+- 6 non-Chief lanes were dispatched today
+- remote runner docs and lane scripts are present locally
+- `docs/remote-codex-runner/runner-refresh.zip` is absent in the inspected workspace
+- latest verified remote runner state is still the 2026-03-18 unattended loop start recorded in `ops/progress.md`
+
+Inferred:
+- the five 2026-03-18 reachable routes remain the next proof surface for one-name pilot follow-up
+- prior remote refresh claims may refer to a package outside this workspace, but that is not observed package readiness here
+- Moltbook remains a promising signal lane, not proven downstream demand
+
+Missing:
+- any 2026-03-19 external action
+- direct replies
+- non-self probes
+- paid attempts
+- paid conversions
+- bundle interest
+- present outreach execution log
+- inspectable refresh zip
+- remote host proof newer than 2026-03-18
+
+Source provenance:
+- `ops/progress.md`
+- `ops/operator-scoreboard.md`
+- `ops/dispatch-ledger.md`
+- `ops/moltbook-signal-log.md`
+- `revenue/pipeline.md`
+- `revenue/outreach/outreach-execution-log.md` missing in this workspace
+- `docs/remote-codex-runner/README.md`
+- `docs/remote-codex-runner/lane-prompts/proof-check.md`
+
+Next proof target:
+- one verified one-name pilot follow-up on an already reachable route with delivery or submit evidence logged in a present file
 ### Pivot Rules
 
 - **Stay Bazaar-first** if external probes are appearing and the bundle path is helping the lead wedge.
 - **Tighten packaging** if probes exist but the offer is confusing, weak, or not converting.
-- **Pivot to direct-service-first** if there are zero non-self probes after focused distribution or if the current path cannot plausibly hit cash by month end.
+- **Pivot to direct-service-first** if there are zero non-self probes after focused distribution is actually qualified or if the current path cannot plausibly hit cash by month end.
 
 ### Daily Minimums To Record
 

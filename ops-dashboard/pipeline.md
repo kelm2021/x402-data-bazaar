@@ -11,8 +11,8 @@ Use this file to track actual buyer conversations, tests, intros, and paid usage
 
 | Lead or Surface | Stage | Next Action | Owner | Notes |
 | --- | --- | --- | --- | --- |
-| Payments MCP buyer workflows | active | tighten prompts and test invocation quality | Apollo | current near-term surface |
-| direct business workflows | active | identify concrete onboarding / screening use cases | Apollo | less dependent on marketplace discovery |
+| Payments MCP buyer workflows | active | test the repaired one-live-counterparty ask in prompt language and reply pack | Apollo | current near-term surface |
+| direct business workflows | active | use the repaired send-ready pack on follow-ups and live-example asks | Apollo | less dependent on marketplace discovery |
 | compliance and onboarding operators | sourcing | build a short target list of buyer workflows and likely users | Apollo | avoid marketplace dependence |
 | vendor-entity-brief bundle | test | determine whether the bundle lifts interest versus raw screening alone | Apollo | bundle, not lead |
 
@@ -41,27 +41,39 @@ Where direct operator workflows fit:
 Opening message drafts to use:
 1. `We built a very small counterparty screen for procurement and onboarding teams. It gives you a cheap first-pass gate before you spend time on a full review. If that would fit one of your approval flows, I can show you the 30-second version.`
 2. `If your team screens new vendors, payees, or contractors before approval, this is meant to slot in as the first check. The bundle adds a short entity brief only when someone needs handoff context.`
-3. `I'm reaching out because we have a low-friction screen for new counterparties that works well as a default gate in agent or operator workflows. If you want, I can send a copy-paste prompt or a live example.`
+3. `I'm reaching out because we have a low-friction screen for new counterparties that works well as a default gate in agent or operator workflows. If you want, I can run a one-name pilot and return the exact output the reviewer would see.`
 
 ## Immediate Next Tests
 
-- Send the opening draft to a small, targeted list of procurement, onboarding, or compliance operators.
+- Follow up on the five already reachable public routes with the one-name pilot ask before sourcing new prospects.
 - Test the Payments MCP prompt against the same workflow language and see if it feels like a natural default action.
-- Watch whether the bundle gets requested only after a screen or whether buyers ask for context up front.
+- Use focused distribution, not raw sends, as the pivot denominator.
+
+## Focused Distribution Denominator
+
+Focused distribution is the denominator for pivot decisions.
+
+Qualified means:
+
+- verified delivery or verified form success
+- at least one follow-up sent
+- at least 48 hours elapsed since first touch
+
+Do not use raw send count as the pivot denominator.
 
 ## Active Prospects
 
 | Rank | Target | Title | Firm | Status | Best Angle |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Paul Valente | Chief Customer Officer & Co-Founder | VISO TRUST | sent 2026-03-18 | compliance and due diligence advisors |
-| 2 | Corentin Le Reun | Chief Executive Officer | VISO TRUST | active | compliance and due diligence advisors |
-| 3 | Ajay Trehan | Founder & Chief Executive Officer | AuthBridge | sent 2026-03-18 | procurement and vendor onboarding |
-| 4 | Raviraj Singh Ghai | Chief Sales Officer & Founding Member | AuthBridge | active | procurement and vendor onboarding |
-| 5 | Ryan Cimo | Founder & Chief Executive Officer | Fraxtional | sent 2026-03-18 | compliance and due diligence advisors |
-| 6 | Cloe Guidry-Reed | Chief Executive Officer | OneCredential | sent 2026-03-18 | procurement and vendor onboarding |
-| 7 | Sonja Crystal Williams | Head of Marketing & Customer Success | OneCredential | active | procurement and vendor onboarding |
-| 8 | Gaurav Baheti | Founder & Chief Executive Officer | Procol | active | procurement and vendor onboarding |
-| 9 | Salvatore Tirabassi | Managing Director | CFO Pro Analytics | sent 2026-03-18 | finance ops and AP |
+| 1 | Paul Valente | Chief Customer Officer & Co-Founder | VISO TRUST | sent 2026-03-18, awaiting reply | compliance and due diligence advisors |
+| 2 | Corentin Le Reun | Chief Executive Officer | VISO TRUST | not contacted | compliance and due diligence advisors |
+| 3 | Ajay Trehan | Founder & Chief Executive Officer | AuthBridge | sent 2026-03-18, awaiting reply | procurement and vendor onboarding |
+| 4 | Raviraj Singh Ghai | Chief Sales Officer & Founding Member | AuthBridge | not contacted | procurement and vendor onboarding |
+| 5 | Ryan Cimo | Founder & Chief Executive Officer | Fraxtional | sent 2026-03-18, awaiting reply | compliance and due diligence advisors |
+| 6 | Cloe Guidry-Reed | Chief Executive Officer | OneCredential | sent 2026-03-18, awaiting reply | procurement and vendor onboarding |
+| 7 | Sonja Crystal Williams | Head of Marketing & Customer Success | OneCredential | not contacted | procurement and vendor onboarding |
+| 8 | Gaurav Baheti | Founder & Chief Executive Officer | Procol | not contacted | procurement and vendor onboarding |
+| 9 | Salvatore Tirabassi | Managing Director | CFO Pro Analytics | sent 2026-03-18, awaiting reply | finance ops and AP |
 | 10 | Chris Lazarte | Partner | Valua Partners | blocked 2026-03-18 | finance ops and AP |
 
 ## Execution Notes
@@ -72,3 +84,5 @@ Opening message drafts to use:
 - `2026-03-18`: Fraxtional form outreach for Ryan Cimo submitted successfully from `ke@liquidmercury.com`; see `revenue/outreach/outreach-execution-log.md`.
 - `2026-03-18`: CFO Pro Analytics outreach emailed to `info@cfoproanalytics.com` from `ke@liquidmercury.com`; see `revenue/outreach/outreach-execution-log.md`.
 - `2026-03-18`: Valua Partners was attempted through both public email and the public contact form, but the route was blocked by Outlook RPC instability and reCAPTCHA validation failure; see `revenue/outreach/outreach-execution-log.md`.
+- `2026-03-19`: the send-ready buyer pack was repaired so replies can be answered with a cleaner one-live-counterparty ask; use `content/approved/lead-wedge-one-pager.md`, `content/approved/reply-pack.md`, and `content/drafts/outreach-sequence.md` as the current response set.
+- `2026-03-19`: next external move is a one-name pilot follow-up on the five already reachable routes; use focused distribution, not raw send count, as the pivot denominator.
