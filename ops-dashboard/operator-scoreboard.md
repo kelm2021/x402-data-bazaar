@@ -112,20 +112,24 @@ This section is for Hegel's evidence capture and should stay empty until real re
 | External sends | zero verified today | no 2026-03-19 outreach send or follow-up is logged in the reviewed files |
 | Focused distribution denominator | 0/5 qualified | qualified means delivered or form-success plus follow-up plus >=48h since first touch; do not use raw sends as the pivot denominator |
 | Moltbook publish status | no new publish verified today | latest verified publish remains Tesla telemetry-honesty post `7e99dc14-e4c5-4203-b746-a8b3496dca7e` from 2026-03-18 |
-| Process fidelity | fail | dispatch threshold passed with 6 non-Chief lanes on 2026-03-19, but no external action is logged today despite five already reachable public routes; missing outreach-execution log also creates a logging failure |
+| Remote refresh package state | missing in inspected workspace | runner docs are present, but `docs/remote-codex-runner/runner-refresh.zip` is not present in this Linux workspace during the proof run |
+| Verified remote runner state | partially verified | local runner docs and lane scripts are present; latest verified execution state remains the 2026-03-18 14:05 Central unattended loop start recorded in `ops/progress.md` |
+| Process fidelity | fail | dispatch threshold passed with 6 non-Chief lanes on 2026-03-19, but no external action is logged today despite five already reachable public routes from the 2026-03-18 send wave |
 | Non-self probes | pending | none verified yet |
 | Direct outreach responses | pending | none verified yet |
 | Paid attempts | pending | none verified yet |
 | Bundle interest | pending | none verified yet |
-| Concrete evidence | constrained | checkpoint reflects only verified prior-day sends, current no-send status, Moltbook state, package inspection, and logged remote-runner evidence |
+| Concrete evidence | constrained | checkpoint reflects only verified prior-day sends, current no-send status, Moltbook state, package inspection, the present outreach execution log, and logged remote-runner evidence |
 
 ## External Evidence Receipt
 
 Observed:
 - 0 verified outreach sends for 2026-03-19
+- 5 public routes have prior observed send or submit receipts from 2026-03-18 and are the active follow-up pool
 - no new Moltbook publish verified today
 - latest verified Moltbook publish remains post `7e99dc14-e4c5-4203-b746-a8b3496dca7e`
 - 6 non-Chief lanes were dispatched today
+- `~/ops/business-os/revenue/outreach/outreach-execution-log.md` is present and documents the 2026-03-18 send receipts
 - remote runner docs and lane scripts are present locally
 - `docs/remote-codex-runner/runner-refresh.zip` is absent in the inspected workspace
 - latest verified remote runner state is still the 2026-03-18 unattended loop start recorded in `ops/progress.md`
@@ -134,6 +138,7 @@ Inferred:
 - the five 2026-03-18 reachable routes remain the next proof surface for one-name pilot follow-up
 - prior remote refresh claims may refer to a package outside this workspace, but that is not observed package readiness here
 - Moltbook remains a promising signal lane, not proven downstream demand
+- the main process failure is external execution against ready channels, not dispatch coverage
 
 Missing:
 - any 2026-03-19 external action
@@ -142,7 +147,6 @@ Missing:
 - paid attempts
 - paid conversions
 - bundle interest
-- present outreach execution log
 - inspectable refresh zip
 - remote host proof newer than 2026-03-18
 
@@ -152,7 +156,7 @@ Source provenance:
 - `ops/dispatch-ledger.md`
 - `ops/moltbook-signal-log.md`
 - `revenue/pipeline.md`
-- `revenue/outreach/outreach-execution-log.md` missing in this workspace
+- `revenue/outreach/outreach-execution-log.md`
 - `docs/remote-codex-runner/README.md`
 - `docs/remote-codex-runner/lane-prompts/proof-check.md`
 

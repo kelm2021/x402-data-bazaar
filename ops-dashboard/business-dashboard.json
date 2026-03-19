@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-03-19 16:34:00 +0000",
-  "publishedAt": "2026-03-19T16:34:11.142Z",
+  "generatedAt": "2026-03-19 17:02:00 +0000",
+  "publishedAt": "2026-03-19T16:40:47.542Z",
   "mission": {
     "targetNetUsd": 1000,
     "deadline": "2026-03-31",
-    "leadWedge": null,
-    "bundle": null,
+    "leadWedge": "restricted-party-screen",
+    "bundle": "vendor-entity-brief",
     "status": "tighten the lead wedge, prove demand, and only broaden if the evidence says so"
   },
   "process": {
@@ -13,7 +13,7 @@
     "failureTrigger": "hit",
     "dispatchedLaneCount": 6,
     "requiredLaneCount": 4,
-    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public routes already existed from the 2026-03-18 outreach wave. The referenced outreach execution log is also missing in this workspace."
+    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public routes already existed from the 2026-03-18 outreach wave."
   },
   "evidence": {
     "outreachSends": 0,
@@ -27,7 +27,7 @@
     "latestMoltbookPostId": null
   },
   "pipeline": {
-    "activeProspects": 0,
+    "activeProspects": 5,
     "prospects": [
       {
         "rank": 1,
@@ -113,7 +113,13 @@
   },
   "confirmedActions": [],
   "blockedRoutes": [],
-  "nextProof": [],
+  "nextProof": [
+    "first logged one-name pilot follow-up on a reachable route",
+    "first verified reply from outreach",
+    "first verified non-self probe",
+    "first verified paid attempt",
+    "first remote runner execution artifact newer than 2026-03-18"
+  ],
   "channelWatchlist": [
     {
       "channel": "x402",
