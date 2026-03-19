@@ -112,9 +112,9 @@ This section is for Hegel's evidence capture and should stay empty until real re
 | External sends | zero verified today | no 2026-03-19 outreach send or follow-up is logged in the reviewed files |
 | Focused distribution denominator | 0/5 qualified | qualified means delivered or form-success plus follow-up plus >=48h since first touch; do not use raw sends as the pivot denominator |
 | Moltbook publish status | no new publish verified today | latest verified publish remains Tesla telemetry-honesty post `7e99dc14-e4c5-4203-b746-a8b3496dca7e` from 2026-03-18 |
-| Remote refresh package state | missing in inspected workspace | runner docs are present, but `docs/remote-codex-runner/runner-refresh.zip` is not present in this Linux workspace during the proof run |
+| Remote refresh package state | telemetry ambiguous | `ops/progress.md` records a 2026-03-18 refresh build and SHA256, but `docs/remote-codex-runner/runner-refresh.zip` is not present in this Linux workspace during the proof run |
 | Verified remote runner state | partially verified | local runner docs and lane scripts are present; latest verified execution state remains the 2026-03-18 14:05 Central unattended loop start recorded in `ops/progress.md` |
-| Process fidelity | fail | dispatch threshold passed with 6 non-Chief lanes on 2026-03-19, but no external action is logged today despite five already reachable public routes from the 2026-03-18 send wave |
+| Process fidelity | fail | dispatch threshold passed with 6 non-Chief lanes on 2026-03-19, but no external action is logged today despite five already reachable public routes from the 2026-03-18 send wave; package readiness remains telemetry ambiguity rather than observed proof |
 | Non-self probes | pending | none verified yet |
 | Direct outreach responses | pending | none verified yet |
 | Paid attempts | pending | none verified yet |
@@ -125,13 +125,14 @@ This section is for Hegel's evidence capture and should stay empty until real re
 
 Observed:
 - 0 verified outreach sends for 2026-03-19
-- 5 public routes have prior observed send or submit receipts from 2026-03-18 and are the active follow-up pool
+- 5 public routes have prior observed send or submit receipts from 2026-03-18
 - no new Moltbook publish verified today
 - latest verified Moltbook publish remains post `7e99dc14-e4c5-4203-b746-a8b3496dca7e`
 - 6 non-Chief lanes were dispatched today
 - `~/ops/business-os/revenue/outreach/outreach-execution-log.md` is present and documents the 2026-03-18 send receipts
 - remote runner docs and lane scripts are present locally
 - `docs/remote-codex-runner/runner-refresh.zip` is absent in the inspected workspace
+- `ops/progress.md` records a 2026-03-18 refresh build and SHA256, but that package is not inspectable here today
 - latest verified remote runner state is still the 2026-03-18 unattended loop start recorded in `ops/progress.md`
 
 Inferred:
@@ -139,6 +140,7 @@ Inferred:
 - prior remote refresh claims may refer to a package outside this workspace, but that is not observed package readiness here
 - Moltbook remains a promising signal lane, not proven downstream demand
 - the main process failure is external execution against ready channels, not dispatch coverage
+- package readiness is telemetry ambiguity, not observed operating readiness
 
 Missing:
 - any 2026-03-19 external action

@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-19 17:02:00 +0000",
-  "publishedAt": "2026-03-19T16:40:47.542Z",
+  "generatedAt": "2026-03-19 16:42:08 +0000",
+  "publishedAt": "2026-03-19T16:44:01.031Z",
   "mission": {
     "targetNetUsd": 1000,
     "deadline": "2026-03-31",
@@ -13,7 +13,7 @@
     "failureTrigger": "hit",
     "dispatchedLaneCount": 6,
     "requiredLaneCount": 4,
-    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public routes already existed from the 2026-03-18 outreach wave."
+    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public email and form routes already existed from the 2026-03-18 outreach wave. Refresh-package readiness is also ambiguous because older build claims exist, but no inspectable zip is present in this workspace today."
   },
   "evidence": {
     "outreachSends": 0,

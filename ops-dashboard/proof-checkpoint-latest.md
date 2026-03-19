@@ -1,6 +1,6 @@
 # Proof Checkpoint
 
-Generated: 2026-03-19 17:02:00 +0000
+Generated: 2026-03-19 16:42:08 +0000
 
 ## End-Of-Day Verdict
 
@@ -8,7 +8,8 @@ Generated: 2026-03-19 17:02:00 +0000
 - Process failure trigger: hit
 - Failure categories:
   - external-execution failure
-- Reason: the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public routes already existed from the 2026-03-18 outreach wave.
+  - telemetry ambiguity
+- Reason: the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public email and form routes already existed from the 2026-03-18 outreach wave. Refresh-package readiness is also ambiguous because older build claims exist, but no inspectable zip is present in this workspace today.
 
 ## Process Fidelity Audit
 
@@ -24,13 +25,16 @@ Generated: 2026-03-19 17:02:00 +0000
 - External-action requirement: failed
   - Reachable public channels existed from the five 2026-03-18 sent routes in `revenue/pipeline.md`
   - No 2026-03-19 follow-up send, reply, probe, or other external action is recorded in the files reviewed
+- Package-state requirement: ambiguous
+  - `ops/progress.md` records a 2026-03-18 refresh build and SHA256
+  - the inspected Linux workspace does not contain `docs/remote-codex-runner/runner-refresh.zip`
 
 ## Today Only: Evidence Classification
 
 ### Observed
 
 - Outreach send count for 2026-03-19: 0 verified sends logged
-- Reachable public channels already available for follow-up: 5 routes from the 2026-03-18 outreach wave are marked sent or submitted and become follow-up-ready on or after `2026-03-20`
+- Reachable public channels already established: 5 routes from the 2026-03-18 outreach wave are marked sent or submitted in the outreach log
 - Moltbook publish status for 2026-03-19: no new publish verified today
 - Prior Moltbook post remains the latest verified publish in the record:
   - infrastructure post `7e99dc14-e4c5-4203-b746-a8b3496dca7e`
@@ -40,6 +44,8 @@ Generated: 2026-03-19 17:02:00 +0000
   - `docs/remote-codex-runner/install-lane-crons.sh` is present
   - `docs/remote-codex-runner/lane-prompts/proof-check.md` is present
   - `docs/remote-codex-runner/runner-refresh.zip` is not present
+- Older package claim in logs:
+  - `ops/progress.md` records a 2026-03-18 refresh build with SHA256 `8D34249243501CE676945C8CA98DFFAF391125DDD240146B38C5A09AEFCD3F81`
 - Verified remote runner state:
   - `ops/progress.md` records a fresh unattended loop start on `2026-03-18` at `2:05 PM` Central
   - no newer remote host log or direct host inspection is available in this run
@@ -66,13 +72,14 @@ Generated: 2026-03-19 17:02:00 +0000
 
 Observed:
 - 0 verified outreach sends for 2026-03-19
-- 5 public routes have prior observed send or submit receipts from 2026-03-18 and are the active follow-up pool
+- 5 public routes have prior observed send or submit receipts from 2026-03-18
 - no new Moltbook publish verified today
 - latest verified Moltbook publish remains infrastructure post `7e99dc14-e4c5-4203-b746-a8b3496dca7e`
 - 6 non-Chief lanes were dispatched today
 - `~/ops/business-os/revenue/outreach/outreach-execution-log.md` is present and documents the 2026-03-18 send receipts
 - remote runner docs and lane scripts are present locally
 - `runner-refresh.zip` is absent from the inspected local runner folder
+- `ops/progress.md` records a 2026-03-18 refresh build and SHA256, but that package is not inspectable in this workspace
 - latest verified remote runner state is still the 2026-03-18 14:05 Central unattended loop start recorded in `ops/progress.md`
 
 Inferred:
@@ -80,6 +87,7 @@ Inferred:
 - remote refresh packaging likely exists outside the current Linux workspace, but that cannot be treated as observed package readiness here
 - Moltbook engagement remains a near-proof signal only until it produces workflow follow-on
 - the main process failure is execution against ready channels, not lane coverage
+- package readiness is telemetry ambiguity, not observed operating readiness
 
 Missing:
 - 2026-03-19 external action
