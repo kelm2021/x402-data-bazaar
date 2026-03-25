@@ -1,0 +1,182 @@
+[
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+    "ok": true,
+    "status": 200,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+    "ok": true,
+    "status": 200,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+    "ok": true,
+    "status": 200,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+    "ok": true,
+    "status": 200,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+    "ok": true,
+    "status": 200,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/census/population",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/congress/bills",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  },
+  {
+    "url": "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+    "ok": false,
+    "status": 429,
+    "protocol": null,
+    "healthStatus": null,
+    "responseStatus": null,
+    "validation": null,
+    "eventCount": 0
+  }
+]

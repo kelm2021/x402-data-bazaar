@@ -1,0 +1,72 @@
+[
+  {
+    "id": "warehouse-app",
+    "serviceName": "x402 Data Bazaar",
+    "domain": "x402-data-bazaar.vercel.app",
+    "kind": "warehouse",
+    "track": "legacy-keep",
+    "operatingMode": "operate-as-warehouse-only",
+    "canonicalUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+    "launchedAt": "2026-03-13T00:00:00.000Z"
+  },
+  {
+    "id": "solar-times",
+    "serviceName": "Solar Times",
+    "domain": "20260313-131854-solar-times.vercel.app",
+    "kind": "seller",
+    "track": "legacy-kill",
+    "operatingMode": "retire-if-costly",
+    "canonicalUrl": "https://20260313-131854-solar-times.vercel.app/api/sun/times",
+    "launchedAt": "2026-03-16T16:22:00.000Z"
+  },
+  {
+    "id": "restricted-party-screen",
+    "serviceName": "Restricted Party Screen",
+    "domain": "restricted-party-screen.vercel.app",
+    "kind": "seller",
+    "track": "core",
+    "operatingMode": "build-and-measure",
+    "canonicalUrl": "https://restricted-party-screen.vercel.app/api/ofac-sanctions-screening/SBERBANK?minScore=90&limit=5",
+    "launchedAt": "2026-03-17T01:40:00.000Z"
+  },
+  {
+    "id": "weather-decision",
+    "serviceName": "Weather Decision Brief",
+    "domain": "x402-weather-decision.vercel.app",
+    "kind": "seller",
+    "track": "legacy-keep",
+    "operatingMode": "freeze-and-monitor",
+    "canonicalUrl": "https://x402-weather-decision.vercel.app/api/weather/current?lat=40.7128&lon=-74.0060",
+    "launchedAt": "2026-03-16T17:24:00.000Z"
+  },
+  {
+    "id": "calendar-business-days",
+    "serviceName": "Business Day Planner",
+    "domain": "x402-business-day-planner.vercel.app",
+    "kind": "seller",
+    "track": "legacy-keep",
+    "operatingMode": "freeze-and-monitor",
+    "canonicalUrl": "https://x402-business-day-planner.vercel.app/api/holidays/today/US",
+    "launchedAt": "2026-03-16T17:26:00.000Z"
+  },
+  {
+    "id": "fx-conversion-quotes",
+    "serviceName": "FX Conversion Quotes",
+    "domain": "x402-fx-conversion-quotes.vercel.app",
+    "kind": "seller",
+    "track": "legacy-keep",
+    "operatingMode": "freeze-and-monitor",
+    "canonicalUrl": "https://x402-fx-conversion-quotes.vercel.app/api/exchange-rates/USD?to=EUR,GBP,JPY&amount=100",
+    "launchedAt": "2026-03-16T17:26:00.000Z"
+  },
+  {
+    "id": "vehicle-vin",
+    "serviceName": "VIN Decoder",
+    "domain": "x402-vin-decoder.vercel.app",
+    "kind": "seller",
+    "track": "legacy-keep",
+    "operatingMode": "freeze-and-monitor",
+    "canonicalUrl": "https://x402-vin-decoder.vercel.app/api/vin/1HGCM82633A004352",
+    "launchedAt": "2026-03-16T17:51:00.000Z"
+  }
+]

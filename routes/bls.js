@@ -3,21 +3,16 @@ const { Router } = require("express");
 const router = Router();
 
 async function fetchBLS(seriesId, years) {
-  const apiKey = process.env.BLS_API_KEY;
   const endYear = new Date().getFullYear();
   const startYear = endYear - (parseInt(years) || 5);
-
-  const url = apiKey
-    ? "https://api.bls.gov/publicAPI/v2/timeseries/data/"
-    : "https://api.bls.gov/publicAPI/v1/timeseries/data/";
-
-  const body = { seriesid: [seriesId], startyear: String(startYear), endyear: String(endYear) };
-  if (apiKey) body.registrationkey = apiKey;
-
-  const resp = await fetch(url, {
+  const resp = await fetch("https://api.bls.gov/publicAPI/v1/timeseries/data/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      seriesid: [seriesId],
+      startyear: String(startYear),
+      endyear: String(endYear),
+    }),
   });
   return resp.json();
 }

@@ -1,0 +1,962 @@
+{
+    "generatedAt":  "2026-03-20T05:41:19.6867182Z",
+    "canonicalEntries":  {
+                             "value":  [
+                                           {
+                                               "routeKey":  "GET /api/vin/*",
+                                               "method":  "GET",
+                                               "path":  "/api/vin/*",
+                                               "category":  "transportation/vehicle",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/current/*",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/current/*",
+                                               "category":  "weather",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/current",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/current",
+                                               "category":  "weather",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/forecast",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/forecast",
+                                               "category":  "weather",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/forecast"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/holidays/today/*",
+                                               "method":  "GET",
+                                               "path":  "/api/holidays/today/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/business-days/next/*",
+                                               "method":  "GET",
+                                               "path":  "/api/business-days/next/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/holidays/*",
+                                               "method":  "GET",
+                                               "path":  "/api/holidays/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/holidays/US/2026"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/exchange-rates/*",
+                                               "method":  "GET",
+                                               "path":  "/api/exchange-rates/*",
+                                               "category":  "finance/fx",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/ip/*",
+                                               "method":  "GET",
+                                               "path":  "/api/ip/*",
+                                               "category":  "networking/geolocation",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/food/barcode/*",
+                                               "method":  "GET",
+                                               "path":  "/api/food/barcode/*",
+                                               "category":  "food/nutrition",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/nutrition/search",
+                                               "method":  "GET",
+                                               "path":  "/api/nutrition/search",
+                                               "category":  "food/nutrition",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/nutrition/search"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fda/recalls",
+                                               "method":  "GET",
+                                               "path":  "/api/fda/recalls",
+                                               "category":  "health/food-safety",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fda/recalls"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fda/adverse-events",
+                                               "method":  "GET",
+                                               "path":  "/api/fda/adverse-events",
+                                               "category":  "health/pharmacovigilance",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fda/adverse-events"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/census/population",
+                                               "method":  "GET",
+                                               "path":  "/api/census/population",
+                                               "category":  "economics/demographics",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/census/population"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/bls/cpi",
+                                               "method":  "GET",
+                                               "path":  "/api/bls/cpi",
+                                               "category":  "economics/inflation",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/bls/cpi"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/bls/unemployment",
+                                               "method":  "GET",
+                                               "path":  "/api/bls/unemployment",
+                                               "category":  "economics/labor",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/bls/unemployment"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/air-quality/*",
+                                               "method":  "GET",
+                                               "path":  "/api/air-quality/*",
+                                               "category":  "weather",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/air-quality/20002"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/congress/bills",
+                                               "method":  "GET",
+                                               "path":  "/api/congress/bills",
+                                               "category":  "government/legislation",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/congress/bills"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fec/candidates",
+                                               "method":  "GET",
+                                               "path":  "/api/fec/candidates",
+                                               "category":  "government/elections",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fec/candidates"
+                                           }
+                                       ],
+                             "Count":  19
+                         },
+    "settlementLedger":  {
+                             "value":  [
+                                           {
+                                               "routeKey":  "GET /api/vin/*",
+                                               "method":  "GET",
+                                               "path":  "/api/vin/*",
+                                               "category":  "transportation/vehicle",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+                                               "tx":  "0x8f8fafe75a176e63c97f931e2ae228391f37b1b86d5d4a2808de784062ec4520"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/current/*",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/current/*",
+                                               "category":  "weather",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+                                               "tx":  "0xab335dba8bacb44d27d4d84c78497de6fbf753bac175a6ff0551ba1e27ba6295"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/current",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/current",
+                                               "category":  "weather",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+                                               "tx":  "0x2f3a11808b99cecc3434a7997b3b03344958bed18e1b53f828474c5ec6f565d8"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/weather/forecast",
+                                               "method":  "GET",
+                                               "path":  "/api/weather/forecast",
+                                               "category":  "weather",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+                                               "tx":  "0x5ab622bb5a91452dc9a5d2d4382a259eee4a24e99044061a1fba45dd47f8fd61"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/holidays/today/*",
+                                               "method":  "GET",
+                                               "path":  "/api/holidays/today/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                               "tx":  "0x41227e8a4f5f80c076e259da8632efd11ae105b3295e0b960679da3509ba3a15"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/business-days/next/*",
+                                               "method":  "GET",
+                                               "path":  "/api/business-days/next/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+                                               "tx":  "0x944a9a102b1956b65950f0c22636b8093a8ef927db1246a4ee3f579f63d63fa8"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/holidays/*",
+                                               "method":  "GET",
+                                               "path":  "/api/holidays/*",
+                                               "category":  "calendar/holidays",
+                                               "priceUsd":  0.002,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+                                               "tx":  "0x5d0cbfe68bb1b711610496e0c3218b2fcc1ffef4e5425b6e5ab8fd0076ead659"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/exchange-rates/*",
+                                               "method":  "GET",
+                                               "path":  "/api/exchange-rates/*",
+                                               "category":  "finance/fx",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+                                               "tx":  "0xd25d5867c9dcc16d657764e2feeb6864fcd529b5a1d1390d04af1b53c3d7150d"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/ip/*",
+                                               "method":  "GET",
+                                               "path":  "/api/ip/*",
+                                               "category":  "networking/geolocation",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+                                               "tx":  "0x13b2181faa2962df0dcc19771aad459781b686b456401ffe19ebb836febcd653"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/food/barcode/*",
+                                               "method":  "GET",
+                                               "path":  "/api/food/barcode/*",
+                                               "category":  "food/nutrition",
+                                               "priceUsd":  0.003,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+                                               "tx":  "0x4172a3b40d702d0597ad6785deeab7998c21d669464a8370339acef6020b161a"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/nutrition/search",
+                                               "method":  "GET",
+                                               "path":  "/api/nutrition/search",
+                                               "category":  "food/nutrition",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+                                               "tx":  "0x28afc201109726953536b52080ba3c1769a9094e7a82c184fef75ac0e8b68343"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fda/recalls",
+                                               "method":  "GET",
+                                               "path":  "/api/fda/recalls",
+                                               "category":  "health/food-safety",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+                                               "tx":  "0xdbc3b6982beec3a097f77d82d6f3442535108724899cf45bfbc7478aa6328ea6"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fda/adverse-events",
+                                               "method":  "GET",
+                                               "path":  "/api/fda/adverse-events",
+                                               "category":  "health/pharmacovigilance",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+                                               "tx":  "0x5f26afc39246a84c20056c60e740b2e520cb0ecc9ba49b0e5b0d29322d128640"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/census/population",
+                                               "method":  "GET",
+                                               "path":  "/api/census/population",
+                                               "category":  "economics/demographics",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/census/population",
+                                               "tx":  "0xf7dd22f5f8d256e12edf985e48161422ce1fb741b9a0bbfb66fae9cf692e289a"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/bls/cpi",
+                                               "method":  "GET",
+                                               "path":  "/api/bls/cpi",
+                                               "category":  "economics/inflation",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+                                               "tx":  "0x96bc25a68e6340c41d8a38498d9b983cdf162d0527e41ae91b5cea95c10e30c3"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/bls/unemployment",
+                                               "method":  "GET",
+                                               "path":  "/api/bls/unemployment",
+                                               "category":  "economics/labor",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+                                               "tx":  "0x95450a125f8120ed6a55098b74baaeaed9e73441631d89fbf62694415292ba23"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/air-quality/*",
+                                               "method":  "GET",
+                                               "path":  "/api/air-quality/*",
+                                               "category":  "weather",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+                                               "tx":  "0x54f3635a6d2c6a02d98330ddda2b1818b015817d67edc5731fd62be41691b86b"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/congress/bills",
+                                               "method":  "GET",
+                                               "path":  "/api/congress/bills",
+                                               "category":  "government/legislation",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/congress/bills",
+                                               "tx":  "0xca6869dbc2b870229c998f2d2b6062b66226897c80d14aecec0b6154d46d9a1b"
+                                           },
+                                           {
+                                               "routeKey":  "GET /api/fec/candidates",
+                                               "method":  "GET",
+                                               "path":  "/api/fec/candidates",
+                                               "category":  "government/elections",
+                                               "priceUsd":  0.005,
+                                               "exampleUrl":  "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+                                               "tx":  "0x10346072d99a230b0cacae7cf4eab51fea7ac6e6744087d23337a2657149c4db"
+                                           }
+                                       ],
+                             "Count":  19
+                         },
+    "supportEvidence":  {
+                            "cdpCurrentHostMatches":  [
+
+                                                      ],
+                            "cdpCurrentHostMatchCount":  0,
+                            "cdpHistoricalStaleEntries":  [
+                                                              {
+                                                                  "resource":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+                                                                  "lastUpdated":  "2026-03-13T11:00:28.496Z"
+                                                              },
+                                                              {
+                                                                  "resource":  "https://x402-data-bazaar.vercel.app/api/weather/current",
+                                                                  "lastUpdated":  "2026-03-13T14:10:15.019Z"
+                                                              },
+                                                              {
+                                                                  "resource":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                                                  "lastUpdated":  "2026-03-13T16:35:01.558Z"
+                                                              }
+                                                          ],
+                            "hostSearchResults":  {
+                                                      "services":  [
+                                                                       {
+                                                                           "id":  "ab7996f8-3c63-41b1-b908-41167d4292a9",
+                                                                           "name":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+                                                                           "description":  null,
+                                                                           "url":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+                                                                           "protocol":  "x402",
+                                                                           "price_sats":  null,
+                                                                           "price_usd":  null,
+                                                                           "payment_asset":  "USD Coin",
+                                                                           "payment_network":  "eip155:8453",
+                                                                           "category":  "uncategorized",
+                                                                           "provider":  "x402-data-bazaar",
+                                                                           "source":  "bazaar",
+                                                                           "featured":  0,
+                                                                           "health_status":  "healthy",
+                                                                           "uptime_30d":  1,
+                                                                           "latency_p50_ms":  277,
+                                                                           "last_checked":  "2026-03-20 04:49:42",
+                                                                           "registered_at":  "2026-03-13 09:01:03",
+                                                                           "http_method":  "GET",
+                                                                           "reliability_score":  92,
+                                                                           "x402_payment_valid":  1,
+                                                                           "x402_facilitator_reachable":  null,
+                                                                           "x402_asset_known":  1
+                                                                       },
+                                                                       {
+                                                                           "id":  "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+                                                                           "name":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                                                           "description":  null,
+                                                                           "url":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                                                           "protocol":  "x402",
+                                                                           "price_sats":  null,
+                                                                           "price_usd":  null,
+                                                                           "payment_asset":  "USD Coin",
+                                                                           "payment_network":  "eip155:8453",
+                                                                           "category":  "uncategorized",
+                                                                           "provider":  "x402-data-bazaar",
+                                                                           "source":  "bazaar",
+                                                                           "featured":  0,
+                                                                           "health_status":  "healthy",
+                                                                           "uptime_30d":  1,
+                                                                           "latency_p50_ms":  278,
+                                                                           "last_checked":  "2026-03-20 04:59:31",
+                                                                           "registered_at":  "2026-03-13 09:01:03",
+                                                                           "http_method":  "GET",
+                                                                           "reliability_score":  92,
+                                                                           "x402_payment_valid":  1,
+                                                                           "x402_facilitator_reachable":  null,
+                                                                           "x402_asset_known":  1
+                                                                       },
+                                                                       {
+                                                                           "id":  "b698a01f-c8e6-498b-9595-5c2a0335dce3",
+                                                                           "name":  "https://x402-data-bazaar.vercel.app/api/weather/current",
+                                                                           "description":  null,
+                                                                           "url":  "https://x402-data-bazaar.vercel.app/api/weather/current",
+                                                                           "protocol":  "x402",
+                                                                           "price_sats":  null,
+                                                                           "price_usd":  null,
+                                                                           "payment_asset":  "USD Coin",
+                                                                           "payment_network":  "eip155:8453",
+                                                                           "category":  "uncategorized",
+                                                                           "provider":  "x402-data-bazaar",
+                                                                           "source":  "bazaar",
+                                                                           "featured":  0,
+                                                                           "health_status":  "healthy",
+                                                                           "uptime_30d":  1,
+                                                                           "latency_p50_ms":  260,
+                                                                           "last_checked":  "2026-03-20 04:57:51",
+                                                                           "registered_at":  "2026-03-13 15:01:03",
+                                                                           "http_method":  "GET",
+                                                                           "reliability_score":  92,
+                                                                           "x402_payment_valid":  1,
+                                                                           "x402_facilitator_reachable":  null,
+                                                                           "x402_asset_known":  1
+                                                                       }
+                                                                   ],
+                                                      "total":  3,
+                                                      "limit":  100,
+                                                      "offset":  0
+                                                  },
+                            "apiCatalogMeta":  {
+                                                   "name":  "x402 Data Bazaar API Discovery",
+                                                   "endpoints":  19
+                                               }
+                        },
+    "unpaidValidation":  {
+                             "summary":  {
+                                             "generatedAt":  "2026-03-20T05:37:50.239Z",
+                                             "total":  19,
+                                             "status402Count":  19,
+                                             "headerPresentCount":  19,
+                                             "headerDecodedCount":  19,
+                                             "fullyValidCount":  19
+                                         },
+                             "results":  [
+                                             {
+                                                 "routeKey":  "GET /api/vin/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/weather/current/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/weather/current",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/weather/forecast",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/holidays/today/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/business-days/next/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/holidays/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/exchange-rates/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/ip/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/food/barcode/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/nutrition/search",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/fda/recalls",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/fda/adverse-events",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/census/population",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/census/population",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/bls/cpi",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/bls/unemployment",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/air-quality/*",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/congress/bills",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/congress/bills",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             },
+                                             {
+                                                 "routeKey":  "GET /api/fec/candidates",
+                                                 "url":  "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+                                                 "ok":  true,
+                                                 "status":  402,
+                                                 "hasPaymentRequiredHeader":  true,
+                                                 "headerDecoded":  true,
+                                                 "headerChecks":  {
+                                                                      "acceptsPresent":  true,
+                                                                      "acceptedScheme":  "exact",
+                                                                      "network":  "eip155:8453",
+                                                                      "asset":  "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                                                                      "payTo":  "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+                                                                      "facilitator":  null
+                                                                  },
+                                                 "error":  null
+                                             }
+                                         ]
+                         },
+    "legacy402indexProbe":  {
+                                "value":  [
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+                                                  "ok":  true,
+                                                  "status":  200,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+                                                  "ok":  true,
+                                                  "status":  200,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+                                                  "ok":  true,
+                                                  "status":  200,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+                                                  "ok":  true,
+                                                  "status":  200,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+                                                  "ok":  true,
+                                                  "status":  200,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/census/population",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/congress/bills",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              },
+                                              {
+                                                  "url":  "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+                                                  "ok":  false,
+                                                  "status":  429,
+                                                  "protocol":  null,
+                                                  "healthStatus":  null,
+                                                  "responseStatus":  null,
+                                                  "validation":  null,
+                                                  "eventCount":  0
+                                              }
+                                          ],
+                                "Count":  18
+                            }
+}

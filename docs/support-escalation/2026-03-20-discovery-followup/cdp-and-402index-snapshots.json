@@ -1,0 +1,104 @@
+{
+  "cdpCurrentHostMatches": [],
+  "cdpCurrentHostMatchCount": 0,
+  "cdpHistoricalStaleEntries": [
+    {
+      "resource": "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+      "lastUpdated": "2026-03-13T11:00:28.496Z"
+    },
+    {
+      "resource": "https://x402-data-bazaar.vercel.app/api/weather/current",
+      "lastUpdated": "2026-03-13T14:10:15.019Z"
+    },
+    {
+      "resource": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "lastUpdated": "2026-03-13T16:35:01.558Z"
+    }
+  ],
+  "hostSearchResults": {
+    "services": [
+      {
+        "id": "ab7996f8-3c63-41b1-b908-41167d4292a9",
+        "name": "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+        "description": null,
+        "url": "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+        "protocol": "x402",
+        "price_sats": null,
+        "price_usd": null,
+        "payment_asset": "USD Coin",
+        "payment_network": "eip155:8453",
+        "category": "uncategorized",
+        "provider": "x402-data-bazaar",
+        "source": "bazaar",
+        "featured": 0,
+        "health_status": "healthy",
+        "uptime_30d": 1,
+        "latency_p50_ms": 277,
+        "last_checked": "2026-03-20 04:49:42",
+        "registered_at": "2026-03-13 09:01:03",
+        "http_method": "GET",
+        "reliability_score": 92,
+        "x402_payment_valid": 1,
+        "x402_facilitator_reachable": null,
+        "x402_asset_known": 1
+      },
+      {
+        "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+        "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+        "description": null,
+        "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+        "protocol": "x402",
+        "price_sats": null,
+        "price_usd": null,
+        "payment_asset": "USD Coin",
+        "payment_network": "eip155:8453",
+        "category": "uncategorized",
+        "provider": "x402-data-bazaar",
+        "source": "bazaar",
+        "featured": 0,
+        "health_status": "healthy",
+        "uptime_30d": 1,
+        "latency_p50_ms": 278,
+        "last_checked": "2026-03-20 04:59:31",
+        "registered_at": "2026-03-13 09:01:03",
+        "http_method": "GET",
+        "reliability_score": 92,
+        "x402_payment_valid": 1,
+        "x402_facilitator_reachable": null,
+        "x402_asset_known": 1
+      },
+      {
+        "id": "b698a01f-c8e6-498b-9595-5c2a0335dce3",
+        "name": "https://x402-data-bazaar.vercel.app/api/weather/current",
+        "description": null,
+        "url": "https://x402-data-bazaar.vercel.app/api/weather/current",
+        "protocol": "x402",
+        "price_sats": null,
+        "price_usd": null,
+        "payment_asset": "USD Coin",
+        "payment_network": "eip155:8453",
+        "category": "uncategorized",
+        "provider": "x402-data-bazaar",
+        "source": "bazaar",
+        "featured": 0,
+        "health_status": "healthy",
+        "uptime_30d": 1,
+        "latency_p50_ms": 260,
+        "last_checked": "2026-03-20 04:57:51",
+        "registered_at": "2026-03-13 15:01:03",
+        "http_method": "GET",
+        "reliability_score": 92,
+        "x402_payment_valid": 1,
+        "x402_facilitator_reachable": null,
+        "x402_asset_known": 1
+      }
+    ],
+    "total": 3,
+    "limit": 100,
+    "offset": 0
+  },
+  "apiCatalogMeta": {
+    "name": "x402 Data Bazaar API Discovery",
+    "endpoints": 19
+  }
+}

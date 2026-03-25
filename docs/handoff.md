@@ -63,7 +63,6 @@ routes/
   bls.js                    — BLS CPI + unemployment (BLS_API_KEY)
   air-quality.js            — EPA AirNow (AIRNOW_API_KEY)
   congress.js               — Congress.gov bills (CONGRESS_API_KEY)
-  fec.js                    — FEC candidates (FEC_API_KEY)
 ```
 
 ## Key Technical Details
@@ -115,7 +114,6 @@ function getPaymentMiddleware() {
 | BLS_API_KEY | Bureau of Labor Statistics |
 | AIRNOW_API_KEY | EPA AirNow |
 | CONGRESS_API_KEY | Congress.gov (api.data.gov key) |
-| FEC_API_KEY | FEC (api.data.gov key) |
 
 ## Addresses
 
@@ -146,3 +144,4 @@ function getPaymentMiddleware() {
 d9a042e — settle error logging (response interceptor)
 0e7a958 — settle-test debug endpoint
 ```
+

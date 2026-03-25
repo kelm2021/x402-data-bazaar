@@ -1,0 +1,52 @@
+{
+  "packageName": "vendor-entity-brief",
+  "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+  "serviceName": "Vendor Entity Brief",
+  "serviceDescription": "Paid x402 API for vendor onboarding and counterparty due-diligence briefs using GLEIF entity data plus OFAC sanctions screening.",
+  "baseUrl": "https://vendor-entity-brief.vercel.app",
+  "port": 3000,
+  "network": "eip155:8453",
+  "route": {
+    "key": "GET /api/vendor-entity-brief",
+    "method": "GET",
+    "routePath": "/api/vendor-entity-brief",
+    "expressPath": "/api/vendor-entity-brief",
+    "resourcePath": "/api/vendor-entity-brief",
+    "canonicalPath": "/api/vendor-entity-brief",
+    "price": "0.25",
+    "category": "identity",
+    "tags": ["compliance", "vendor-risk", "due-diligence", "ofac", "gleif"],
+    "description": "Short vendor entity brief for procurement, payouts, and cross-border onboarding. Query by legal name and get a machine-usable GLEIF entity match summary, LEI candidate shortlist, jurisdiction and registration details, plus OFAC restricted-party screening and a proceed-or-pause recommendation when the buyer needs a compact handoff artifact.",
+    "queryExample": {
+      "name": "SBERBANK",
+      "country": "CZ",
+      "minScore": "90",
+      "limit": "3"
+    },
+    "outputExample": {
+      "success": true,
+      "data": {
+        "query": {
+          "name": "SBERBANK",
+          "country": "CZ",
+          "minScore": 90,
+          "limit": 3
+        },
+        "summary": {
+          "status": "manual-review-required",
+          "recommendedAction": "pause-and-review",
+          "leiCandidateCount": 3,
+          "screeningMatchCount": 1,
+          "manualReviewRecommended": true
+        },
+        "bestEntityCandidate": {
+          "lei": "31570010000000029583",
+          "legalName": "Sberbank CZ, a.s. v likvidaci",
+          "jurisdiction": "CZ",
+          "entityStatus": "ACTIVE"
+        }
+      },
+      "source": "GLEIF API + OFAC Sanctions List Service"
+    }
+  }
+}

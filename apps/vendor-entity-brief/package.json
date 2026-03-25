@@ -1,0 +1,21 @@
+{
+  "name": "vendor-entity-brief",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test",
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@coinbase/x402": "^2.1.0",
+    "@upstash/redis": "^1.37.0",
+    "@x402/core": "^2.6.0",
+    "@x402/evm": "^2.6.0",
+    "@x402/express": "^2.6.0",
+    "@x402/extensions": "^2.6.0",
+    "express": "^5.2.1",
+    "node-fetch": "^2.7.0"
+  }
+}

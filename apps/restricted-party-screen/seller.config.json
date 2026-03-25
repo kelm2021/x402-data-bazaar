@@ -1,0 +1,183 @@
+{
+  "packageName": "restricted-party-screen",
+  "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+  "serviceName": "Restricted Party Screen",
+  "serviceDescription": "Paid x402 API for OFAC sanctions and restricted-party screening in agentic commerce, vendor onboarding, payouts, cross-border trade, and compliance workflows.",
+  "baseUrl": "https://restricted-party-screen.vercel.app",
+  "port": 3000,
+  "network": "eip155:8453",
+  "routes": [
+    {
+      "key": "GET /api/ofac-sanctions-screening/*",
+      "method": "GET",
+      "routePath": "/api/ofac-sanctions-screening/*",
+      "expressPath": "/api/ofac-sanctions-screening/:name",
+      "resourcePath": "/api/ofac-sanctions-screening/SBERBANK",
+      "canonicalPath": "/api/ofac-sanctions-screening/SBERBANK",
+      "price": "0.005",
+      "category": "identity",
+      "tags": ["compliance", "ofac", "sanctions", "restricted-party"],
+      "description": "OFAC sanctions and restricted-party screening for a person or entity name. Returns grouped potential matches, aliases, denied-party and sanctions-list context, source lists, sanctions programs, and a manual-review recommendation for vendor onboarding, payout checks, and cross-border compliance. Optional query params: minScore, type, country, program, list, limit.",
+      "queryExample": {
+        "minScore": "90",
+        "limit": "5"
+      },
+      "outputExample": {
+        "success": true,
+        "data": {
+          "query": {
+            "name": "SBERBANK",
+            "minScore": 90,
+            "limit": 5
+          },
+          "summary": {
+            "matchCount": 1,
+            "exactMatchCount": 1,
+            "manualReviewRecommended": true
+          },
+          "matches": [
+            {
+              "id": 18715,
+              "primaryName": "AKTSIONERNE TOVARYSTVO SBERBANK",
+              "aliases": [
+                "JOINT STOCK COMPANY SBERBANK",
+                "JSC SBERBANK"
+              ],
+              "type": "Entity",
+              "programs": [
+                "RUSSIA-EO14024",
+                "UKRAINE-EO13662"
+              ],
+              "lists": [
+                "SDN",
+                "Non-SDN"
+              ],
+              "addresses": [
+                "46 Volodymyrska street"
+              ],
+              "bestNameScore": 100,
+              "manualReviewRecommended": true
+            }
+          ],
+          "sourceFreshness": {
+            "sdnLastUpdated": "2026-03-13T00:00:00",
+            "consolidatedLastUpdated": "2026-01-08T00:00:00"
+          },
+          "screeningOnly": true
+        },
+        "source": "OFAC Sanctions List Service"
+      }
+    },
+    {
+      "key": "GET /api/vendor-onboarding/restricted-party-batch",
+      "method": "GET",
+      "handlerId": "batch",
+      "routePath": "/api/vendor-onboarding/restricted-party-batch",
+      "expressPath": "/api/vendor-onboarding/restricted-party-batch",
+      "resourcePath": "/api/vendor-onboarding/restricted-party-batch",
+      "canonicalPath": "/api/vendor-onboarding/restricted-party-batch",
+      "price": "0.15",
+      "category": "identity",
+      "tags": ["compliance", "ofac", "sanctions", "batch-screening"],
+      "description": "Low-friction batch restricted-party screen for up to 25 counterparties in one paid call. Returns per-name screening results, flagged counterparties, a batch-level proceed-or-pause recommendation, and machine-readable review signals for procurement, payouts, and cross-border onboarding workflows. Required query param: names separated with the pipe character (|). Optional query params: workflow, minScore, type, country, program, list, limit.",
+      "queryExample": {
+        "names": "SBERBANK|VTB BANK PJSC|GAZPROMBANK",
+        "workflow": "vendor-onboarding",
+        "minScore": "90",
+        "limit": "3"
+      },
+      "outputExample": {
+        "success": true,
+        "data": {
+          "workflow": "vendor-onboarding",
+          "query": {
+            "names": [
+              "SBERBANK",
+              "VTB BANK PJSC",
+              "GAZPROMBANK"
+            ],
+            "screenedCount": 3,
+            "minScore": 90,
+            "limit": 3
+          },
+          "summary": {
+            "status": "manual-review-required",
+            "screenedCount": 3,
+            "flaggedCount": 2,
+            "clearCount": 1,
+            "manualReviewRecommended": true,
+            "recommendedAction": "pause-and-review"
+          },
+          "flaggedCounterparties": [
+            {
+              "name": "SBERBANK",
+              "matchCount": 1
+            }
+          ]
+        },
+        "source": "OFAC Sanctions List Service"
+      }
+    },
+    {
+      "key": "GET /api/restricted-party/screen/*",
+      "method": "GET",
+      "routePath": "/api/restricted-party/screen/*",
+      "expressPath": "/api/restricted-party/screen/:name",
+      "resourcePath": "/api/restricted-party/screen/SBERBANK",
+      "canonicalPath": "/api/restricted-party/screen/SBERBANK",
+      "price": "0.005",
+      "category": "identity",
+      "tags": ["compliance", "ofac", "sanctions", "restricted-party"],
+      "description": "Legacy alias for OFAC sanctions and restricted-party screening. Returns grouped potential matches, aliases, source lists, sanctions programs, and a manual-review recommendation. Optional query params: minScore, type, country, program, list, limit.",
+      "queryExample": {
+        "minScore": "90",
+        "limit": "5"
+      },
+      "outputExample": {
+        "success": true,
+        "data": {
+          "query": {
+            "name": "SBERBANK",
+            "minScore": 90,
+            "limit": 5
+          },
+          "summary": {
+            "matchCount": 1,
+            "exactMatchCount": 1,
+            "manualReviewRecommended": true
+          },
+          "matches": [
+            {
+              "id": 18715,
+              "primaryName": "AKTSIONERNE TOVARYSTVO SBERBANK",
+              "aliases": [
+                "JOINT STOCK COMPANY SBERBANK",
+                "JSC SBERBANK"
+              ],
+              "type": "Entity",
+              "programs": [
+                "RUSSIA-EO14024",
+                "UKRAINE-EO13662"
+              ],
+              "lists": [
+                "SDN",
+                "Non-SDN"
+              ],
+              "addresses": [
+                "46 Volodymyrska street"
+              ],
+              "bestNameScore": 100,
+              "manualReviewRecommended": true
+            }
+          ],
+          "sourceFreshness": {
+            "sdnLastUpdated": "2026-03-13T00:00:00",
+            "consolidatedLastUpdated": "2026-01-08T00:00:00"
+          },
+          "screeningOnly": true
+        },
+        "source": "OFAC Sanctions List Service"
+      }
+    }
+  ]
+}

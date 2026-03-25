@@ -1,0 +1,180 @@
+{
+  "generatedAt": "2026-03-18 16:52:09 -05:00",
+  "publishedAt": "2026-03-18T22:29:02.492Z",
+  "mission": {
+    "targetNetUsd": 1000,
+    "deadline": "2026-03-31",
+    "leadWedge": "restricted-party-screen",
+    "bundle": "vendor-entity-brief",
+    "status": "tighten the lead wedge, prove demand, and only broaden if the evidence says so"
+  },
+  "process": {
+    "fidelity": "pass",
+    "failureTrigger": "not hit",
+    "dispatchedLaneCount": 9,
+    "requiredLaneCount": 4,
+    "reason": "the dispatch ledger shows 9 non-Chief lanes used today, and the workspace contains real external actions through reachable public channels."
+  },
+  "evidence": {
+    "outreachSends": 5,
+    "blockedTargets": 1,
+    "replies": 0,
+    "paidAttempts": 0,
+    "paidConversions": 0,
+    "bundleInterest": 0,
+    "externalProbes": 0,
+    "moltbookPublished": true,
+    "latestMoltbookPostId": "7e99dc14-e4c5-4203-b746-a8b3496dca7e"
+  },
+  "pipeline": {
+    "activeProspects": 10,
+    "prospects": [
+      {
+        "rank": 1,
+        "target": "Paul Valente",
+        "title": "Chief Customer Officer & Co-Founder",
+        "firm": "VISO TRUST",
+        "status": "sent 2026-03-18",
+        "bestAngle": "compliance and due diligence advisors"
+      },
+      {
+        "rank": 2,
+        "target": "Corentin Le Reun",
+        "title": "Chief Executive Officer",
+        "firm": "VISO TRUST",
+        "status": "active",
+        "bestAngle": "compliance and due diligence advisors"
+      },
+      {
+        "rank": 3,
+        "target": "Ajay Trehan",
+        "title": "Founder & Chief Executive Officer",
+        "firm": "AuthBridge",
+        "status": "sent 2026-03-18",
+        "bestAngle": "procurement and vendor onboarding"
+      },
+      {
+        "rank": 4,
+        "target": "Raviraj Singh Ghai",
+        "title": "Chief Sales Officer & Founding Member",
+        "firm": "AuthBridge",
+        "status": "active",
+        "bestAngle": "procurement and vendor onboarding"
+      },
+      {
+        "rank": 5,
+        "target": "Ryan Cimo",
+        "title": "Founder & Chief Executive Officer",
+        "firm": "Fraxtional",
+        "status": "sent 2026-03-18",
+        "bestAngle": "compliance and due diligence advisors"
+      },
+      {
+        "rank": 6,
+        "target": "Cloe Guidry-Reed",
+        "title": "Chief Executive Officer",
+        "firm": "OneCredential",
+        "status": "sent 2026-03-18",
+        "bestAngle": "procurement and vendor onboarding"
+      },
+      {
+        "rank": 7,
+        "target": "Sonja Crystal Williams",
+        "title": "Head of Marketing & Customer Success",
+        "firm": "OneCredential",
+        "status": "active",
+        "bestAngle": "procurement and vendor onboarding"
+      },
+      {
+        "rank": 8,
+        "target": "Gaurav Baheti",
+        "title": "Founder & Chief Executive Officer",
+        "firm": "Procol",
+        "status": "active",
+        "bestAngle": "procurement and vendor onboarding"
+      },
+      {
+        "rank": 9,
+        "target": "Salvatore Tirabassi",
+        "title": "Managing Director",
+        "firm": "CFO Pro Analytics",
+        "status": "sent 2026-03-18",
+        "bestAngle": "finance ops and AP"
+      },
+      {
+        "rank": 10,
+        "target": "Chris Lazarte",
+        "title": "Partner",
+        "firm": "Valua Partners",
+        "status": "blocked 2026-03-18",
+        "bestAngle": "finance ops and AP"
+      }
+    ]
+  },
+  "confirmedActions": [
+    "VISO TRUST public email sent to info@visotrust.com",
+    "AuthBridge fallback public email sent to sales@authbridge.com after the form route failed",
+    "OneCredential public contact form submitted with on-page success confirmation",
+    "Fraxtional public contact form submitted successfully",
+    "CFO Pro Analytics public email sent to info@cfoproanalytics.com"
+  ],
+  "blockedRoutes": [
+    "Valua Partners public email and public form both failed; no send is claimed"
+  ],
+  "nextProof": [],
+  "channelWatchlist": [
+    {
+      "channel": "x402",
+      "role": "near-term payment rail",
+      "status": "active",
+      "promoteWhen": "it is the simplest believable paid path"
+    },
+    {
+      "channel": "Payments MCP",
+      "role": "buyer shell",
+      "status": "active",
+      "promoteWhen": "it improves invocation or conversion"
+    },
+    {
+      "channel": "MCP Registry / Smithery",
+      "role": "wrapper distribution",
+      "status": "watch",
+      "promoteWhen": "tool installs or reuse appear"
+    },
+    {
+      "channel": "ChatGPT apps",
+      "role": "later distribution",
+      "status": "watch",
+      "promoteWhen": "in-chat UX clearly matters"
+    },
+    {
+      "channel": "ACP",
+      "role": "later workflow rail",
+      "status": "watch",
+      "promoteWhen": "workflow becomes stateful or escrow-worthy"
+    },
+    {
+      "channel": "Moltbook",
+      "role": "demand sensor",
+      "status": "watch",
+      "promoteWhen": "it produces real downstream action"
+    }
+  ],
+  "refreshPackage": {
+    "path": "C:\\Users\\KentEgan\\claude projects\\x402-data-bazaar\\docs\\remote-codex-runner\\runner-refresh.zip",
+    "sha256": "B571BC0FC09CA691FCC6FA35C047F53E80633131907192AFD4576C288C536A5A"
+  },
+  "remoteRunner": {
+    "status": "checked",
+    "detail": "ops/progress.md says the remote runner mission was migrated to the broader business OS and a fresh unattended loop start was manually verified on 2026-03-18 at 2:05 PM Central"
+  },
+  "rawFiles": {
+    "proofMarkdownPath": "ops-dashboard/proof-checkpoint-latest.md",
+    "operatorScoreboardPath": "ops-dashboard/operator-scoreboard.md",
+    "pipelinePath": "ops-dashboard/pipeline.md",
+    "outreachExecutionLogPath": "ops-dashboard/outreach-execution-log.md"
+  },
+  "source": {
+    "outputDir": "C:\\Users\\KentEgan\\claude projects\\x402-data-bazaar\\ops-dashboard"
+  }
+}

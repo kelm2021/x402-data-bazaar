@@ -1,0 +1,6 @@
+[Unit]
+Description=Ensure Codex tmux session exists
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/start-eom-loop.sh

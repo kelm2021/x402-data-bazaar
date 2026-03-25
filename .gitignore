@@ -1,5 +1,14 @@
 node_modules/
-.env
 .vercel/
+.playwright-cli/
+tmp/
+.tmp_public_base_url.txt
+tmp_api_new_domain.json
+/docs/remote-codex-runner/runner-refresh-stage/
 
-.vercel
+# Local environment snapshots
+.env
+.env*
+**/.env*
+!.env.example
+!**/.env.example

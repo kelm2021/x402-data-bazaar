@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "stage": "402index-search",
+  "query": "x402-data-bazaar.vercel.app",
+  "url": "https://402index.io/api/v1/services?q=x402-data-bazaar.vercel.app&limit=200",
+  "status": 200,
+  "total": 3,
+  "count": 3,
+  "services": [
+    {
+      "id": "ab7996f8-3c63-41b1-b908-41167d4292a9",
+      "name": "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+      "url": "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+      "protocol": "x402",
+      "health": "healthy",
+      "source": "bazaar",
+      "method": "GET",
+      "paymentValid": 1,
+      "reliability": 92,
+      "lastChecked": "2026-03-20 05:49:14"
+    },
+    {
+      "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+      "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "protocol": "x402",
+      "health": "healthy",
+      "source": "bazaar",
+      "method": "GET",
+      "paymentValid": 1,
+      "reliability": 92,
+      "lastChecked": "2026-03-20 06:47:54"
+    },
+    {
+      "id": "b698a01f-c8e6-498b-9595-5c2a0335dce3",
+      "name": "https://x402-data-bazaar.vercel.app/api/weather/current",
+      "url": "https://x402-data-bazaar.vercel.app/api/weather/current",
+      "protocol": "x402",
+      "health": "healthy",
+      "source": "bazaar",
+      "method": "GET",
+      "paymentValid": 1,
+      "reliability": 92,
+      "lastChecked": "2026-03-20 05:58:59"
+    }
+  ]
+}
+

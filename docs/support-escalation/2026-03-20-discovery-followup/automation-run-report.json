@@ -1,0 +1,102 @@
+{
+  "startedAt": "2026-03-20T06:02:09.617Z",
+  "completedAt": "2026-03-20T06:02:21.846Z",
+  "config": {
+    "host": "x402-data-bazaar.vercel.app",
+    "searchLimit": 100,
+    "cycle1Minutes": 0,
+    "cycle2Minutes": 0,
+    "liveSubmit": true,
+    "submitMode": "email",
+    "packetDir": "docs\\support-escalation\\2026-03-20-discovery-followup"
+  },
+  "baseline": {
+    "snapshotPath": "C:\\Users\\KentEgan\\claude projects\\x402-data-bazaar\\docs\\support-escalation\\2026-03-20-discovery-followup\\cdp-and-402index-snapshots.json",
+    "discoveryBaselineCount": 0,
+    "expectedStaleUrls": [
+      "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+      "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "https://x402-data-bazaar.vercel.app/api/weather/current"
+    ]
+  },
+  "cycles": [
+    {
+      "cycle": 1,
+      "label": "Cycle 1",
+      "scheduledAt": "2026-03-20T06:02:09.622Z",
+      "ranAt": "2026-03-20T06:02:09.622Z",
+      "discoveryPath": "docs\\support-escalation\\2026-03-20-discovery-followup\\recheck-cycle1-discovery.json",
+      "indexPath": "docs\\support-escalation\\2026-03-20-discovery-followup\\recheck-cycle1-402index-raw.json",
+      "evaluation": {
+        "discoveryCount": 0,
+        "discoveryNotImproved": true,
+        "expectedStaleCount": 3,
+        "currentHostResultCount": 3,
+        "sameStaleRouteSet": true,
+        "expectedStaleUrls": [
+          "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+          "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "https://x402-data-bazaar.vercel.app/api/weather/current"
+        ],
+        "currentHostUrls": [
+          "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+          "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "https://x402-data-bazaar.vercel.app/api/weather/current"
+        ],
+        "expectedRoutesStillMissingMetadata": true
+      }
+    },
+    {
+      "cycle": 2,
+      "label": "Cycle 2",
+      "scheduledAt": "2026-03-20T06:02:09.622Z",
+      "ranAt": "2026-03-20T06:02:15.715Z",
+      "discoveryPath": "docs\\support-escalation\\2026-03-20-discovery-followup\\recheck-cycle2-discovery.json",
+      "indexPath": "docs\\support-escalation\\2026-03-20-discovery-followup\\recheck-cycle2-402index-raw.json",
+      "evaluation": {
+        "discoveryCount": 0,
+        "discoveryNotImproved": true,
+        "expectedStaleCount": 3,
+        "currentHostResultCount": 3,
+        "sameStaleRouteSet": true,
+        "expectedStaleUrls": [
+          "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+          "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "https://x402-data-bazaar.vercel.app/api/weather/current"
+        ],
+        "currentHostUrls": [
+          "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+          "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "https://x402-data-bazaar.vercel.app/api/weather/current"
+        ],
+        "expectedRoutesStillMissingMetadata": true
+      }
+    }
+  ],
+  "decision": {
+    "unchanged": true,
+    "cycle1Ready": true,
+    "cycle2Ready": true,
+    "criteria": {
+      "discoveryNotImproved": true,
+      "sameStaleRouteSet": true,
+      "expectedRoutesStillMissingMetadata": true
+    }
+  },
+  "submissions": [
+    {
+      "name": "cdp-bazaar",
+      "channel": "email",
+      "ok": false,
+      "skipped": true,
+      "reason": "Missing RESEND_API_KEY"
+    },
+    {
+      "name": "402index",
+      "channel": "email",
+      "ok": false,
+      "skipped": true,
+      "reason": "Missing RESEND_API_KEY"
+    }
+  ]
+}

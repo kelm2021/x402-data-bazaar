@@ -7,7 +7,25 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test",
+    "business-dashboard:build": "node scripts/build_business_dashboard_snapshot.js",
+    "rebuild:status": "node scripts/rebuild_status.js",
+    "portfolio:list": "node scripts/list_seller_portfolio.js",
+    "portfolio:manifest": "node scripts/seller_manifest_report.js",
+    "portfolio:report": "node scripts/portfolio_report.js",
+    "portfolio:scaffold": "node scripts/scaffold_portfolio_seller.js",
+    "portfolio:live": "node scripts/live_seller_status.js",
+    "402index:search": "node scripts/automation_http.cjs 402index-search",
+    "402index:probe": "node scripts/automation_http.cjs 402index-probe",
+    "402index:check": "node scripts/automation_http.cjs 402index-check",
+    "402index:audit": "node scripts/automation_http.cjs 402index-audit",
+    "escalation:auto": "node scripts/discovery_escalation_automation.cjs",
+    "escalation:auto:test": "node scripts/discovery_escalation_automation.cjs --cycle1-minutes 1 --cycle2-minutes 2",
+    "escalation:auto:live": "node scripts/discovery_escalation_automation.cjs --live-submit",
+    "restricted-party-screen:distribution-pack": "node scripts/restricted_party_distribution_pack.js",
+    "restricted-party-screen:dev": "npm --prefix apps/restricted-party-screen run dev",
+    "restricted-party-screen:siwx-demo": "node scripts/restricted_party_siwx_reclaim_demo.js",
+    "restricted-party-screen:test": "npm --prefix apps/restricted-party-screen test"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +33,12 @@
   "type": "commonjs",
   "dependencies": {
     "@coinbase/x402": "^2.1.0",
+    "@upstash/redis": "^1.37.0",
     "@x402/core": "^2.6.0",
     "@x402/evm": "^2.6.0",
     "@x402/express": "^2.6.0",
+    "@x402/extensions": "^2.6.0",
     "express": "^5.2.1",
-    "node-fetch": "^2.7.0",
-    "x402-express": "^1.1.0"
+    "node-fetch": "^2.7.0"
   }
 }

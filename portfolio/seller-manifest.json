@@ -1,0 +1,125 @@
+{
+  "generatedFrom": "manual-strategy-classification",
+  "items": [
+    {
+      "id": "restricted-party-screen",
+      "path": "apps/restricted-party-screen",
+      "classification": "core",
+      "status": "active",
+      "operatingMode": "build-and-measure",
+      "notes": "Phase-1 wedge for agent transaction checks."
+    },
+    {
+      "id": "calendar-business-days",
+      "path": "routes/holidays.js",
+      "classification": "legacy-keep",
+      "status": "active",
+      "operatingMode": "freeze-and-monitor",
+      "notes": "Transaction-adjacent calendar logic worth keeping live."
+    },
+    {
+      "id": "fx-conversion-quotes",
+      "path": "routes/exchange-rates.js",
+      "classification": "legacy-keep",
+      "status": "active",
+      "operatingMode": "freeze-and-monitor",
+      "notes": "Existing side-income candidate with meaningful demand."
+    },
+    {
+      "id": "vehicle-vin",
+      "path": "routes/vin.js",
+      "classification": "legacy-keep",
+      "status": "active",
+      "operatingMode": "freeze-and-monitor",
+      "notes": "Useful exact-input lookup; keep if support stays low."
+    },
+    {
+      "id": "weather-decision",
+      "path": "routes/weather.js",
+      "classification": "legacy-keep",
+      "status": "active",
+      "operatingMode": "freeze-and-monitor",
+      "notes": "Keep live for side income, but do not let it drive the roadmap."
+    },
+    {
+      "id": "air-quality-zip",
+      "path": "routes/air-quality.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Commodity utility with weak fit to the focused provider thesis."
+    },
+    {
+      "id": "economic-inflation",
+      "path": "routes/bls.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Do not invest further unless it surprises us with paid demand."
+    },
+    {
+      "id": "economic-unemployment",
+      "path": "routes/bls.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Long-tail inventory, not part of the current business identity."
+    },
+    {
+      "id": "census-demographics",
+      "path": "routes/census.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Generic data inventory."
+    },
+    {
+      "id": "congress-bills",
+      "path": "routes/congress.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Interesting data, weak commercial coherence."
+    },
+    {
+      "id": "public-health-recalls",
+      "path": "routes/fda.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Outside the focused trade-compliance wedge."
+    },
+    {
+      "id": "drug-safety-events",
+      "path": "routes/fda.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Inventory only."
+    },
+    {
+      "id": "food-barcode",
+      "path": "routes/food.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Consumer utility, not part of the focused provider identity."
+    },
+    {
+      "id": "ip-geolocation",
+      "path": "routes/ip.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Crowded category with low moat."
+    },
+    {
+      "id": "nutrition-search",
+      "path": "routes/nutrition.js",
+      "classification": "legacy-kill",
+      "status": "frozen",
+      "operatingMode": "retire-if-costly",
+      "notes": "Catalog breadth, not strategic focus."
+    }
+  ]
+}

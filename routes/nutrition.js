@@ -4,10 +4,8 @@ const router = Router();
 
 router.get("/api/nutrition/search", async (req, res) => {
   try {
-    const { query, limit } = req.query;
-    if (!query) {
-      return res.status(400).json({ success: false, error: "query param required (e.g. ?query=chicken breast)" });
-    }
+    const query = String(req.query.query ?? "chicken breast");
+    const { limit } = req.query;
 
     const apiKey = process.env.USDA_API_KEY;
     if (!apiKey) return res.status(503).json({ success: false, error: "USDA API key not configured" });

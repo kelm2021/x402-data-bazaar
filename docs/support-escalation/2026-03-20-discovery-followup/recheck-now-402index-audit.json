@@ -1,0 +1,2196 @@
+{
+  "ok": true,
+  "stage": "402index-audit",
+  "scope": "x402-data-bazaar",
+  "generatedAt": "2026-03-20T07:02:17.230Z",
+  "inventory": {
+    "modules": [
+      "warehouse"
+    ],
+    "hosts": [
+      "x402-data-bazaar.vercel.app"
+    ],
+    "endpointCount": 19
+  },
+  "hostSearch": [
+    {
+      "host": "x402-data-bazaar.vercel.app",
+      "ok": true,
+      "status": 200,
+      "total": 3,
+      "count": 3,
+      "metadataQuality": {
+        "indexedServices": 3,
+        "missingPrice": 3,
+        "uncategorized": 3,
+        "missingDescription": 3,
+        "degradedOrDown": 0
+      },
+      "networkError": null,
+      "queryUrl": "https://402index.io/api/v1/services?q=x402-data-bazaar.vercel.app&limit=200"
+    }
+  ],
+  "totals": {
+    "endpoints": 19,
+    "probeHealthy": 19,
+    "probeDegraded": 0,
+    "probeDown": 0,
+    "probeUnknown": 0,
+    "probeErrors": 0,
+    "probeRateLimited": 11,
+    "paymentRequired402": 19,
+    "indexExact": 1,
+    "indexPath": 0,
+    "indexHostOnly": 18,
+    "indexNone": 0,
+    "metadata": {
+      "missingPriceOnIndexedRoutes": 1,
+      "uncategorizedOnIndexedRoutes": 1,
+      "missingDescriptionOnIndexedRoutes": 1,
+      "categoryMismatchOnIndexedRoutes": 1,
+      "priceMismatchOnIndexedRoutes": 0
+    },
+    "protocolDetected": {
+      "x402": 19,
+      "L402": 0,
+      "MPP": 0,
+      "unknown": 0
+    }
+  },
+  "failureCount": 19,
+  "failures": [
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/vin/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+      "resourcePath": "/api/vin/1HGCM82633A004352",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Vehicles & Mobility",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3Zpbi8xSEdDTTgyNjMzQTAwNDM1MiIsImRlc2NyaXB0aW9uIjoiRGVjb2RlIGFueSAxNy1jaGFyYWN0ZXIgVklOIC0tIHJldHVybnMgeWVhciwgbWFrZSwgbW9kZWwsIHRyaW0sIGJvZHkg... [truncated 2568 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352\",\"description\":\"Decode any 17-character VIN -- returns year, make, model, trim, body class, dri... [truncated 1915 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/current/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "resourcePath": "/api/weather/current/40.7128/-74.0060",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvY3VycmVudC80MC43MTI4Ly03NC4wMDYwIiwiZGVzY3JpcHRpb24iOiJBY3Rpb25hYmxlIHdlYXRoZXIgZGVjaXNpb24gYnJpZWYgZm9yIGV4YWN0IGNvb3JkaW5hdGVzIGVu... [truncated 3324 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060\",\"description\":\"Actionable weather decision brief for exact coordinates encoded in t... [truncated 2481 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/current",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "resourcePath": "/api/weather/current/40.7128/-74.0060",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvY3VycmVudC80MC43MTI4Ly03NC4wMDYwIiwiZGVzY3JpcHRpb24iOiJBY3Rpb25hYmxlIHdlYXRoZXIgZGVjaXNpb24gYnJpZWYgZm9yIGV4YWN0IGNvb3JkaW5hdGVzIGVu... [truncated 3324 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060\",\"description\":\"Actionable weather decision brief for exact coordinates encoded in t... [truncated 2481 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/forecast",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+      "resourcePath": "/api/weather/forecast",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvZm9yZWNhc3QiLCJkZXNjcmlwdGlvbiI6IkRhaWx5IHdlYXRoZXIgZm9yZWNhc3QgKDEtMTYgZGF5cykgZm9yIGFueSBsYXQvbG9uIC0tIGhpZ2gvbG93IHRlbXBzIChGKSwg... [truncated 3568 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/forecast\",\"description\":\"Daily weather forecast (1-16 days) for any lat/lon -- high/low temps (F), precipitat... [truncated 2664 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/holidays/today/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "resourcePath": "/api/holidays/today/US",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 169,
+          "totalTimeMs": 173,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2hvbGlkYXlzL3RvZGF5L1VTIiwiZGVzY3JpcHRpb24iOiJCdXNpbmVzcy1kYXkgaW50ZWxsaWdlbmNlIGZvciB0aGUgY3VycmVudCBsb2NhbCBkYXRlIGluIGEgY291bnRyeSAtLSBob2xp... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "exact",
+        "exactMatches": [
+          {
+            "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+            "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "protocol": "x402",
+            "health": "healthy",
+            "source": "bazaar",
+            "method": "GET",
+            "paymentValid": 1,
+            "reliability": 92,
+            "lastChecked": "2026-03-20 06:47:54"
+          }
+        ],
+        "pathMatches": [
+          {
+            "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+            "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "protocol": "x402",
+            "health": "healthy",
+            "source": "bazaar",
+            "method": "GET",
+            "paymentValid": 1,
+            "reliability": 92,
+            "lastChecked": "2026-03-20 06:47:54"
+          }
+        ],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": {
+          "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+          "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "source": "bazaar",
+          "category": "uncategorized",
+          "price_usd": null,
+          "price_sats": null,
+          "description": null,
+          "health_status": "healthy"
+        }
+      },
+      "recommendations": []
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/business-days/next/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+      "resourcePath": "/api/business-days/next/US/2026-03-15",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 193,
+          "totalTimeMs": 195,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2J1c2luZXNzLWRheXMvbmV4dC9VUy8yMDI2LTAzLTE1IiwiZGVzY3JpcHRpb24iOiJGaW5kIHRoZSBuZXh0IGJ1c2luZXNzIGRheSBvbiBvciBhZnRlciBhIHNwZWNpZmljIGRhdGUgZm9y... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/holidays/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+      "resourcePath": "/api/holidays/US/2026",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 162,
+          "totalTimeMs": 164,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2hvbGlkYXlzL1VTLzIwMjYiLCJkZXNjcmlwdGlvbiI6IlB1YmxpYyBob2xpZGF5cyBmb3IgYW55IGNvdW50cnkgYW5kIHllYXIuIFVzZSBJU08gMzE2Ni0xIGFscGhhLTIgY291bnRyeSBj... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/exchange-rates/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+      "resourcePath": "/api/exchange-rates/quote/USD/EUR/100",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 164,
+          "totalTimeMs": 166,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2V4Y2hhbmdlLXJhdGVzL3F1b3RlL1VTRC9FVVIvMTAwIiwiZGVzY3JpcHRpb24iOiJGWCBjb252ZXJzaW9uIHF1b3RlcyBmb3IgYSBzcGVjaWZpYyBhbW91bnQuIFJldHVybnMgY29udmVy... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/ip/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+      "resourcePath": "/api/ip/8.8.8.8",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Identity & Location",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 161,
+          "totalTimeMs": 163,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2lwLzguOC44LjgiLCJkZXNjcmlwdGlvbiI6IklQIGdlb2xvY2F0aW9uIC0tIGNvdW50cnksIHJlZ2lvbiwgY2l0eSwgWklQLCBsYXQvbG9uLCB0aW1lem9uZSwgSVNQLCBvcmcsIGFuZCBB... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/food/barcode/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+      "resourcePath": "/api/food/barcode/737628064502",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Food & Nutrition",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Zvb2QvYmFyY29kZS83Mzc2MjgwNjQ1MDIiLCJkZXNjcmlwdGlvbiI6IlByb2R1Y3QgbG9va3VwIGJ5IGJhcmNvZGUvVVBDIC0tIG5hbWUsIGJyYW5kLCBpbmdyZWRpZW50cywgbnV0cmkt... [truncated 2664 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502\",\"description\":\"Product lookup by barcode/UPC -- name, brand, ingredients, nutri-score, ful... [truncated 1987 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/nutrition/search",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+      "resourcePath": "/api/nutrition/search",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Food & Nutrition",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL251dHJpdGlvbi9zZWFyY2giLCJkZXNjcmlwdGlvbiI6IlNlYXJjaCBVU0RBIEZvb2REYXRhIENlbnRyYWwgZm9yIG51dHJpdGlvbiBkYXRhIC0tIGNhbG9yaWVzLCBwcm90ZWluLCBmYXQs... [truncated 3456 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/nutrition/search\",\"description\":\"Search USDA FoodData Central for nutrition data -- calories, protein, fat, carbs, fi... [truncated 2580 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fda/recalls",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+      "resourcePath": "/api/fda/recalls",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZkYS9yZWNhbGxzIiwiZGVzY3JpcHRpb24iOiJGREEgZm9vZCByZWNhbGwgZW5mb3JjZW1lbnQgYWN0aW9ucyAtLSBwcm9kdWN0IGRlc2NyaXB0aW9uLCByZWFzb24sIGNsYXNzaWZpY2F0... [truncated 3144 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/fda/recalls\",\"description\":\"FDA food recall enforcement actions -- product description, reason, classification, compa... [truncated 2347 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fda/adverse-events",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+      "resourcePath": "/api/fda/adverse-events",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZkYS9hZHZlcnNlLWV2ZW50cyIsImRlc2NyaXB0aW9uIjoiRkRBIGRydWcgYWR2ZXJzZSBldmVudCByZXBvcnRzIC0tIHJlYWN0aW9ucywgc3VzcGVjdCBkcnVncywgc2VyaW91c25lc3Mu... [truncated 3220 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/fda/adverse-events\",\"description\":\"FDA drug adverse event reports -- reactions, suspect drugs, seriousness. Query: ?d... [truncated 2404 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/census/population",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/census/population",
+      "resourcePath": "/api/census/population",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2NlbnN1cy9wb3B1bGF0aW9uIiwiZGVzY3JpcHRpb24iOiJVUyBDZW5zdXMgcG9wdWxhdGlvbiwgbWVkaWFuIGhvdXNlaG9sZCBpbmNvbWUsIGFuZCBtZWRpYW4gYWdlLiBRdWVyeSBieSBa... [truncated 3084 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/census/population\",\"description\":\"US Census population, median household income, and median age. Query by ZIP (?zip=2... [truncated 2301 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/bls/cpi",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+      "resourcePath": "/api/bls/cpi",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Jscy9jcGkiLCJkZXNjcmlwdGlvbiI6IkNvbnN1bWVyIFByaWNlIEluZGV4IChDUEktVSkgLS0gQWxsIEl0ZW1zLCBVUyBDaXR5IEF2ZXJhZ2UuIE1vbnRobHkgdmFsdWVzIHdpdGggaGlz... [truncated 2936 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/bls/cpi\",\"description\":\"Consumer Price Index (CPI-U) -- All Items, US City Average. Monthly values with history. Opti... [truncated 2192 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/bls/unemployment",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+      "resourcePath": "/api/bls/unemployment",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Jscy91bmVtcGxveW1lbnQiLCJkZXNjcmlwdGlvbiI6IlVTIHVuZW1wbG95bWVudCByYXRlIChzZWFzb25hbGx5IGFkanVzdGVkKS4gTW9udGhseSB2YWx1ZXMgd2l0aCBoaXN0b3J5LiBP... [truncated 2920 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/bls/unemployment\",\"description\":\"US unemployment rate (seasonally adjusted). Monthly values with history. Optional ?y... [truncated 2180 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/air-quality/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+      "resourcePath": "/api/air-quality/20002",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 163,
+          "totalTimeMs": 168,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Fpci1xdWFsaXR5LzIwMDAyIiwiZGVzY3JpcHRpb24iOiJDdXJyZW50IGFpciBxdWFsaXR5IGluZGV4IChBUUkpIGJ5IFVTIFpJUCBjb2RlIC0tIFBNMi41LCBvem9uZSByZWFkaW5ncywg... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/congress/bills",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/congress/bills",
+      "resourcePath": "/api/congress/bills",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 165,
+          "totalTimeMs": 166,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2NvbmdyZXNzL2JpbGxzIiwiZGVzY3JpcHRpb24iOiJSZWNlbnQgQ29uZ3Jlc3Npb25hbCBiaWxscyAtLSB0aXRsZSwgbGF0ZXN0IGFjdGlvbiwgb3JpZ2luIGNoYW1iZXIsIHVwZGF0ZSBk... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fec/candidates",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+      "resourcePath": "/api/fec/candidates",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 266,
+          "totalTimeMs": 268,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZlYy9jYW5kaWRhdGVzIiwiZGVzY3JpcHRpb24iOiJGRUMgY2FuZGlkYXRlIHNlYXJjaCAtLSBuYW1lLCBwYXJ0eSwgb2ZmaWNlLCBzdGF0ZSwgZGlzdHJpY3QsIGluY3VtYmVudCBzdGF0... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    }
+  ],
+  "endpoints": [
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/vin/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+      "resourcePath": "/api/vin/1HGCM82633A004352",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Vehicles & Mobility",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3Zpbi8xSEdDTTgyNjMzQTAwNDM1MiIsImRlc2NyaXB0aW9uIjoiRGVjb2RlIGFueSAxNy1jaGFyYWN0ZXIgVklOIC0tIHJldHVybnMgeWVhciwgbWFrZSwgbW9kZWwsIHRyaW0sIGJvZHkg... [truncated 2568 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352\",\"description\":\"Decode any 17-character VIN -- returns year, make, model, trim, body class, dri... [truncated 1915 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/current/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "resourcePath": "/api/weather/current/40.7128/-74.0060",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvY3VycmVudC80MC43MTI4Ly03NC4wMDYwIiwiZGVzY3JpcHRpb24iOiJBY3Rpb25hYmxlIHdlYXRoZXIgZGVjaXNpb24gYnJpZWYgZm9yIGV4YWN0IGNvb3JkaW5hdGVzIGVu... [truncated 3324 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060\",\"description\":\"Actionable weather decision brief for exact coordinates encoded in t... [truncated 2481 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/current",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "resourcePath": "/api/weather/current/40.7128/-74.0060",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvY3VycmVudC80MC43MTI4Ly03NC4wMDYwIiwiZGVzY3JpcHRpb24iOiJBY3Rpb25hYmxlIHdlYXRoZXIgZGVjaXNpb24gYnJpZWYgZm9yIGV4YWN0IGNvb3JkaW5hdGVzIGVu... [truncated 3324 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060\",\"description\":\"Actionable weather decision brief for exact coordinates encoded in t... [truncated 2481 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/weather/forecast",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+      "resourcePath": "/api/weather/forecast",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL3dlYXRoZXIvZm9yZWNhc3QiLCJkZXNjcmlwdGlvbiI6IkRhaWx5IHdlYXRoZXIgZm9yZWNhc3QgKDEtMTYgZGF5cykgZm9yIGFueSBsYXQvbG9uIC0tIGhpZ2gvbG93IHRlbXBzIChGKSwg... [truncated 3568 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/weather/forecast\",\"description\":\"Daily weather forecast (1-16 days) for any lat/lon -- high/low temps (F), precipitat... [truncated 2664 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/holidays/today/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "resourcePath": "/api/holidays/today/US",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 169,
+          "totalTimeMs": 173,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2hvbGlkYXlzL3RvZGF5L1VTIiwiZGVzY3JpcHRpb24iOiJCdXNpbmVzcy1kYXkgaW50ZWxsaWdlbmNlIGZvciB0aGUgY3VycmVudCBsb2NhbCBkYXRlIGluIGEgY291bnRyeSAtLSBob2xp... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "exact",
+        "exactMatches": [
+          {
+            "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+            "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "protocol": "x402",
+            "health": "healthy",
+            "source": "bazaar",
+            "method": "GET",
+            "paymentValid": 1,
+            "reliability": 92,
+            "lastChecked": "2026-03-20 06:47:54"
+          }
+        ],
+        "pathMatches": [
+          {
+            "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+            "name": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+            "protocol": "x402",
+            "health": "healthy",
+            "source": "bazaar",
+            "method": "GET",
+            "paymentValid": 1,
+            "reliability": 92,
+            "lastChecked": "2026-03-20 06:47:54"
+          }
+        ],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": {
+          "id": "32662835-da0e-43c0-bed2-f72a8c4d7b2d",
+          "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+          "source": "bazaar",
+          "category": "uncategorized",
+          "price_usd": null,
+          "price_sats": null,
+          "description": null,
+          "health_status": "healthy"
+        }
+      },
+      "recommendations": []
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/business-days/next/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+      "resourcePath": "/api/business-days/next/US/2026-03-15",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 193,
+          "totalTimeMs": 195,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2J1c2luZXNzLWRheXMvbmV4dC9VUy8yMDI2LTAzLTE1IiwiZGVzY3JpcHRpb24iOiJGaW5kIHRoZSBuZXh0IGJ1c2luZXNzIGRheSBvbiBvciBhZnRlciBhIHNwZWNpZmljIGRhdGUgZm9y... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/holidays/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+      "resourcePath": "/api/holidays/US/2026",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.002",
+        "expectedPriceUsd": 0.002,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Calendar & Scheduling",
+        "priceUsd": 0.002
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 162,
+          "totalTimeMs": 164,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2hvbGlkYXlzL1VTLzIwMjYiLCJkZXNjcmlwdGlvbiI6IlB1YmxpYyBob2xpZGF5cyBmb3IgYW55IGNvdW50cnkgYW5kIHllYXIuIFVzZSBJU08gMzE2Ni0xIGFscGhhLTIgY291bnRyeSBj... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/exchange-rates/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+      "resourcePath": "/api/exchange-rates/quote/USD/EUR/100",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 164,
+          "totalTimeMs": 166,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2V4Y2hhbmdlLXJhdGVzL3F1b3RlL1VTRC9FVVIvMTAwIiwiZGVzY3JpcHRpb24iOiJGWCBjb252ZXJzaW9uIHF1b3RlcyBmb3IgYSBzcGVjaWZpYyBhbW91bnQuIFJldHVybnMgY29udmVy... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/ip/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+      "resourcePath": "/api/ip/8.8.8.8",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Identity & Location",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 161,
+          "totalTimeMs": 163,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2lwLzguOC44LjgiLCJkZXNjcmlwdGlvbiI6IklQIGdlb2xvY2F0aW9uIC0tIGNvdW50cnksIHJlZ2lvbiwgY2l0eSwgWklQLCBsYXQvbG9uLCB0aW1lem9uZSwgSVNQLCBvcmcsIGFuZCBB... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/food/barcode/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+      "resourcePath": "/api/food/barcode/737628064502",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.003",
+        "expectedPriceUsd": 0.003,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Food & Nutrition",
+        "priceUsd": 0.003
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Zvb2QvYmFyY29kZS83Mzc2MjgwNjQ1MDIiLCJkZXNjcmlwdGlvbiI6IlByb2R1Y3QgbG9va3VwIGJ5IGJhcmNvZGUvVVBDIC0tIG5hbWUsIGJyYW5kLCBpbmdyZWRpZW50cywgbnV0cmkt... [truncated 2664 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502\",\"description\":\"Product lookup by barcode/UPC -- name, brand, ingredients, nutri-score, ful... [truncated 1987 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/nutrition/search",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+      "resourcePath": "/api/nutrition/search",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Food & Nutrition",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL251dHJpdGlvbi9zZWFyY2giLCJkZXNjcmlwdGlvbiI6IlNlYXJjaCBVU0RBIEZvb2REYXRhIENlbnRyYWwgZm9yIG51dHJpdGlvbiBkYXRhIC0tIGNhbG9yaWVzLCBwcm90ZWluLCBmYXQs... [truncated 3456 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/nutrition/search\",\"description\":\"Search USDA FoodData Central for nutrition data -- calories, protein, fat, carbs, fi... [truncated 2580 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fda/recalls",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+      "resourcePath": "/api/fda/recalls",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZkYS9yZWNhbGxzIiwiZGVzY3JpcHRpb24iOiJGREEgZm9vZCByZWNhbGwgZW5mb3JjZW1lbnQgYWN0aW9ucyAtLSBwcm9kdWN0IGRlc2NyaXB0aW9uLCByZWFzb24sIGNsYXNzaWZpY2F0... [truncated 3144 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/fda/recalls\",\"description\":\"FDA food recall enforcement actions -- product description, reason, classification, compa... [truncated 2347 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fda/adverse-events",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+      "resourcePath": "/api/fda/adverse-events",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZkYS9hZHZlcnNlLWV2ZW50cyIsImRlc2NyaXB0aW9uIjoiRkRBIGRydWcgYWR2ZXJzZSBldmVudCByZXBvcnRzIC0tIHJlYWN0aW9ucywgc3VzcGVjdCBkcnVncywgc2VyaW91c25lc3Mu... [truncated 3220 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/fda/adverse-events\",\"description\":\"FDA drug adverse event reports -- reactions, suspect drugs, seriousness. Query: ?d... [truncated 2404 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/census/population",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/census/population",
+      "resourcePath": "/api/census/population",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2NlbnN1cy9wb3B1bGF0aW9uIiwiZGVzY3JpcHRpb24iOiJVUyBDZW5zdXMgcG9wdWxhdGlvbiwgbWVkaWFuIGhvdXNlaG9sZCBpbmNvbWUsIGFuZCBtZWRpYW4gYWdlLiBRdWVyeSBieSBa... [truncated 3084 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/census/population\",\"description\":\"US Census population, median household income, and median age. Query by ZIP (?zip=2... [truncated 2301 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/bls/cpi",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+      "resourcePath": "/api/bls/cpi",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Jscy9jcGkiLCJkZXNjcmlwdGlvbiI6IkNvbnN1bWVyIFByaWNlIEluZGV4IChDUEktVSkgLS0gQWxsIEl0ZW1zLCBVUyBDaXR5IEF2ZXJhZ2UuIE1vbnRobHkgdmFsdWVzIHdpdGggaGlz... [truncated 2936 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/bls/cpi\",\"description\":\"Consumer Price Index (CPI-U) -- All Items, US City Average. Monthly values with history. Opti... [truncated 2192 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/bls/unemployment",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+      "resourcePath": "/api/bls/unemployment",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Finance & Markets",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 429,
+        "source": "402index+direct-fallback",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": null,
+          "totalTimeMs": null,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "hasPaymentRequiredHeader": true
+            },
+            "message": "x402 payment-required header detected."
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Jscy91bmVtcGxveW1lbnQiLCJkZXNjcmlwdGlvbiI6IlVTIHVuZW1wbG95bWVudCByYXRlIChzZWFzb25hbGx5IGFkanVzdGVkKS4gTW9udGhseSB2YWx1ZXMgd2l0aCBoaXN0b3J5LiBP... [truncated 2920 chars]"
+          },
+          "body": "{\"x402Version\":2,\"error\":\"Payment required\",\"resource\":{\"url\":\"https://x402-data-bazaar.vercel.app/api/bls/unemployment\",\"description\":\"US unemployment rate (seasonally adjusted). Monthly values with history. Optional ?y... [truncated 2180 chars]",
+          "details": {
+            "fallbackUsed": true,
+            "fallbackReason": "402index-probe-rate-limited"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/air-quality/*",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+      "resourcePath": "/api/air-quality/20002",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Weather & Environment",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 163,
+          "totalTimeMs": 168,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2Fpci1xdWFsaXR5LzIwMDAyIiwiZGVzY3JpcHRpb24iOiJDdXJyZW50IGFpciBxdWFsaXR5IGluZGV4IChBUUkpIGJ5IFVTIFpJUCBjb2RlIC0tIFBNMi41LCBvem9uZSByZWFkaW5ncywg... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/congress/bills",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/congress/bills",
+      "resourcePath": "/api/congress/bills",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 165,
+          "totalTimeMs": 166,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2NvbmdyZXNzL2JpbGxzIiwiZGVzY3JpcHRpb24iOiJSZWNlbnQgQ29uZ3Jlc3Npb25hbCBiaWxscyAtLSB0aXRsZSwgbGF0ZXN0IGFjdGlvbiwgb3JpZ2luIGNoYW1iZXIsIHVwZGF0ZSBk... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    },
+    {
+      "moduleId": "warehouse",
+      "serviceName": "x402 Data Bazaar",
+      "routeKey": "GET /api/fec/candidates",
+      "endpointUrl": "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+      "resourcePath": "/api/fec/candidates",
+      "protocolHint": "x402",
+      "pricing": {
+        "price": "$0.005",
+        "expectedPriceUsd": 0.005,
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d"
+      },
+      "expected": {
+        "category": "Government & Civic Data",
+        "priceUsd": 0.005
+      },
+      "probe": {
+        "ok": true,
+        "status": 200,
+        "source": "402index",
+        "summary": {
+          "protocol": "x402",
+          "healthStatus": "healthy",
+          "responseStatus": 402,
+          "responseTimeMs": 266,
+          "totalTimeMs": 268,
+          "validation": {
+            "step": "x402_validation",
+            "valid": true,
+            "details": {
+              "assetKnown": true,
+              "facilitatorReachable": null
+            },
+            "message": "x402 payment validation: valid (known asset (USDC))"
+          },
+          "headers": {
+            "PAYMENT-REQUIRED": "eyJ4NDAyVmVyc2lvbiI6MiwiZXJyb3IiOiJQYXltZW50IHJlcXVpcmVkIiwicmVzb3VyY2UiOnsidXJsIjoiaHR0cHM6Ly94NDAyLWRhdGEtYmF6YWFyLnZlcmNlbC5hcHAvYXBpL2ZlYy9jYW5kaWRhdGVzIiwiZGVzY3JpcHRpb24iOiJGRUMgY2FuZGlkYXRlIHNlYXJjaCAtLSBuYW1lLCBwYXJ0eSwgb2ZmaWNlLCBzdGF0ZSwgZGlzdHJpY3QsIGluY3VtYmVudCBzdGF0... [truncated 26 chars]"
+          }
+        },
+        "networkError": null
+      },
+      "indexing": {
+        "coverage": "host-only",
+        "exactMatches": [],
+        "pathMatches": [],
+        "hostMatchCount": 3,
+        "indexedRouteMetadata": null
+      },
+      "recommendations": [
+        "No matching indexed service was found for this endpoint path; check discovery registration and canonical route exposure."
+      ]
+    }
+  ]
+}
+

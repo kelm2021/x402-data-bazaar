@@ -2,6 +2,65 @@ const fetch = require("node-fetch");
 const { Router } = require("express");
 const router = Router();
 
+function buildAirQualityDecision({ aqi, category, dominantPollutant }) {
+  const normalizedCategory = String(category ?? "").trim() || "Unknown";
+
+  if (aqi <= 50) {
+    return {
+      riskLevel: "low",
+      summary: `Air quality is ${normalizedCategory} (AQI ${aqi}). Outdoor activity is generally safe for most people.`,
+      outdoorGuidance: "Proceed with normal outdoor plans.",
+      sensitiveGroupGuidance: "No special precautions for most people.",
+      maskRecommended: false,
+      dominantPollutant,
+    };
+  }
+
+  if (aqi <= 100) {
+    return {
+      riskLevel: "moderate",
+      summary: `Air quality is ${normalizedCategory} (AQI ${aqi}). Most people can continue normal activity, but sensitive groups should reduce prolonged exertion.`,
+      outdoorGuidance: "Short outdoor activity is usually fine; avoid prolonged heavy exertion.",
+      sensitiveGroupGuidance:
+        "Children, older adults, and people with asthma or heart/lung conditions should pace activity.",
+      maskRecommended: false,
+      dominantPollutant,
+    };
+  }
+
+  if (aqi <= 150) {
+    return {
+      riskLevel: "elevated",
+      summary: `Air quality is ${normalizedCategory} (AQI ${aqi}). Sensitive groups are at higher risk and should limit outdoor exertion.`,
+      outdoorGuidance: "Reduce prolonged outdoor activity, especially cardio-heavy sessions.",
+      sensitiveGroupGuidance:
+        "Sensitive groups should minimize time outdoors and consider well-fitted masks.",
+      maskRecommended: true,
+      dominantPollutant,
+    };
+  }
+
+  if (aqi <= 200) {
+    return {
+      riskLevel: "high",
+      summary: `Air quality is ${normalizedCategory} (AQI ${aqi}). Everyone should reduce prolonged outdoor exertion.`,
+      outdoorGuidance: "Move training and extended activities indoors where possible.",
+      sensitiveGroupGuidance: "Sensitive groups should avoid outdoor exertion.",
+      maskRecommended: true,
+      dominantPollutant,
+    };
+  }
+
+  return {
+    riskLevel: "very-high",
+    summary: `Air quality is ${normalizedCategory} (AQI ${aqi}). Health risk is significant and outdoor exposure should be minimized.`,
+    outdoorGuidance: "Avoid non-essential outdoor activity until conditions improve.",
+    sensitiveGroupGuidance: "Sensitive groups should remain indoors with filtered air.",
+    maskRecommended: true,
+    dominantPollutant,
+  };
+}
+
 router.get("/api/air-quality/:zip", async (req, res) => {
   try {
     const { zip } = req.params;
@@ -19,7 +78,7 @@ router.get("/api/air-quality/:zip", async (req, res) => {
 
     const readings = raw.map((r) => ({
       parameter: r.ParameterName,
-      aqi: r.AQI,
+      aqi: Number(r.AQI),
       category: r.Category?.Name,
       categoryNumber: r.Category?.Number,
       reportingArea: r.ReportingArea,
@@ -30,7 +89,17 @@ router.get("/api/air-quality/:zip", async (req, res) => {
       longitude: r.Longitude,
     }));
 
-    const worstAqi = readings.reduce((max, r) => (r.aqi > max.aqi ? r : max), readings[0]);
+    const validReadings = readings.filter((reading) => Number.isFinite(reading.aqi));
+    if (!validReadings.length) {
+      return res.status(502).json({ success: false, error: "Upstream API returned non-numeric AQI readings" });
+    }
+
+    const worstAqi = validReadings.reduce((max, reading) => (reading.aqi > max.aqi ? reading : max), validReadings[0]);
+    const decision = buildAirQualityDecision({
+      aqi: worstAqi.aqi,
+      category: worstAqi.category,
+      dominantPollutant: worstAqi.parameter,
+    });
 
     res.json({
       success: true,
@@ -38,6 +107,8 @@ router.get("/api/air-quality/:zip", async (req, res) => {
         zip,
         overallAqi: worstAqi.aqi,
         overallCategory: worstAqi.category,
+        dominantPollutant: worstAqi.parameter,
+        decision,
         readings,
       },
       source: "EPA AirNow API",

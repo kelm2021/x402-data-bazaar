@@ -1,0 +1,376 @@
+{
+  "summary": {
+    "generatedAt": "2026-03-20T06:54:52.268Z",
+    "total": 19,
+    "status402Count": 19,
+    "headerPresentCount": 19,
+    "headerDecodedCount": 19,
+    "fullyValidCount": 19,
+    "facilitatorPresentCount": 19,
+    "categoryPresentCount": 19,
+    "priceLabelPresentCount": 19
+  },
+  "results": [
+    {
+      "routeKey": "GET /api/vin/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "transportation/vehicle",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/weather/current/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "weather",
+        "maxAmountRequiredUSD": "$0.003"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/weather/current",
+      "url": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "weather",
+        "maxAmountRequiredUSD": "$0.003"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/weather/forecast",
+      "url": "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "weather",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/holidays/today/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/holidays/today/US",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "calendar/holidays",
+        "maxAmountRequiredUSD": "$0.002"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/business-days/next/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "calendar/holidays",
+        "maxAmountRequiredUSD": "$0.002"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/holidays/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/holidays/US/2026",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "calendar/holidays",
+        "maxAmountRequiredUSD": "$0.002"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/exchange-rates/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "finance/fx",
+        "maxAmountRequiredUSD": "$0.003"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/ip/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "networking/geolocation",
+        "maxAmountRequiredUSD": "$0.003"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/food/barcode/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "food/nutrition",
+        "maxAmountRequiredUSD": "$0.003"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/nutrition/search",
+      "url": "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "food/nutrition",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/fda/recalls",
+      "url": "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "health/food-safety",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/fda/adverse-events",
+      "url": "https://x402-data-bazaar.vercel.app/api/fda/adverse-events",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "health/pharmacovigilance",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/census/population",
+      "url": "https://x402-data-bazaar.vercel.app/api/census/population",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "economics/demographics",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/bls/cpi",
+      "url": "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "economics/inflation",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/bls/unemployment",
+      "url": "https://x402-data-bazaar.vercel.app/api/bls/unemployment",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "economics/labor",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/air-quality/*",
+      "url": "https://x402-data-bazaar.vercel.app/api/air-quality/20002",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "weather",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/congress/bills",
+      "url": "https://x402-data-bazaar.vercel.app/api/congress/bills",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "government/legislation",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    },
+    {
+      "routeKey": "GET /api/fec/candidates",
+      "url": "https://x402-data-bazaar.vercel.app/api/fec/candidates",
+      "ok": true,
+      "status": 402,
+      "hasPaymentRequiredHeader": true,
+      "headerDecoded": true,
+      "headerChecks": {
+        "acceptsPresent": true,
+        "acceptedScheme": "exact",
+        "network": "eip155:8453",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+        "facilitator": "https://api.cdp.coinbase.com/platform/v2/x402",
+        "category": "government/elections",
+        "maxAmountRequiredUSD": "$0.005"
+      },
+      "error": null
+    }
+  ]
+}

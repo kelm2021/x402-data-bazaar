@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "stage": "discovery",
+  "url": "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources?type=http&limit=500&offset=0",
+  "needle": "x402-data-bazaar.vercel.app",
+  "searchedCount": 12947,
+  "searchedTotal": 12947,
+  "pagesFetched": 26,
+  "count": 0,
+  "matches": []
+}

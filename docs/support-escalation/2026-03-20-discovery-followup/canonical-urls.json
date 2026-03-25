@@ -1,0 +1,154 @@
+[
+  {
+    "routeKey": "GET /api/vin/*",
+    "method": "GET",
+    "path": "/api/vin/*",
+    "category": "transportation/vehicle",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/vin/1HGCM82633A004352"
+  },
+  {
+    "routeKey": "GET /api/weather/current/*",
+    "method": "GET",
+    "path": "/api/weather/current/*",
+    "category": "weather",
+    "priceUsd": 0.003,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060"
+  },
+  {
+    "routeKey": "GET /api/weather/current",
+    "method": "GET",
+    "path": "/api/weather/current",
+    "category": "weather",
+    "priceUsd": 0.003,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060"
+  },
+  {
+    "routeKey": "GET /api/weather/forecast",
+    "method": "GET",
+    "path": "/api/weather/forecast",
+    "category": "weather",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/weather/forecast"
+  },
+  {
+    "routeKey": "GET /api/holidays/today/*",
+    "method": "GET",
+    "path": "/api/holidays/today/*",
+    "category": "calendar/holidays",
+    "priceUsd": 0.002,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/holidays/today/US"
+  },
+  {
+    "routeKey": "GET /api/business-days/next/*",
+    "method": "GET",
+    "path": "/api/business-days/next/*",
+    "category": "calendar/holidays",
+    "priceUsd": 0.002,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15"
+  },
+  {
+    "routeKey": "GET /api/holidays/*",
+    "method": "GET",
+    "path": "/api/holidays/*",
+    "category": "calendar/holidays",
+    "priceUsd": 0.002,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/holidays/US/2026"
+  },
+  {
+    "routeKey": "GET /api/exchange-rates/*",
+    "method": "GET",
+    "path": "/api/exchange-rates/*",
+    "category": "finance/fx",
+    "priceUsd": 0.003,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100"
+  },
+  {
+    "routeKey": "GET /api/ip/*",
+    "method": "GET",
+    "path": "/api/ip/*",
+    "category": "networking/geolocation",
+    "priceUsd": 0.003,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/ip/8.8.8.8"
+  },
+  {
+    "routeKey": "GET /api/food/barcode/*",
+    "method": "GET",
+    "path": "/api/food/barcode/*",
+    "category": "food/nutrition",
+    "priceUsd": 0.003,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/food/barcode/737628064502"
+  },
+  {
+    "routeKey": "GET /api/nutrition/search",
+    "method": "GET",
+    "path": "/api/nutrition/search",
+    "category": "food/nutrition",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/nutrition/search"
+  },
+  {
+    "routeKey": "GET /api/fda/recalls",
+    "method": "GET",
+    "path": "/api/fda/recalls",
+    "category": "health/food-safety",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/fda/recalls"
+  },
+  {
+    "routeKey": "GET /api/fda/adverse-events",
+    "method": "GET",
+    "path": "/api/fda/adverse-events",
+    "category": "health/pharmacovigilance",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/fda/adverse-events"
+  },
+  {
+    "routeKey": "GET /api/census/population",
+    "method": "GET",
+    "path": "/api/census/population",
+    "category": "economics/demographics",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/census/population"
+  },
+  {
+    "routeKey": "GET /api/bls/cpi",
+    "method": "GET",
+    "path": "/api/bls/cpi",
+    "category": "economics/inflation",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/bls/cpi"
+  },
+  {
+    "routeKey": "GET /api/bls/unemployment",
+    "method": "GET",
+    "path": "/api/bls/unemployment",
+    "category": "economics/labor",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/bls/unemployment"
+  },
+  {
+    "routeKey": "GET /api/air-quality/*",
+    "method": "GET",
+    "path": "/api/air-quality/*",
+    "category": "weather",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/air-quality/20002"
+  },
+  {
+    "routeKey": "GET /api/congress/bills",
+    "method": "GET",
+    "path": "/api/congress/bills",
+    "category": "government/legislation",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/congress/bills"
+  },
+  {
+    "routeKey": "GET /api/fec/candidates",
+    "method": "GET",
+    "path": "/api/fec/candidates",
+    "category": "government/elections",
+    "priceUsd": 0.005,
+    "exampleUrl": "https://x402-data-bazaar.vercel.app/api/fec/candidates"
+  }
+]
