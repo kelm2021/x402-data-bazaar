@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-03-18 16:52:09 -05:00",
-  "publishedAt": "2026-03-18T22:29:02.492Z",
+  "generatedAt": "2026-03-19 16:42:08 +0000",
+  "publishedAt": "2026-03-19T17:00:55.178Z",
   "mission": {
     "targetNetUsd": 1000,
     "deadline": "2026-03-31",
@@ -9,32 +9,32 @@
     "status": "tighten the lead wedge, prove demand, and only broaden if the evidence says so"
   },
   "process": {
-    "fidelity": "pass",
-    "failureTrigger": "not hit",
-    "dispatchedLaneCount": 9,
+    "fidelity": "fail",
+    "failureTrigger": "hit",
+    "dispatchedLaneCount": 6,
     "requiredLaneCount": 4,
-    "reason": "the dispatch ledger shows 9 non-Chief lanes used today, and the workspace contains real external actions through reachable public channels."
+    "reason": "the dispatch ledger shows at least 4 non-Chief lanes dispatched on 2026-03-19, but no 2026-03-19 external action is logged even though reachable public email and form routes already existed from the 2026-03-18 outreach wave. Refresh-package readiness is also ambiguous because older build claims exist, but no inspectable zip is present in this workspace today."
   },
   "evidence": {
-    "outreachSends": 5,
-    "blockedTargets": 1,
+    "outreachSends": 0,
+    "blockedTargets": 0,
     "replies": 0,
     "paidAttempts": 0,
     "paidConversions": 0,
     "bundleInterest": 0,
     "externalProbes": 0,
-    "moltbookPublished": true,
-    "latestMoltbookPostId": "7e99dc14-e4c5-4203-b746-a8b3496dca7e"
+    "moltbookPublished": false,
+    "latestMoltbookPostId": null
   },
   "pipeline": {
-    "activeProspects": 10,
+    "activeProspects": 5,
     "prospects": [
       {
         "rank": 1,
         "target": "Paul Valente",
         "title": "Chief Customer Officer & Co-Founder",
         "firm": "VISO TRUST",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -42,7 +42,7 @@
         "target": "Corentin Le Reun",
         "title": "Chief Executive Officer",
         "firm": "VISO TRUST",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -50,7 +50,7 @@
         "target": "Ajay Trehan",
         "title": "Founder & Chief Executive Officer",
         "firm": "AuthBridge",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -58,7 +58,7 @@
         "target": "Raviraj Singh Ghai",
         "title": "Chief Sales Officer & Founding Member",
         "firm": "AuthBridge",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -66,7 +66,7 @@
         "target": "Ryan Cimo",
         "title": "Founder & Chief Executive Officer",
         "firm": "Fraxtional",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "compliance and due diligence advisors"
       },
       {
@@ -74,7 +74,7 @@
         "target": "Cloe Guidry-Reed",
         "title": "Chief Executive Officer",
         "firm": "OneCredential",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -82,7 +82,7 @@
         "target": "Sonja Crystal Williams",
         "title": "Head of Marketing & Customer Success",
         "firm": "OneCredential",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -90,7 +90,7 @@
         "target": "Gaurav Baheti",
         "title": "Founder & Chief Executive Officer",
         "firm": "Procol",
-        "status": "active",
+        "status": "not contacted",
         "bestAngle": "procurement and vendor onboarding"
       },
       {
@@ -98,7 +98,7 @@
         "target": "Salvatore Tirabassi",
         "title": "Managing Director",
         "firm": "CFO Pro Analytics",
-        "status": "sent 2026-03-18",
+        "status": "sent 2026-03-18, awaiting reply",
         "bestAngle": "finance ops and AP"
       },
       {
@@ -111,17 +111,15 @@
       }
     ]
   },
-  "confirmedActions": [
-    "VISO TRUST public email sent to info@visotrust.com",
-    "AuthBridge fallback public email sent to sales@authbridge.com after the form route failed",
-    "OneCredential public contact form submitted with on-page success confirmation",
-    "Fraxtional public contact form submitted successfully",
-    "CFO Pro Analytics public email sent to info@cfoproanalytics.com"
+  "confirmedActions": [],
+  "blockedRoutes": [],
+  "nextProof": [
+    "first logged one-name pilot follow-up on a reachable route",
+    "first verified reply from outreach",
+    "first verified non-self probe",
+    "first verified paid attempt",
+    "first remote runner execution artifact newer than 2026-03-18"
   ],
-  "blockedRoutes": [
-    "Valua Partners public email and public form both failed; no send is claimed"
-  ],
-  "nextProof": [],
   "channelWatchlist": [
     {
       "channel": "x402",
@@ -161,12 +159,12 @@
     }
   ],
   "refreshPackage": {
-    "path": "C:\\Users\\KentEgan\\claude projects\\x402-data-bazaar\\docs\\remote-codex-runner\\runner-refresh.zip",
-    "sha256": "B571BC0FC09CA691FCC6FA35C047F53E80633131907192AFD4576C288C536A5A"
+    "path": null,
+    "sha256": null
   },
   "remoteRunner": {
-    "status": "checked",
-    "detail": "ops/progress.md says the remote runner mission was migrated to the broader business OS and a fresh unattended loop start was manually verified on 2026-03-18 at 2:05 PM Central"
+    "status": "workspace-verified",
+    "detail": "No remote runner detail published."
   },
   "rawFiles": {
     "proofMarkdownPath": "ops-dashboard/proof-checkpoint-latest.md",
@@ -175,6 +173,6 @@
     "outreachExecutionLogPath": "ops-dashboard/outreach-execution-log.md"
   },
   "source": {
-    "outputDir": "C:\\Users\\KentEgan\\claude projects\\x402-data-bazaar\\ops-dashboard"
+    "outputDir": "/home/kent/work/x402-data-bazaar-dashboard-publisher/ops-dashboard"
   }
 }
