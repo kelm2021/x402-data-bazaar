@@ -1480,7 +1480,6 @@ function createApp(options = {}) {
 
   app.get("/", createHealthHandler(routes));
   app.get("/api", createApiDiscoveryHandler(routes));
-  app.get("/well-known-x402-aurelian.json", createWellKnownX402AurelianHandler(wellKnownX402Aurelian));
   app.get(
     "/.well-known/x402-aurelian.json",
     createWellKnownX402AurelianHandler(wellKnownX402Aurelian),

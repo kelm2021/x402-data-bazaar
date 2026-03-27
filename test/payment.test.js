@@ -115,18 +115,14 @@ test("well-known x402 manifest is publicly reachable", async () => {
   const app = createApp({ enableDebugRoutes: false });
 
   await withServer(app, async (baseUrl) => {
-    const rootPathResponse = await fetch(`${baseUrl}/well-known-x402-aurelian.json`);
-    const rootPathBody = await rootPathResponse.json();
     const dotWellKnownResponse = await fetch(`${baseUrl}/.well-known/x402-aurelian.json`);
     const dotWellKnownBody = await dotWellKnownResponse.json();
 
-    assert.equal(rootPathResponse.status, 200);
     assert.equal(dotWellKnownResponse.status, 200);
-    assert.equal(rootPathBody.name, "x402 Data Bazaar");
     assert.equal(dotWellKnownBody.name, "x402 Data Bazaar");
-    assert.equal(rootPathBody.website, "https://x402.aurelianflo.com");
-    assert.ok(Array.isArray(rootPathBody.resources));
-    assert.ok(rootPathBody.resources.length >= 20);
+    assert.equal(dotWellKnownBody.website, "https://x402.aurelianflo.com");
+    assert.ok(Array.isArray(dotWellKnownBody.resources));
+    assert.ok(dotWellKnownBody.resources.length >= 20);
   });
 });
 
