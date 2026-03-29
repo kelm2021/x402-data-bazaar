@@ -46,7 +46,7 @@ The route should sell machine-readable screening support, not legal advice. It s
 Phase 1 now includes a distribution layer too:
 
 - keep Bazaar indexing live, but do not rely on it as the only path
-- package the wedge for Coinbase Payments MCP so agents have a direct tool lane
+- package the wedge for Payments MCP so agents have a direct tool lane
 - enable SIWX so returning wallets can regain access without repaying
 - stay on USDC-denominated pricing first, even if buyers can pay with broader supported tokens
 

@@ -7,7 +7,7 @@
 The current phase-1 distribution plan is:
 
 1. keep the Bazaar path live and monitor indexing
-2. add a direct MCP lane through Coinbase Payments MCP
+2. add a direct MCP lane through Payments MCP
 3. support SIWX so returning wallets can reopen access without re-paying
 
 Registry status as of March 17, 2026:
@@ -61,7 +61,7 @@ Current storage mode:
 As of March 17, 2026 UTC:
 
 - seller-side SIWX verification is configured for Base smart wallets
-- Coinbase Payments MCP live payment works
+- Payments MCP live payment works
 - repeat access through the current Payments MCP path still re-pays instead of reclaiming access, which suggests the client is not yet sending SIWX proofs on retry
 - signer-driven reclaim is now verified through `npm run restricted-party-screen:siwx-demo`
 - the signer-driven demo proved a second fresh request can return `200` with no new settlement when the client sends the SIWX proof correctly
