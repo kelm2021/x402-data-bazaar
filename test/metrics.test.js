@@ -513,6 +513,207 @@ test("metrics dashboard hides legacy free probe rows and groups routes by type",
   });
 });
 
+test("metrics feed tracks facilitator usage and fallback selections from request context", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (req, _res, next) => {
+      req.x402Facilitator = {
+        provider: "payai",
+        facilitatorUrl: "https://facilitator.payai.network",
+        mode: "round_robin",
+        fallbackUsed: true,
+      };
+      next();
+    },
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const apiResponse = await fetch(`${baseUrl}/api/holidays/today/US`);
+    assert.equal(apiResponse.status, 200);
+
+    const metricsResponse = await fetch(`${baseUrl}/ops/metrics/data`);
+    const summary = await metricsResponse.json();
+    const facilitator = summary.facilitators.find((entry) => entry.provider === "payai");
+
+    assert.equal(metricsResponse.status, 200);
+    assert.equal(summary.totals.uniqueFacilitatorsSeen, 1);
+    assert.equal(summary.totals.fallbackSelections, 1);
+    assert.ok(facilitator);
+    assert.equal(facilitator.mode, "round_robin");
+    assert.equal(facilitator.total, 1);
+    assert.equal(facilitator.fallbackUsedCount, 1);
+  });
+});
+
+test("metrics feed derives facilitator provider from payment-required challenge metadata", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    facilitatorLoader: async () => createStubFacilitator(),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const apiResponse = await fetch(`${baseUrl}/api/vin/1HGCM82633A004352`);
+    assert.equal(apiResponse.status, 402);
+
+    const metricsResponse = await fetch(`${baseUrl}/ops/metrics/data`);
+    const summary = await metricsResponse.json();
+    const facilitator = summary.facilitators[0];
+
+    assert.equal(metricsResponse.status, 200);
+    assert.ok(facilitator);
+    assert.equal(facilitator.paymentRequired, 1);
+    assert.equal(summary.totals.uniqueFacilitatorsSeen, 1);
+    assert.ok(facilitator.provider || facilitator.facilitatorUrl);
+  });
+});
+
+test("metrics dashboard places category-tagged routes into specific groups before Other APIs", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    metricsStore: createStaticMetricsStore({
+      generatedAt: "2026-03-27T18:10:00.000Z",
+      startedAt: "2026-03-27T17:00:00.000Z",
+      updatedAt: "2026-03-27T18:09:00.000Z",
+      storage: {
+        kind: "redis",
+        persistent: true,
+        label: "Upstash Redis via Vercel integration",
+      },
+      totals: {
+        total: 18,
+        success: 6,
+        paidSuccess: 6,
+        externalPaidSuccess: 6,
+        selfTaggedPaidSuccess: 0,
+        paymentRequired: 12,
+        clientErrors: 0,
+        serverErrors: 0,
+        paidUsd: 0.043,
+        externalPaidUsd: 0.043,
+        selfTaggedPaidUsd: 0,
+        averageLatencyMs: 88,
+        uniqueCallersSeen: 2,
+        uniqueServicesSeen: 1,
+        selfTaggedRequests: 0,
+        anonymousRequests: 18,
+        uniqueRoutesSeen: 4,
+      },
+      routes: [
+        {
+          key: "GET /api/stocks/quote/*",
+          method: "GET",
+          routePath: "/api/stocks/quote/*",
+          description: "Stock quote by ticker symbol.",
+          category: "data/finance",
+          priceLabel: "$0.008 USDC",
+          total: 5,
+          success: 2,
+          paidSuccess: 2,
+          externalPaidSuccess: 2,
+          selfTaggedPaidSuccess: 0,
+          paymentRequired: 3,
+          clientErrors: 0,
+          serverErrors: 0,
+          paidUsd: 0.016,
+          externalPaidUsd: 0.016,
+          selfTaggedPaidUsd: 0,
+          averageLatencyMs: 72,
+          lastSeenAt: "2026-03-27T18:05:00.000Z",
+          lastStatus: 200,
+          lastPath: "/api/stocks/quote/AAPL",
+        },
+        {
+          key: "GET /api/domain-availability/*",
+          method: "GET",
+          routePath: "/api/domain-availability/*",
+          description: "Domain availability lookup.",
+          category: "data/network-intelligence",
+          priceLabel: "$0.01 USDC",
+          total: 4,
+          success: 1,
+          paidSuccess: 1,
+          externalPaidSuccess: 1,
+          selfTaggedPaidSuccess: 0,
+          paymentRequired: 3,
+          clientErrors: 0,
+          serverErrors: 0,
+          paidUsd: 0.01,
+          externalPaidUsd: 0.01,
+          selfTaggedPaidUsd: 0,
+          averageLatencyMs: 95,
+          lastSeenAt: "2026-03-27T18:06:00.000Z",
+          lastStatus: 200,
+          lastPath: "/api/domain-availability/example.com",
+        },
+        {
+          key: "GET /api/sports/scores/*",
+          method: "GET",
+          routePath: "/api/sports/scores/*",
+          description: "Sports scoreboard by day.",
+          category: "real-time-data/sports",
+          priceLabel: "$0.009 USDC",
+          total: 5,
+          success: 2,
+          paidSuccess: 2,
+          externalPaidSuccess: 2,
+          selfTaggedPaidSuccess: 0,
+          paymentRequired: 3,
+          clientErrors: 0,
+          serverErrors: 0,
+          paidUsd: 0.018,
+          externalPaidUsd: 0.018,
+          selfTaggedPaidUsd: 0,
+          averageLatencyMs: 82,
+          lastSeenAt: "2026-03-27T18:07:00.000Z",
+          lastStatus: 200,
+          lastPath: "/api/sports/scores/nba",
+        },
+        {
+          key: "GET /api/worldbank/*",
+          method: "GET",
+          routePath: "/api/worldbank/*",
+          description: "World Bank indicator query.",
+          category: "data/world",
+          priceLabel: "$0.003 USDC",
+          total: 4,
+          success: 1,
+          paidSuccess: 1,
+          externalPaidSuccess: 1,
+          selfTaggedPaidSuccess: 0,
+          paymentRequired: 3,
+          clientErrors: 0,
+          serverErrors: 0,
+          paidUsd: 0.003,
+          externalPaidUsd: 0.003,
+          selfTaggedPaidUsd: 0,
+          averageLatencyMs: 103,
+          lastSeenAt: "2026-03-27T18:08:00.000Z",
+          lastStatus: 200,
+          lastPath: "/api/worldbank/SP.POP.TOTL",
+        },
+      ],
+      services: [],
+      callers: [],
+      hourly: [],
+    }),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/ops/metrics`);
+    const html = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.match(html, /Finance &amp; Markets/);
+    assert.match(html, /Network &amp; Domain Intelligence/);
+    assert.match(html, /Sports &amp; Odds/);
+    assert.match(html, /World &amp; Research Data/);
+    assert.doesNotMatch(html, /Other APIs/);
+  });
+});
+
 test("metrics feed groups caller fingerprints without storing raw IPs or raw user agents", async () => {
   const app = createApp({
     env: {},

@@ -4,6 +4,7 @@ const test = require("node:test");
 const fetch = require("node-fetch");
 const { decodePaymentRequiredHeader } = require("@x402/core/http");
 const { bazaarResourceServerExtension } = require("@x402/extensions/bazaar");
+const genericSimulatorSellerConfig = require("../apps/generic-parameter-simulator/seller.config.json");
 
 const {
   PAY_TO,
@@ -13,6 +14,33 @@ const {
   sanitizeAcceptedRequirements,
   sanitizePaymentPayloadForMatching,
 } = require("../app");
+
+function getSellerRoutes(config) {
+  if (Array.isArray(config?.routes) && config.routes.length) {
+    return config.routes;
+  }
+
+  return config?.route ? [config.route] : [];
+}
+
+function buildCanonicalResourceUrl(baseUrl, resourcePath) {
+  if (!resourcePath) {
+    return null;
+  }
+
+  if (resourcePath.startsWith("http://") || resourcePath.startsWith("https://")) {
+    return resourcePath;
+  }
+
+  return `${String(baseUrl || "").replace(/\/+$/, "")}${resourcePath}`;
+}
+
+function getCanonicalSellerResources(config) {
+  const baseUrl = config?.baseUrl || "https://x402.aurelianflo.com";
+  return getSellerRoutes(config)
+    .map((route) => buildCanonicalResourceUrl(baseUrl, route.canonicalPath || route.resourcePath))
+    .filter(Boolean);
+}
 
 function createStubFacilitator() {
   return {
@@ -76,13 +104,32 @@ test("health check stays free", async () => {
   const app = createApp({ enableDebugRoutes: false });
 
   await withServer(app, async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/`);
+    const response = await fetch(`${baseUrl}/?format=json`);
     const body = await response.json();
 
     assert.equal(response.status, 200);
-    assert.equal(body.name, "x402 Data Bazaar");
+    assert.equal(body.name, "AurelianFlo APIs");
     assert.equal(body.payment.protocol, "x402");
     assert.ok(body.catalog.length > 0);
+  });
+});
+
+test("health root serves title/description metadata when HTML is requested", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/`, {
+      headers: { Accept: "text/html" },
+    });
+    const body = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.match(String(response.headers.get("content-type") || ""), /text\/html/i);
+    assert.match(body, /<title>AurelianFlo APIs<\/title>/i);
+    assert.match(
+      body,
+      /<meta name="description" content="Curated, high-signal endpoints with x402-native access\."/i,
+    );
   });
 });
 
@@ -96,7 +143,7 @@ test("api discovery endpoint lists concrete endpoint metadata without payment", 
 
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("payment-required"), null);
-    assert.equal(body.name, "x402 Data Bazaar API Discovery");
+    assert.equal(body.name, "AurelianFlo APIs");
     assert.equal(body.payment.protocol, "x402");
     assert.ok(Array.isArray(body.catalog));
     assert.ok(body.catalog.length > 0);
@@ -105,41 +152,161 @@ test("api discovery endpoint lists concrete endpoint metadata without payment", 
     assert.equal(weatherEntry.priceUsd, 0.005);
     assert.equal(
       weatherEntry.exampleUrl,
-      "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+      "https://x402.aurelianflo.com/api/weather/current/40.7128/-74.0060",
     );
     assert.equal(weatherEntry.payment.network, X402_NETWORK);
   });
 });
 
-test("well-known x402 manifest is publicly reachable", async () => {
+test("openapi document is publicly reachable with title and icon metadata", async () => {
   const app = createApp({ enableDebugRoutes: false });
 
   await withServer(app, async (baseUrl) => {
-    const standardPathResponse = await fetch(`${baseUrl}/.well-known/x402`, {
-      redirect: "manual",
-    });
-    const dotWellKnownResponse = await fetch(`${baseUrl}/.well-known/x402-aurelian.json`);
-    const dotWellKnownBody = await dotWellKnownResponse.json();
+    const response = await fetch(`${baseUrl}/openapi.json`);
+    const body = await response.json();
 
-    assert.equal(standardPathResponse.status, 308);
-    assert.ok(
-      String(standardPathResponse.headers.get("location") || "").endsWith(
-        "/.well-known/x402-aurelian.json",
-      ),
-    );
-    assert.equal(dotWellKnownResponse.status, 200);
-    assert.equal(dotWellKnownBody.name, "x402 Data Bazaar");
-    assert.equal(dotWellKnownBody.website, "https://x402.aurelianflo.com");
-    assert.ok(Array.isArray(dotWellKnownBody.resources));
-    assert.ok(dotWellKnownBody.resources.length >= 20);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("payment-required"), null);
+    assert.equal(body.openapi, "3.1.0");
+    assert.equal(body.info.title, "AurelianFlo APIs");
+    assert.equal(body.info.version, "1.0.0");
+    assert.equal(body.info["x-logo"].url, "https://x402.aurelianflo.com/favicon.ico");
+    assert.equal(body.servers[0].url, "https://x402.aurelianflo.com");
+    assert.ok(body.paths["/api/stocks/search"]?.get);
   });
 });
 
-test("main app bucket includes restricted-party and vendor-entity-brief routes", async () => {
+test("favicon endpoint is publicly reachable", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/favicon.ico`);
+    const payload = await response.buffer();
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("payment-required"), null);
+    assert.match(String(response.headers.get("content-type") || ""), /image\/png/i);
+    assert.ok(payload.length > 0);
+  });
+});
+
+test("simulation landing endpoint is free and exposes composability guide", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/sim`);
+    const body = await response.json();
+    const endpointPaths = body.endpoints.map((endpoint) => endpoint.path);
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("payment-required"), null);
+    assert.equal(body.name, "Bazaar Simulation Suite");
+    assert.equal(body.version, "1.0.0");
+    assert.equal(Array.isArray(body.endpoints), true);
+    assert.equal(body.endpoints.length, 6);
+    assert.deepEqual(endpointPaths, [
+      "/api/sim/probability",
+      "/api/sim/compare",
+      "/api/sim/sensitivity",
+      "/api/sim/forecast",
+      "/api/sim/composed",
+      "/api/sim/optimize",
+    ]);
+    assert.equal(body.endpoints[0].price, "$0.05");
+    assert.equal(body.endpoints[5].price, "$0.10");
+    assert.ok(Array.isArray(body.composability?.pipeline_pattern));
+    assert.ok(Array.isArray(body.composability?.example_pipelines));
+  });
+});
+
+test("well-known x402 manifest is publicly reachable", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+  const genericSimulatorResources = getCanonicalSellerResources(genericSimulatorSellerConfig);
+  const genericSimulatorBaseUrl = String(
+    genericSimulatorSellerConfig?.baseUrl || "https://x402.aurelianflo.com",
+  ).replace(/\/+$/, "");
+
+  await withServer(app, async (baseUrl) => {
+    const standardPathResponse = await fetch(`${baseUrl}/.well-known/x402`);
+    const standardPathBody = await standardPathResponse.json();
+    const dotWellKnownResponse = await fetch(`${baseUrl}/.well-known/x402-aurelian.json`);
+    const dotWellKnownBody = await dotWellKnownResponse.json();
+
+    assert.equal(standardPathResponse.status, 200);
+    assert.equal(standardPathBody.version, 1);
+    assert.ok(Array.isArray(standardPathBody.resources));
+    assert.ok(
+      standardPathBody.resources.some((entry) => String(entry).startsWith("GET /api/vin/")),
+    );
+    assert.equal(dotWellKnownResponse.status, 200);
+    assert.equal(dotWellKnownBody.name, "AurelianFlo APIs");
+    assert.equal(dotWellKnownBody.website, "https://x402.aurelianflo.com");
+    assert.ok(Array.isArray(dotWellKnownBody.resources));
+    assert.ok(dotWellKnownBody.resources.length >= 20);
+    assert.match(String(dotWellKnownBody.instructions || ""), /## Composable Simulations/);
+    assert.ok(Array.isArray(dotWellKnownBody.endpoints));
+
+    const simulationEndpoints = dotWellKnownBody.endpoints.filter(
+      (endpoint) =>
+        endpoint.method === "POST" && String(endpoint.path || "").startsWith("/api/sim/"),
+    );
+    assert.equal(simulationEndpoints.length, 6);
+    for (const endpoint of simulationEndpoints) {
+      assert.equal(endpoint.composability?.pattern, "data-to-simulation", endpoint.path);
+      assert.ok(typeof endpoint.composability?.description === "string", endpoint.path);
+    }
+
+    for (const resourceUrl of genericSimulatorResources) {
+      assert.ok(dotWellKnownBody.resources.includes(resourceUrl), resourceUrl);
+    }
+
+    assert.ok(!dotWellKnownBody.resources.includes(`${genericSimulatorBaseUrl}/methodology`));
+    assert.ok(!dotWellKnownBody.resources.includes(`${genericSimulatorBaseUrl}/integrations/payments-mcp`));
+  });
+});
+
+test("well-known x402 manifest includes env-driven ownership proofs", async () => {
+  const proofA = `0x${"a".repeat(130)}`;
+  const proofB = `0x${"b".repeat(130)}`;
+  const app = createApp({
+    enableDebugRoutes: false,
+    env: {
+      ...process.env,
+      X402_OWNERSHIP_PROOFS: JSON.stringify([proofA, proofB, "not-a-signature"]),
+    },
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/.well-known/x402-aurelian.json`);
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(body.ownershipProofs, [proofA, proofB]);
+  });
+});
+
+test("402index verification file is publicly reachable", async () => {
+  const app = createApp({
+    enableDebugRoutes: false,
+    index402VerificationHash: "test-verification-hash",
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/.well-known/402index-verify.txt`);
+    const body = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("payment-required"), null);
+    assert.equal(body, "test-verification-hash");
+  });
+});
+
+test("main app bucket includes bundled seller routes including generic-parameter-simulator", async () => {
   const app = createApp({
     enableDebugRoutes: false,
     facilitatorLoader: async () => createStubFacilitator(),
   });
+  const genericSimulatorRoutes = getSellerRoutes(genericSimulatorSellerConfig);
 
   await withServer(app, async (baseUrl) => {
     const discoveryResponse = await fetch(`${baseUrl}/api`);
@@ -151,6 +318,10 @@ test("main app bucket includes restricted-party and vendor-entity-brief routes",
     assert.ok(routeKeys.has("GET /api/vendor-onboarding/restricted-party-batch"));
     assert.ok(routeKeys.has("GET /api/restricted-party/screen/*"));
     assert.ok(routeKeys.has("GET /api/vendor-entity-brief"));
+
+    for (const route of genericSimulatorRoutes) {
+      assert.ok(routeKeys.has(route.key), route.key);
+    }
 
     const cases = [
       {
@@ -197,8 +368,19 @@ test("api discovery includes representative all-tier expansion endpoints", async
     assert.ok(routeKeys.has("GET /api/stocks/quote/*"));
     assert.ok(routeKeys.has("GET /api/stocks/search"));
     assert.ok(routeKeys.has("GET /api/treasury-rates"));
+    assert.ok(routeKeys.has("GET /api/commodities/gold"));
+    assert.ok(routeKeys.has("GET /api/commodities/oil"));
+    assert.ok(routeKeys.has("GET /api/mortgage-rates"));
+    assert.ok(routeKeys.has("GET /api/sp500"));
+    assert.ok(routeKeys.has("GET /api/vix"));
+    assert.ok(routeKeys.has("GET /api/dollar-index"));
+    assert.ok(routeKeys.has("GET /api/credit-spreads"));
+    assert.ok(routeKeys.has("GET /api/real-rates"));
+    assert.ok(routeKeys.has("GET /api/inflation-expectations"));
     assert.ok(routeKeys.has("GET /api/weather/historical"));
     assert.ok(routeKeys.has("GET /api/weather/air-quality"));
+    assert.ok(routeKeys.has("GET /api/weather/extremes"));
+    assert.ok(routeKeys.has("GET /api/weather/freeze-risk"));
     assert.ok(routeKeys.has("GET /api/census/income/*"));
     assert.ok(routeKeys.has("GET /api/fda/drug-events/*"));
     assert.ok(routeKeys.has("GET /api/geocode"));
@@ -206,7 +388,10 @@ test("api discovery includes representative all-tier expansion endpoints", async
     assert.ok(routeKeys.has("GET /api/sec/filings/*"));
     assert.ok(routeKeys.has("GET /api/sports/odds/*"));
     assert.ok(routeKeys.has("GET /api/worldbank/*"));
-    assert.ok(routeKeys.has("GET /api/patents/search"));
+    assert.ok(routeKeys.has("GET /api/courts/opinions"));
+    assert.ok(routeKeys.has("GET /api/courts/citations"));
+    assert.ok(routeKeys.has("GET /api/courts/court-info"));
+    assert.ok(routeKeys.has("GET /api/courts/clusters"));
   });
 });
 
@@ -299,7 +484,7 @@ test("exchange base route advertises its own canonical resource", async () => {
     assert.equal(response.status, 402);
     assert.equal(
       paymentRequired.resource.url,
-      "https://x402-data-bazaar.vercel.app/api/exchange-rates/USD",
+      "https://x402.aurelianflo.com/api/exchange-rates/USD",
     );
     assert.equal(paymentRequired.accepts[0].amount, "12000");
   });
@@ -320,7 +505,7 @@ test("exchange quote route advertises quote canonical resource", async () => {
     assert.equal(response.status, 402);
     assert.equal(
       paymentRequired.resource.url,
-      "https://x402-data-bazaar.vercel.app/api/exchange-rates/quote/USD/EUR/100",
+      "https://x402.aurelianflo.com/api/exchange-rates/quote/USD/EUR/100",
     );
     assert.equal(paymentRequired.accepts[0].amount, "12000");
   });
@@ -341,7 +526,7 @@ test("weather current query route advertises its own canonical resource", async 
     assert.equal(response.status, 402);
     assert.equal(
       paymentRequired.resource.url,
-      "https://x402-data-bazaar.vercel.app/api/weather/current",
+      "https://x402.aurelianflo.com/api/weather/current",
     );
     assert.equal(paymentRequired.accepts[0].amount, "5000");
   });
@@ -382,7 +567,7 @@ test("next business day route returns x402 payment requirements without a paymen
     assert.equal(response.status, 402);
     assert.equal(
       paymentRequired.resource.url,
-      "https://x402-data-bazaar.vercel.app/api/business-days/next/US/2026-03-15",
+      "https://x402.aurelianflo.com/api/business-days/next/US/2026-03-15",
     );
     assert.equal(paymentRequired.accepts[0].amount, "8000");
   });
@@ -398,92 +583,162 @@ test("query-driven routes advertise stable canonical resource URLs", async () =>
     {
       path: "/api/weather/forecast?lat=40.7128&lon=-74.0060&days=7",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/weather/forecast",
+        "https://x402.aurelianflo.com/api/weather/forecast",
     },
     {
       path: "/api/nutrition/search?query=chicken%20breast&limit=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/nutrition/search",
+        "https://x402.aurelianflo.com/api/nutrition/search",
     },
     {
       path: "/api/fda/recalls?query=peanut&limit=10",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/fda/recalls",
+        "https://x402.aurelianflo.com/api/fda/recalls",
     },
     {
       path: "/api/census/population?state=06",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/census/population",
+        "https://x402.aurelianflo.com/api/census/population",
     },
     {
       path: "/api/bls/cpi?years=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/bls/cpi",
+        "https://x402.aurelianflo.com/api/bls/cpi",
     },
     {
       path: "/api/congress/bills?congress=119&limit=20",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/congress/bills",
+        "https://x402.aurelianflo.com/api/congress/bills",
     },
     {
       path: "/api/stocks/search?q=apple&limit=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/stocks/search",
+        "https://x402.aurelianflo.com/api/stocks/search",
     },
     {
       path: "/api/stocks/candles/AAPL?interval=daily&limit=10",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/stocks/candles/AAPL",
+        "https://x402.aurelianflo.com/api/stocks/candles/AAPL",
+    },
+    {
+      path: "/api/commodities/gold?limit=30",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/commodities/gold",
+    },
+    {
+      path: "/api/commodities/oil?limit=30",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/commodities/oil",
+    },
+    {
+      path: "/api/mortgage-rates?limit=52",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/mortgage-rates",
+    },
+    {
+      path: "/api/sp500?limit=60",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/sp500",
+    },
+    {
+      path: "/api/vix?limit=60",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/vix",
+    },
+    {
+      path: "/api/dollar-index?limit=60",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/dollar-index",
+    },
+    {
+      path: "/api/credit-spreads?limit=24",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/credit-spreads",
+    },
+    {
+      path: "/api/real-rates?limit=60",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/real-rates",
+    },
+    {
+      path: "/api/inflation-expectations?limit=60",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/inflation-expectations",
     },
     {
       path: "/api/weather/historical?lat=40.7128&lon=-74.0060&start=2026-03-01&end=2026-03-07",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/weather/historical",
+        "https://x402.aurelianflo.com/api/weather/historical",
     },
     {
       path: "/api/weather/marine?lat=40.7128&lon=-74.0060&hours=24",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/weather/marine",
+        "https://x402.aurelianflo.com/api/weather/marine",
     },
     {
       path: "/api/weather/air-quality?zip=20002",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/weather/air-quality",
+        "https://x402.aurelianflo.com/api/weather/air-quality",
+    },
+    {
+      path: "/api/weather/extremes?lat=40.7128&lon=-74.0060&days=7",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/weather/extremes",
+    },
+    {
+      path: "/api/weather/freeze-risk?lat=40.7128&lon=-74.0060&days=10&threshold_f=32",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/weather/freeze-risk",
     },
     {
       path: "/api/census/housing?state=06",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/census/housing",
+        "https://x402.aurelianflo.com/api/census/housing",
     },
     {
       path: "/api/census/age-breakdown?state=06",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/census/age-breakdown",
+        "https://x402.aurelianflo.com/api/census/age-breakdown",
     },
     {
       path: "/api/fda/medical-devices?query=pump&limit=10",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/fda/medical-devices",
+        "https://x402.aurelianflo.com/api/fda/medical-devices",
     },
     {
       path: "/api/fda/device-recalls?query=pacemaker&limit=10",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/fda/device-recalls",
+        "https://x402.aurelianflo.com/api/fda/device-recalls",
     },
     {
       path: "/api/geocode?q=Chicago&limit=3",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/geocode",
+        "https://x402.aurelianflo.com/api/geocode",
     },
     {
       path: "/api/courts/cases?query=antitrust&limit=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/courts/cases",
+        "https://x402.aurelianflo.com/api/courts/cases",
     },
     {
-      path: "/api/patents/search?q=battery&limit=5",
+      path: "/api/courts/opinions?query=antitrust&limit=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/patents/search",
+        "https://x402.aurelianflo.com/api/courts/opinions",
+    },
+    {
+      path: "/api/courts/citations?citation=410%20U.S.%20113&limit=5",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/courts/citations?citation=410+U.S.+113",
+    },
+    {
+      path: "/api/courts/court-info?id=scotus&limit=5",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/courts/court-info",
+    },
+    {
+      path: "/api/courts/clusters?query=antitrust&limit=5",
+      expectedResource:
+        "https://x402.aurelianflo.com/api/courts/clusters",
     },
   ];
 
@@ -510,37 +765,37 @@ test("path aliases and new path routes advertise stable canonical resource URLs"
     {
       path: "/api/fda/drug-events/aspirin?limit=5",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/fda/drug-events/aspirin",
+        "https://x402.aurelianflo.com/api/fda/drug-events/aspirin",
     },
     {
       path: "/api/census/income/20002",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/census/income/20002",
+        "https://x402.aurelianflo.com/api/census/income/20002",
     },
     {
       path: "/api/uv-index/40.7128/-74.0060",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/uv-index/40.7128/-74.0060",
+        "https://x402.aurelianflo.com/api/uv-index/40.7128/-74.0060",
     },
     {
       path: "/api/sec/filings/AAPL",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/sec/filings/AAPL",
+        "https://x402.aurelianflo.com/api/sec/filings/AAPL",
     },
     {
       path: "/api/dns/example.com",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/dns/example.com",
+        "https://x402.aurelianflo.com/api/dns/example.com",
     },
     {
       path: "/api/sports/odds/nfl?regions=us",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/sports/odds/nfl",
+        "https://x402.aurelianflo.com/api/sports/odds/nfl",
     },
     {
       path: "/api/worldbank/US/NY.GDP.MKTP.CD?date=2020:2025",
       expectedResource:
-        "https://x402-data-bazaar.vercel.app/api/worldbank/US/NY.GDP.MKTP.CD",
+        "https://x402.aurelianflo.com/api/worldbank/US/NY.GDP.MKTP.CD",
     },
   ];
 
@@ -763,3 +1018,4 @@ test("paid routes only pass through the payment gate once per request", async ()
     assert.equal(paymentGateCalls, 1);
   });
 });
+

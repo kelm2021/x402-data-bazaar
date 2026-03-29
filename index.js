@@ -25,6 +25,7 @@ module.exports.createRouteConfig = appModule.createRouteConfig;
 module.exports.createSettleTestHandler = appModule.createSettleTestHandler;
 module.exports.getRouteDescription = appModule.getRouteDescription;
 module.exports.getRoutePrice = appModule.getRoutePrice;
+module.exports.loadFacilitator = appModule.loadFacilitator;
 module.exports.loadCoinbaseFacilitator = appModule.loadCoinbaseFacilitator;
 module.exports.mountPaidRoutes = appModule.mountPaidRoutes;
 module.exports.routeConfig = appModule.routeConfig;

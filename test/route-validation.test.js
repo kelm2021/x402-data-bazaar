@@ -59,6 +59,23 @@ test("uv index route validates numeric coordinates", async () => {
   });
 });
 
+test("weather extremes route requires valid coordinates", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (_req, _res, next) => next(),
+    mercTrustMiddleware: null,
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/weather/extremes?lat=abc&lon=-74`);
+    const body = await response.json();
+
+    assert.equal(response.status, 400);
+    assert.match(String(body.error || ""), /lat|lon|coordinate/i);
+  });
+});
+
 test("fed funds route requires FRED API key when no fallback is available", async () => {
   const app = createApp({
     env: {},
@@ -69,6 +86,40 @@ test("fed funds route requires FRED API key when no fallback is available", asyn
 
   await withServer(app, async (baseUrl) => {
     const response = await fetch(`${baseUrl}/api/fed-funds-rate`);
+    const body = await response.json();
+
+    assert.equal(response.status, 503);
+    assert.match(String(body.error || ""), /fred/i);
+  });
+});
+
+test("vix route requires FRED API key when no fallback is available", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (_req, _res, next) => next(),
+    mercTrustMiddleware: null,
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/vix`);
+    const body = await response.json();
+
+    assert.equal(response.status, 503);
+    assert.match(String(body.error || ""), /fred/i);
+  });
+});
+
+test("credit spreads route requires FRED API key when no fallback is available", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (_req, _res, next) => next(),
+    mercTrustMiddleware: null,
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/credit-spreads`);
     const body = await response.json();
 
     assert.equal(response.status, 503);

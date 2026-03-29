@@ -407,6 +407,7 @@ function normalizeRouteCatalog(routeCatalog = []) {
       method,
       routePath,
       description: route.description ?? "",
+      category: route.category ?? null,
       priceLabel:
         route.priceLabel ?? formatUsdPrice(route.priceUsd ?? route.price ?? null),
       priceUsdMicros,
@@ -425,6 +426,7 @@ function createRouteCatalog(routes = {}) {
         method,
         routePath,
         description: config.description ?? "",
+        category: config.category ?? null,
         priceLabel: formatUsdPrice(paymentOption?.price ?? null),
         priceUsdMicros: usdToMicros(paymentOption?.price ?? null),
       };
@@ -489,6 +491,7 @@ function createRouteState(route) {
     method: route.method,
     routePath: route.routePath,
     description: route.description,
+    category: route.category ?? null,
     priceLabel: route.priceLabel,
     priceUsdMicros: getRoutePriceUsdMicros(route),
     lastSeenAt: null,
@@ -668,6 +671,7 @@ function applyEvent(snapshot, event) {
       method: event.method,
       routePath: event.path,
       description: "Unconfigured route",
+      category: null,
       priceLabel: "Free",
       priceUsdMicros: event.routePriceUsdMicros ?? 0,
       lastSeenAt: null,
@@ -867,6 +871,7 @@ function buildSummary(snapshot, storage) {
         method: route.method,
         routePath: route.routePath,
         description: route.description,
+        category: route.category ?? null,
         priceLabel: route.priceLabel,
         priceUsd: microsToUsd(route.priceUsdMicros),
         total: route.total,
@@ -1193,6 +1198,7 @@ function createRedisMetricsStore(routeCatalog, redis) {
         method: event.method,
         routePath: event.path,
         description: "Unconfigured route",
+        category: null,
         priceLabel: "Free",
         priceUsdMicros: 0,
       };
@@ -1220,6 +1226,7 @@ function createRedisMetricsStore(routeCatalog, redis) {
         method: route.method,
         routePath: route.routePath,
         description: route.description,
+        category: route.category ?? "",
         priceLabel: route.priceLabel,
         priceUsdMicros: String(route.priceUsdMicros ?? 0),
         lastSeenAt: event.at,
@@ -1299,6 +1306,7 @@ function createRedisMetricsStore(routeCatalog, redis) {
                 savedState?.routePath ??
                 (routeKey.split(" ").slice(1).join(" ") || routeKey),
               description: savedState?.description ?? "Unconfigured route",
+              category: savedState?.category ?? null,
               priceLabel: savedState?.priceLabel ?? "Free",
               priceUsdMicros: getRoutePriceUsdMicros(savedState),
             };
@@ -1435,6 +1443,7 @@ async function loadFileSnapshot(filePath, routeCatalog) {
             method: routeKey.split(" ")[0] ?? "GET",
             routePath: routeKey.split(" ").slice(1).join(" ") || routeKey,
             description: "Unconfigured route",
+            category: null,
             priceLabel: "Free",
             priceUsdMicros: 0,
             lastSeenAt: null,
@@ -1714,6 +1723,7 @@ const DASHBOARD_ROUTE_GROUPS = [
     description:
       "Forecasts, current conditions, solar timing, and air quality APIs for outdoor and location-aware decisions.",
     prefixes: ["/api/weather", "/api/air-quality", "/api/sun"],
+    categoryPrefixes: ["real-time-data/weather"],
     keywords: ["weather", "forecast", "air quality", "sunrise", "sunset", "solar", "twilight"],
   },
   {
@@ -1729,16 +1739,18 @@ const DASHBOARD_ROUTE_GROUPS = [
     title: "Government & Civic Data",
     description:
       "Public-sector datasets covering economics, regulations, elections, legislation, and population statistics.",
-    prefixes: ["/api/census", "/api/bls", "/api/fda", "/api/congress"],
+    prefixes: ["/api/census", "/api/bls", "/api/congress", "/api/sec", "/api/courts", "/api/sanctions"],
+    categoryPrefixes: ["data/government"],
     keywords: [
       "census",
       "labor statistics",
       "bls",
-      "fda",
       "congress",
       "government",
       "election",
       "legislation",
+      "sec filing",
+      "sanction",
     ],
   },
   {
@@ -1746,24 +1758,73 @@ const DASHBOARD_ROUTE_GROUPS = [
     title: "Finance & Markets",
     description:
       "Exchange-rate, conversion, and market-style lookup APIs for money and price-sensitive workflows.",
-    prefixes: ["/api/exchange-rates"],
+    prefixes: [
+      "/api/exchange-rates",
+      "/api/stocks",
+      "/api/treasury-rates",
+      "/api/fed-funds-rate",
+      "/api/yield-curve",
+    ],
+    categoryPrefixes: ["data/finance"],
     keywords: ["exchange rate", "currency", "fx", "quote", "market"],
   },
   {
-    key: "food",
-    title: "Food & Nutrition",
+    key: "health",
+    title: "Health & Nutrition",
     description:
-      "Food lookup and nutrition APIs for ingredients, products, and dietary enrichment tasks.",
-    prefixes: ["/api/food", "/api/nutrition"],
-    keywords: ["food", "nutrition", "barcode", "calories", "usda"],
+      "Health, safety, and nutrition APIs for food products, recalls, and clinical data lookups.",
+    prefixes: ["/api/fda", "/api/food", "/api/nutrition"],
+    categoryPrefixes: ["data/health"],
+    keywords: ["food", "nutrition", "barcode", "calories", "usda", "fda", "recall", "drug"],
   },
   {
     key: "identity",
     title: "Identity & Location",
     description:
       "Vehicle, IP, ZIP, and location-style enrichment APIs that add place or identity context to workflows.",
-    prefixes: ["/api/vin", "/api/ip", "/api/zip"],
-    keywords: ["vin", "vehicle", "ip geolocation", "postal", "zip", "location"],
+    prefixes: [
+      "/api/vin",
+      "/api/ip",
+      "/api/zip",
+      "/api/zipcode",
+      "/api/geocode",
+      "/api/reverse-geocode",
+      "/api/elevation",
+      "/api/timezone",
+      "/api/ofac-sanctions-screening",
+      "/api/restricted-party",
+      "/api/vendor-entity-brief",
+      "/api/vendor-onboarding",
+    ],
+    categoryPrefixes: ["identity", "data/location", "data/reference"],
+    keywords: ["vin", "vehicle", "ip geolocation", "postal", "zip", "location", "entity", "identity"],
+  },
+  {
+    key: "network",
+    title: "Network & Domain Intelligence",
+    description:
+      "Domain availability, DNS, SSL, WHOIS, and related network intelligence APIs for internet-facing workflows.",
+    prefixes: ["/api/domain-availability", "/api/dns", "/api/ssl", "/api/whois"],
+    categoryPrefixes: ["data/network-intelligence"],
+    keywords: ["domain", "dns", "ssl", "whois", "network"],
+  },
+  {
+    key: "sports",
+    title: "Sports & Odds",
+    description:
+      "Scores, standings, schedules, and betting-market APIs for sports-aware applications and automation.",
+    prefixes: ["/api/sports"],
+    categoryPrefixes: ["real-time-data/sports"],
+    keywords: ["sports", "odds", "scores", "standings", "schedule"],
+  },
+  {
+    key: "world",
+    title: "World & Research Data",
+    description:
+      "International indicators and cross-country reference datasets for global research and analysis.",
+    prefixes: ["/api/worldbank", "/api/country", "/api/patents"],
+    categoryPrefixes: ["data/world"],
+    keywords: ["world", "country", "global", "patents", "worldbank"],
   },
   {
     key: "other",
@@ -1784,13 +1845,17 @@ function isDashboardHiddenRoute(route = {}) {
 
 function routeMatchesGroup(route, group) {
   const routePath = String(route.routePath || "").toLowerCase();
-  const text = [route.key, route.routePath, route.description]
+  const routeCategory = String(route.category || "").toLowerCase();
+  const text = [route.key, route.routePath, route.description, route.category]
     .filter(Boolean)
     .join(" ")
     .toLowerCase();
 
   return (
     group.prefixes.some((prefix) => routePath.startsWith(prefix)) ||
+    (group.categoryPrefixes ?? []).some(
+      (prefix) => routeCategory === prefix || routeCategory.startsWith(`${prefix}/`),
+    ) ||
     group.keywords.some((keyword) => text.includes(keyword))
   );
 }

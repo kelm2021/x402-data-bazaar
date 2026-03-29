@@ -30,6 +30,16 @@
     "launchedAt": "2026-03-17T01:40:00.000Z"
   },
   {
+    "id": "generic-parameter-simulator",
+    "serviceName": "Generic Parameter Simulator",
+    "domain": "x402.aurelianflo.com",
+    "kind": "seller",
+    "track": "core",
+    "operatingMode": "build-and-measure",
+    "canonicalUrl": "https://x402.aurelianflo.com/api/sim/probability",
+    "launchedAt": "2026-03-27T00:00:00.000Z"
+  },
+  {
     "id": "weather-decision",
     "serviceName": "Weather Decision Brief",
     "domain": "x402-weather-decision.vercel.app",

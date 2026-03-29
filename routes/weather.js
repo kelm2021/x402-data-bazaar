@@ -41,6 +41,20 @@ function getCoordinates(req) {
   };
 }
 
+function parseCoordinateNumbers(req) {
+  const { lat, lon } = getCoordinates(req);
+  const latNum = Number.parseFloat(String(lat));
+  const lonNum = Number.parseFloat(String(lon));
+  if (!Number.isFinite(latNum) || !Number.isFinite(lonNum)) {
+    return null;
+  }
+  if (latNum < -90 || latNum > 90 || lonNum < -180 || lonNum > 180) {
+    return null;
+  }
+
+  return { lat: latNum, lon: lonNum };
+}
+
 function parseIsoDate(value) {
   const text = String(value || "").trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) {
@@ -473,10 +487,146 @@ router.get("/api/uv-index/:lat/:lon", async (req, res) => {
   }
 });
 
+router.get("/api/weather/extremes", async (req, res) => {
+  try {
+    const coordinates = parseCoordinateNumbers(req);
+    if (!coordinates) {
+      return res.status(400).json({
+        success: false,
+        error: "lat and lon are required query params and must be valid coordinates",
+      });
+    }
+    const days = Math.max(1, Math.min(16, Number.parseInt(String(req.query.days || "7"), 10) || 7));
+
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast" +
+        `?latitude=${coordinates.lat}&longitude=${coordinates.lon}` +
+        "&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code" +
+        "&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto" +
+        `&forecast_days=${days}`,
+    );
+    const raw = await response.json();
+    const daily = raw.daily || {};
+    const dates = Array.isArray(daily.time) ? daily.time : [];
+    const byDay = dates.map((date, index) => {
+      const weatherCode = daily.weather_code?.[index];
+      const maxTemp = daily.temperature_2m_max?.[index] ?? null;
+      const minTemp = daily.temperature_2m_min?.[index] ?? null;
+      const precipitation = daily.precipitation_sum?.[index] ?? null;
+      const maxWind = daily.wind_speed_10m_max?.[index] ?? null;
+
+      return {
+        date,
+        tempMaxF: maxTemp,
+        tempMinF: minTemp,
+        precipitationIn: precipitation,
+        windMaxMph: maxWind,
+        condition: WEATHER_CODES[weatherCode] || "Unknown",
+        flags: {
+          heatRisk: Number.isFinite(maxTemp) && maxTemp >= 95,
+          freezeRisk: Number.isFinite(minTemp) && minTemp <= 32,
+          heavyRain: Number.isFinite(precipitation) && precipitation >= 1,
+          highWind: Number.isFinite(maxWind) && maxWind >= 25,
+          severeStorm: Number.isFinite(weatherCode) && weatherCode >= 95,
+        },
+      };
+    });
+
+    const summary = byDay.reduce(
+      (acc, day) => {
+        acc.heatRiskDays += day.flags.heatRisk ? 1 : 0;
+        acc.freezeRiskDays += day.flags.freezeRisk ? 1 : 0;
+        acc.heavyRainDays += day.flags.heavyRain ? 1 : 0;
+        acc.highWindDays += day.flags.highWind ? 1 : 0;
+        acc.severeStormDays += day.flags.severeStorm ? 1 : 0;
+        return acc;
+      },
+      {
+        heatRiskDays: 0,
+        freezeRiskDays: 0,
+        heavyRainDays: 0,
+        highWindDays: 0,
+        severeStormDays: 0,
+      },
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        latitude: raw.latitude,
+        longitude: raw.longitude,
+        timezone: raw.timezone,
+        days: byDay.length,
+        summary,
+        forecast: byDay,
+      },
+      source: "Open-Meteo API",
+    });
+  } catch (error) {
+    return res.status(502).json({ success: false, error: "Upstream API error", details: error.message });
+  }
+});
+
+router.get("/api/weather/freeze-risk", async (req, res) => {
+  try {
+    const coordinates = parseCoordinateNumbers(req);
+    if (!coordinates) {
+      return res.status(400).json({
+        success: false,
+        error: "lat and lon are required query params and must be valid coordinates",
+      });
+    }
+    const days = Math.max(1, Math.min(16, Number.parseInt(String(req.query.days || "10"), 10) || 10));
+    const thresholdF = Math.max(
+      -40,
+      Math.min(50, Number.parseFloat(String(req.query.threshold_f || "32")) || 32),
+    );
+
+    const response = await fetch(
+      "https://api.open-meteo.com/v1/forecast" +
+        `?latitude=${coordinates.lat}&longitude=${coordinates.lon}` +
+        "&daily=temperature_2m_min,weather_code" +
+        "&temperature_unit=fahrenheit&timezone=auto" +
+        `&forecast_days=${days}`,
+    );
+    const raw = await response.json();
+    const daily = raw.daily || {};
+    const dates = Array.isArray(daily.time) ? daily.time : [];
+    const riskDays = dates
+      .map((date, index) => ({
+        date,
+        tempMinF: daily.temperature_2m_min?.[index] ?? null,
+        condition: WEATHER_CODES[daily.weather_code?.[index]] || "Unknown",
+      }))
+      .filter((entry) => Number.isFinite(entry.tempMinF) && entry.tempMinF <= thresholdF);
+
+    const riskLevel =
+      riskDays.length >= 4 ? "high" : riskDays.length >= 2 ? "medium" : riskDays.length >= 1 ? "low" : "none";
+
+    return res.json({
+      success: true,
+      data: {
+        latitude: raw.latitude,
+        longitude: raw.longitude,
+        timezone: raw.timezone,
+        thresholdF,
+        daysScanned: dates.length,
+        riskLevel,
+        freezeDays: riskDays,
+        firstFreezeDate: riskDays[0]?.date || null,
+      },
+      source: "Open-Meteo API",
+    });
+  } catch (error) {
+    return res.status(502).json({ success: false, error: "Upstream API error", details: error.message });
+  }
+});
+
 router.buildDecisionBrief = buildDecisionBrief;
 router.buildHourlyDecisionWindow = buildHourlyDecisionWindow;
 router.parseIsoDate = parseIsoDate;
 router.normalizeUsState = normalizeUsState;
 router.getDayDifference = getDayDifference;
+router.parseCoordinateNumbers = parseCoordinateNumbers;
 
 module.exports = router;

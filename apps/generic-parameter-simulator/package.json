@@ -1,0 +1,31 @@
+{
+  "name": "generic-parameter-simulator",
+  "version": "3.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Generic Monte Carlo parameter simulation API with x402 payments",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "simulation",
+    "x402",
+    "monte-carlo",
+    "probability",
+    "parameter-modeling"
+  ],
+  "author": "Liquid Mercury",
+  "license": "ISC",
+  "dependencies": {
+    "@coinbase/x402": "^2.1.0",
+    "@upstash/redis": "^1.37.0",
+    "@x402/core": "^2.7.0",
+    "@x402/evm": "^2.7.0",
+    "@x402/express": "^2.7.0",
+    "@x402/extensions": "^2.7.0",
+    "express": "^5.2.1"
+  }
+}

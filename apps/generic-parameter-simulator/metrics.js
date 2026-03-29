@@ -6,34 +6,11 @@ const { Redis } = require("@upstash/redis");
 const DASHBOARD_USERNAME = "metrics";
 const DEFAULT_LOOKBACK_HOURS = 24;
 const MAX_HOURLY_BUCKETS = 7 * 24;
-const METRICS_NAMESPACE = "metrics:v1";
+const DEFAULT_METRICS_NAMESPACE = "metrics:v1";
 const DEFAULT_SELF_TAG_HEADER_NAME = "x-metrics-source";
 const DEFAULT_SELF_TAG_HEADER_VALUE = "self";
 const DEFAULT_TOP_CALLERS = 12;
 const USD_MICROS_PER_USD = 1_000_000;
-const RETIRED_ROUTE_PREFIXES = ["/api/fec"];
-const RETIRED_ROUTE_KEYS = new Set([
-  "POST /api/vendor-entity-brief",
-  "POST /api/vendor-onboarding/vendor-entity-brief-batch",
-]);
-const RECENT_PAYING_WINDOW_24H_MS = 24 * 60 * 60 * 1000;
-const RECENT_PAYING_WINDOW_72H_MS = 72 * 60 * 60 * 1000;
-const FACILITATOR_PROVIDER_BY_HOST = new Map([
-  ["api.cdp.coinbase.com", "coinbase"],
-  ["facilitator.payai.network", "payai"],
-  ["facilitator.daydreams.systems", "daydreams"],
-  ["x402.dexter.cash", "dexter"],
-  ["open.x402.host", "openx402"],
-  ["facilitator.openx402.com", "openx402"],
-]);
-
-function normalizeSecret(value) {
-  if (value == null) {
-    return "";
-  }
-
-  return String(value).trim();
-}
 
 function escapeHtml(value) {
   return String(value)
@@ -48,68 +25,6 @@ function toIsoHour(value = new Date()) {
   const date = new Date(value);
   date.setUTCMinutes(0, 0, 0);
   return date.toISOString();
-}
-
-function getRoutePathValue(value) {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) {
-    return "";
-  }
-
-  const firstSpace = normalized.indexOf(" ");
-  if (firstSpace > 0) {
-    const prefix = normalized.slice(0, firstSpace).toUpperCase();
-    if (prefix === "GET" || prefix === "HEAD" || prefix === "POST" || prefix === "PUT") {
-      return normalized.slice(firstSpace + 1).trim();
-    }
-  }
-
-  return normalized;
-}
-
-function isRetiredRoutePath(value) {
-  const routePath = getRoutePathValue(value).toLowerCase();
-  if (!routePath) {
-    return false;
-  }
-
-  return RETIRED_ROUTE_PREFIXES.some(
-    (prefix) => routePath === prefix || routePath.startsWith(`${prefix}/`),
-  );
-}
-
-function isRetiredRouteKey(value) {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) {
-    return false;
-  }
-
-  return RETIRED_ROUTE_KEYS.has(normalized);
-}
-
-function isRetiredRoute(route = {}) {
-  return (
-    isRetiredRouteKey(route.key) ||
-    isRetiredRoutePath(route.routePath) ||
-    isRetiredRoutePath(route.key)
-  );
-}
-
-function sanitizeRouteKeyForDisplay(routeKey) {
-  return isRetiredRouteKey(routeKey) || isRetiredRoutePath(routeKey) ? null : routeKey ?? null;
-}
-
-function sanitizeRouteKeysForDisplay(routeKeys = []) {
-  const visible = [];
-  const seen = new Set();
-  for (const routeKey of routeKeys) {
-    if (!routeKey || isRetiredRouteKey(routeKey) || isRetiredRoutePath(routeKey) || seen.has(routeKey)) {
-      continue;
-    }
-    seen.add(routeKey);
-    visible.push(routeKey);
-  }
-  return visible.sort();
 }
 
 function createCounterSet() {
@@ -136,169 +51,6 @@ function getHeaderValue(headers, name) {
   }
 
   return value ?? null;
-}
-
-function normalizeFacilitatorProvider(value) {
-  const normalized = String(value ?? "").trim().toLowerCase();
-  return normalized || null;
-}
-
-function normalizeFacilitatorUrl(value) {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) {
-    return null;
-  }
-
-  try {
-    const parsed = new URL(normalized);
-    parsed.hash = "";
-    parsed.search = "";
-    return parsed.toString().replace(/\/+$/, "");
-  } catch (error) {
-    return normalized.replace(/\/+$/, "");
-  }
-}
-
-function providerFromFacilitatorUrl(value) {
-  const facilitatorUrl = normalizeFacilitatorUrl(value);
-  if (!facilitatorUrl) {
-    return null;
-  }
-
-  try {
-    const host = new URL(facilitatorUrl).host.toLowerCase();
-    return FACILITATOR_PROVIDER_BY_HOST.get(host) ?? null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function buildFacilitatorId(provider, facilitatorUrl) {
-  const normalizedProvider = normalizeFacilitatorProvider(provider);
-  if (normalizedProvider) {
-    return `provider:${normalizedProvider}`;
-  }
-
-  const normalizedUrl = normalizeFacilitatorUrl(facilitatorUrl);
-  if (normalizedUrl) {
-    return `url:${normalizedUrl}`;
-  }
-
-  return null;
-}
-
-function extractAcceptedFacilitatorUrl(decodedPayment) {
-  if (!decodedPayment || typeof decodedPayment !== "object") {
-    return null;
-  }
-
-  const accepted = decodedPayment.accepted;
-  if (accepted && typeof accepted === "object" && !Array.isArray(accepted)) {
-    return normalizeFacilitatorUrl(accepted.facilitator);
-  }
-
-  if (Array.isArray(accepted)) {
-    for (const entry of accepted) {
-      if (entry && typeof entry === "object" && !Array.isArray(entry)) {
-        const extracted = normalizeFacilitatorUrl(entry.facilitator);
-        if (extracted) {
-          return extracted;
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
-let x402HttpCodec = null;
-let x402HttpCodecLoaded = false;
-
-function getX402HttpCodec() {
-  if (!x402HttpCodecLoaded) {
-    x402HttpCodecLoaded = true;
-    try {
-      x402HttpCodec = require("@x402/core/http");
-    } catch (error) {
-      x402HttpCodec = null;
-    }
-  }
-
-  return x402HttpCodec;
-}
-
-function extractFacilitatorFromPaymentSignature(req) {
-  const header = getHeaderValue(req?.headers, "payment-signature") ?? getHeaderValue(req?.headers, "x-payment");
-  if (!header) {
-    return null;
-  }
-
-  const codec = getX402HttpCodec();
-  if (!codec || typeof codec.decodePaymentSignatureHeader !== "function") {
-    return null;
-  }
-
-  try {
-    const decoded = codec.decodePaymentSignatureHeader(String(header));
-    return extractAcceptedFacilitatorUrl(decoded);
-  } catch (error) {
-    return null;
-  }
-}
-
-function extractFacilitatorFromPaymentRequired(res) {
-  const headerValue = res?.getHeader?.("PAYMENT-REQUIRED");
-  if (!headerValue) {
-    return null;
-  }
-
-  const codec = getX402HttpCodec();
-  if (!codec || typeof codec.decodePaymentRequiredHeader !== "function") {
-    return null;
-  }
-
-  try {
-    const decoded = codec.decodePaymentRequiredHeader(String(headerValue));
-    const accepts = Array.isArray(decoded?.accepts) ? decoded.accepts : [];
-    for (const accept of accepts) {
-      const extracted = normalizeFacilitatorUrl(accept?.facilitator);
-      if (extracted) {
-        return extracted;
-      }
-    }
-  } catch (error) {
-    return null;
-  }
-
-  return null;
-}
-
-function describeRequestFacilitator(req, res) {
-  const context =
-    req?.x402Facilitator && typeof req.x402Facilitator === "object" && !Array.isArray(req.x402Facilitator)
-      ? req.x402Facilitator
-      : {};
-  const mode = String(context.mode ?? "").trim().toLowerCase() || null;
-  const fallbackUsed = Boolean(context.fallbackUsed);
-  const facilitatorUrl =
-    normalizeFacilitatorUrl(context.facilitatorUrl ?? context.url) ??
-    extractFacilitatorFromPaymentRequired(res) ??
-    extractFacilitatorFromPaymentSignature(req);
-  const provider =
-    normalizeFacilitatorProvider(context.provider) ?? providerFromFacilitatorUrl(facilitatorUrl);
-  const facilitatorId = buildFacilitatorId(provider, facilitatorUrl);
-
-  if (!facilitatorId) {
-    return null;
-  }
-
-  return {
-    facilitatorId,
-    provider,
-    facilitatorUrl,
-    mode,
-    fallbackUsed,
-  };
 }
 
 function normalizeFingerprintPart(value, fallback) {
@@ -332,33 +84,10 @@ function normalizeServiceHost(value) {
 
   if (normalized.startsWith("http://") || normalized.startsWith("https://")) {
     try {
-      return normalizeServiceHost(new URL(normalized).host.toLowerCase());
+      return new URL(normalized).host.toLowerCase();
     } catch (error) {
-      return normalizeServiceHost(normalized.replace(/^https?:\/\//, ""));
+      return normalized;
     }
-  }
-
-  try {
-    const parsed = new URL(`http://${normalized}`);
-    const hostname = String(parsed.hostname ?? "").trim().toLowerCase();
-    if (hostname) {
-      return hostname.endsWith(".") ? hostname.slice(0, -1) : hostname;
-    }
-  } catch (error) {
-    // Fall through to regex-based normalization for malformed host headers.
-  }
-
-  const bracketedIpv6 = normalized.match(/^\[([0-9a-f:]+)\](?::\d+)?$/i);
-  if (bracketedIpv6) {
-    return `[${bracketedIpv6[1].toLowerCase()}]`;
-  }
-
-  if (/^[^:\s]+:\d+$/.test(normalized)) {
-    return normalized.slice(0, normalized.lastIndexOf(":"));
-  }
-
-  if (normalized.endsWith(".")) {
-    return normalized.slice(0, -1);
   }
 
   return normalized;
@@ -380,35 +109,6 @@ function getRequestServiceHost(req) {
   }
 
   return "unknown-host";
-}
-
-function isRawHostObservation(value) {
-  const normalized = String(value ?? "").trim().toLowerCase();
-  if (!normalized) {
-    return true;
-  }
-
-  return (
-    normalized === "unknown-host" ||
-    normalized === "localhost" ||
-    normalized === "127.0.0.1" ||
-    normalized === "0.0.0.0" ||
-    /^\d{1,3}(?:\.\d{1,3}){3}(?::\d+)?$/.test(normalized) ||
-    /^\[[0-9a-f:]+\](?::\d+)?$/i.test(normalized)
-  );
-}
-
-function formatObservedHostLabel(value) {
-  return isRawHostObservation(value) ? "Direct IP / raw host header" : String(value ?? "unknown-host");
-}
-
-function formatObservedHostDetail(service) {
-  const routeCountLabel = `${formatInteger(service.routeCount)} active routes seen for this observed host`;
-  if (!isRawHostObservation(service.serviceHost)) {
-    return routeCountLabel;
-  }
-
-  return `${routeCountLabel}; do not treat this row as a distinct product surface`;
 }
 
 function classifyUserAgent(userAgent) {
@@ -725,20 +425,6 @@ function createServiceState(service = {}) {
   };
 }
 
-function createFacilitatorState(facilitator = {}) {
-  return {
-    ...createCounterSet(),
-    facilitatorId: facilitator.facilitatorId ?? "unknown-facilitator",
-    provider: facilitator.provider ?? null,
-    facilitatorUrl: facilitator.facilitatorUrl ?? null,
-    mode: facilitator.mode ?? null,
-    fallbackUsedCount: numericValue(facilitator.fallbackUsedCount),
-    lastSeenAt: null,
-    lastRouteKey: null,
-    lastPath: null,
-  };
-}
-
 function createHourlyState(hourStart) {
   return {
     ...createCounterSet(),
@@ -759,7 +445,6 @@ function createSnapshot(routeCatalog) {
     routes,
     sources: {},
     services: {},
-    facilitators: {},
     hourly: {},
   };
 }
@@ -930,11 +615,10 @@ function applyEvent(snapshot, event) {
   sourceState.lastRouteKey = event.routeKey;
   sourceState.lastPath = event.path;
 
-  const canonicalServiceHost = normalizeServiceHost(event.serviceHost);
   const serviceState =
-    snapshot.services[canonicalServiceHost] ??
-    (snapshot.services[canonicalServiceHost] = createServiceState({
-      serviceHost: canonicalServiceHost,
+    snapshot.services[event.serviceHost] ??
+    (snapshot.services[event.serviceHost] = createServiceState({
+      serviceHost: event.serviceHost,
     }));
   markCounters(serviceState, metricsEvent);
   serviceState.lastSeenAt = event.at;
@@ -942,32 +626,6 @@ function applyEvent(snapshot, event) {
   serviceState.lastPath = event.path;
   if (!serviceState.routeKeysSeen.includes(event.routeKey)) {
     serviceState.routeKeysSeen.push(event.routeKey);
-  }
-
-  if (event.facilitatorId) {
-    const facilitatorState =
-      snapshot.facilitators[event.facilitatorId] ??
-      (snapshot.facilitators[event.facilitatorId] = createFacilitatorState({
-        facilitatorId: event.facilitatorId,
-        provider: event.facilitatorProvider,
-        facilitatorUrl: event.facilitatorUrl,
-        mode: event.facilitatorMode,
-      }));
-    markCounters(facilitatorState, metricsEvent);
-    if (event.facilitatorFallbackUsed) {
-      facilitatorState.fallbackUsedCount += 1;
-    }
-    facilitatorState.provider =
-      normalizeFacilitatorProvider(event.facilitatorProvider) ??
-      facilitatorState.provider ??
-      providerFromFacilitatorUrl(event.facilitatorUrl);
-    facilitatorState.facilitatorUrl =
-      normalizeFacilitatorUrl(event.facilitatorUrl) ?? facilitatorState.facilitatorUrl;
-    facilitatorState.mode =
-      String(event.facilitatorMode ?? "").trim().toLowerCase() || facilitatorState.mode;
-    facilitatorState.lastSeenAt = event.at;
-    facilitatorState.lastRouteKey = event.routeKey;
-    facilitatorState.lastPath = event.path;
   }
 
   trimHourlyBuckets(snapshot.hourly, new Date(event.at));
@@ -993,154 +651,6 @@ function getRecentHourKeys(hours = DEFAULT_LOOKBACK_HOURS, now = new Date()) {
   }
 
   return buckets;
-}
-
-function addCounterValues(target, raw = {}) {
-  target.total += numericValue(raw.total);
-  target.success += numericValue(raw.success);
-  target.paidSuccess += numericValue(raw.paidSuccess);
-  target.externalPaidSuccess += numericValue(raw.externalPaidSuccess);
-  target.selfTaggedPaidSuccess += numericValue(raw.selfTaggedPaidSuccess);
-  target.paymentRequired += numericValue(raw.paymentRequired);
-  target.clientErrors += numericValue(raw.clientErrors);
-  target.serverErrors += numericValue(raw.serverErrors);
-  target.totalDurationMs += numericValue(raw.totalDurationMs);
-  target.paidUsdMicros += numericValue(raw.paidUsdMicros);
-  target.externalPaidUsdMicros += numericValue(raw.externalPaidUsdMicros);
-  target.selfTaggedPaidUsdMicros += numericValue(raw.selfTaggedPaidUsdMicros);
-  return target;
-}
-
-function mergeServiceState(target, source = {}) {
-  addCounterValues(target, source);
-
-  const sourceRouteKeys = Array.isArray(source.routeKeysSeen) ? source.routeKeysSeen : [];
-  if (sourceRouteKeys.length > 0) {
-    const mergedKeys = new Set(target.routeKeysSeen ?? []);
-    for (const routeKey of sourceRouteKeys) {
-      mergedKeys.add(routeKey);
-    }
-    target.routeKeysSeen = Array.from(mergedKeys);
-  }
-
-  const targetSeenAt = Date.parse(target.lastSeenAt ?? "");
-  const sourceSeenAt = Date.parse(source.lastSeenAt ?? "");
-  const shouldReplaceLast =
-    !target.lastSeenAt ||
-    (Number.isFinite(sourceSeenAt) && (!Number.isFinite(targetSeenAt) || sourceSeenAt >= targetSeenAt));
-
-  if (shouldReplaceLast) {
-    target.lastSeenAt = source.lastSeenAt ?? target.lastSeenAt;
-    target.lastRouteKey = source.lastRouteKey ?? target.lastRouteKey;
-    target.lastPath = source.lastPath ?? target.lastPath;
-  }
-
-  return target;
-}
-
-function mergeServicesByCanonicalHost(services = {}) {
-  const merged = {};
-  for (const service of Object.values(services)) {
-    const canonicalHost = normalizeServiceHost(service?.serviceHost);
-    const target =
-      merged[canonicalHost] ??
-      (merged[canonicalHost] = createServiceState({
-        serviceHost: canonicalHost,
-      }));
-    mergeServiceState(target, service);
-  }
-
-  return merged;
-}
-
-function buildTrafficQuality(allCallers = [], options = {}) {
-  const referenceTime = Date.parse(options.referenceTime ?? "");
-  const nowMs = Number.isFinite(referenceTime) ? referenceTime : Date.now();
-  const activeCallers = allCallers.filter(
-    (source) => !isRetiredRoutePath(source.lastRouteKeyRaw ?? source.lastRouteKey),
-  );
-  const payingSources = activeCallers.filter(
-    (source) => numericValue(source.paidSuccess) > 0,
-  );
-  const nonPayingSources = activeCallers.filter(
-    (source) => numericValue(source.paidSuccess) === 0,
-  );
-  const activeRequests = activeCallers.reduce((sum, source) => sum + numericValue(source.total), 0);
-  const activePaymentRequired = activeCallers.reduce(
-    (sum, source) => sum + numericValue(source.paymentRequired),
-    0,
-  );
-  const nonPayingRequests = nonPayingSources.reduce(
-    (sum, source) => sum + numericValue(source.total),
-    0,
-  );
-  const nonPayingPaymentRequired = nonPayingSources.reduce(
-    (sum, source) => sum + numericValue(source.paymentRequired),
-    0,
-  );
-  const recentPaying24h = payingSources.filter((source) => {
-    const seenAt = Date.parse(source.lastSeenAt ?? "");
-    return Number.isFinite(seenAt) && nowMs - seenAt <= RECENT_PAYING_WINDOW_24H_MS;
-  }).length;
-  const recentPaying72h = payingSources.filter((source) => {
-    const seenAt = Date.parse(source.lastSeenAt ?? "");
-    return Number.isFinite(seenAt) && nowMs - seenAt <= RECENT_PAYING_WINDOW_72H_MS;
-  }).length;
-  const agentClassMap = new Map();
-  for (const source of activeCallers) {
-    const key = source.agentClass || "unknown";
-    const entry = agentClassMap.get(key) ?? {
-      agentClass: key,
-      requests: 0,
-      paidSuccess: 0,
-      sourceCount: 0,
-      nonPayingSourceCount: 0,
-    };
-    entry.requests += numericValue(source.total);
-    entry.paidSuccess += numericValue(source.paidSuccess);
-    entry.sourceCount += 1;
-    if (numericValue(source.paidSuccess) === 0) {
-      entry.nonPayingSourceCount += 1;
-    }
-    agentClassMap.set(key, entry);
-  }
-
-  const topAgentClasses = Array.from(agentClassMap.values())
-    .sort((left, right) => {
-      if (right.requests !== left.requests) {
-        return right.requests - left.requests;
-      }
-
-      if (right.nonPayingSourceCount !== left.nonPayingSourceCount) {
-        return right.nonPayingSourceCount - left.nonPayingSourceCount;
-      }
-
-      return left.agentClass.localeCompare(right.agentClass);
-    })
-    .slice(0, 5);
-
-  return {
-    sources: {
-      total: activeCallers.length,
-      paying: payingSources.length,
-      nonPaying: nonPayingSources.length,
-      shareNonPaying: activeCallers.length > 0 ? nonPayingSources.length / activeCallers.length : 0,
-      activePaying24h: recentPaying24h,
-      activePaying72h: recentPaying72h,
-    },
-    requests: {
-      total: activeRequests,
-      fromNonPayingSources: nonPayingRequests,
-      shareNonPaying: activeRequests > 0 ? nonPayingRequests / activeRequests : 0,
-    },
-    paymentRequired: {
-      total: activePaymentRequired,
-      fromNonPayingSources: nonPayingPaymentRequired,
-      shareFromNonPayingSources:
-        activePaymentRequired > 0 ? nonPayingPaymentRequired / activePaymentRequired : 0,
-    },
-    topAgentClasses,
-  };
 }
 
 function buildSummary(snapshot, storage) {
@@ -1194,6 +704,10 @@ function buildSummary(snapshot, storage) {
       };
     })
     .sort((left, right) => {
+      if (right.externalPaidUsd !== left.externalPaidUsd) {
+        return right.externalPaidUsd - left.externalPaidUsd;
+      }
+
       if (right.paidUsd !== left.paidUsd) {
         return right.paidUsd - left.paidUsd;
       }
@@ -1204,22 +718,10 @@ function buildSummary(snapshot, storage) {
 
       return left.key.localeCompare(right.key);
     });
-  const retiredRoutes = routes.filter((route) => isRetiredRoute(route));
-  const activeRoutes = routes.filter((route) => !isRetiredRoute(route));
-  const retiredRouteRequestCount = retiredRoutes.reduce(
-    (sum, route) => sum + numericValue(route.total),
-    0,
-  );
-  const retiredRoutePaymentRequired = retiredRoutes.reduce(
-    (sum, route) => sum + numericValue(route.paymentRequired),
-    0,
-  );
 
   const allCallers = Object.values(snapshot.sources)
     .map((source) => {
       const paidCounts = deriveSourcePaidCounts(source);
-      const rawLastRouteKey = source.lastRouteKey ?? null;
-      const sanitizedLastRouteKey = sanitizeRouteKeyForDisplay(rawLastRouteKey);
 
       return {
         sourceId: source.sourceId,
@@ -1238,8 +740,7 @@ function buildSummary(snapshot, storage) {
         selfTaggedPaidUsd: microsToUsd(source.selfTaggedPaidUsdMicros),
         averageLatencyMs: roundAverage(source.totalDurationMs, source.total),
         lastSeenAt: source.lastSeenAt,
-        lastRouteKey: sanitizedLastRouteKey,
-        lastRouteKeyRaw: rawLastRouteKey,
+        lastRouteKey: source.lastRouteKey,
         lastPath: source.lastPath,
       };
     })
@@ -1255,34 +756,28 @@ function buildSummary(snapshot, storage) {
 
       return left.sourceId.localeCompare(right.sourceId);
     });
-  const callers = allCallers
-    .slice(0, DEFAULT_TOP_CALLERS)
-    .map(({ lastRouteKeyRaw, ...caller }) => caller);
-  const mergedServices = mergeServicesByCanonicalHost(snapshot.services);
-  const services = Object.values(mergedServices)
-    .map((service) => {
-      const routeKeys = sanitizeRouteKeysForDisplay(service.routeKeysSeen);
-      return {
-        serviceHost: service.serviceHost,
-        total: service.total,
-        success: service.success,
-        paidSuccess: service.paidSuccess,
-        externalPaidSuccess: service.externalPaidSuccess,
-        selfTaggedPaidSuccess: service.selfTaggedPaidSuccess,
-        paymentRequired: service.paymentRequired,
-        clientErrors: service.clientErrors,
-        serverErrors: service.serverErrors,
-        paidUsd: microsToUsd(service.paidUsdMicros),
-        externalPaidUsd: microsToUsd(service.externalPaidUsdMicros),
-        selfTaggedPaidUsd: microsToUsd(service.selfTaggedPaidUsdMicros),
-        averageLatencyMs: roundAverage(service.totalDurationMs, service.total),
-        lastSeenAt: service.lastSeenAt,
-        lastRouteKey: sanitizeRouteKeyForDisplay(service.lastRouteKey),
-        lastPath: service.lastPath,
-        routeCount: routeKeys.length,
-        routeKeys,
-      };
-    })
+  const callers = allCallers.slice(0, DEFAULT_TOP_CALLERS);
+  const services = Object.values(snapshot.services)
+    .map((service) => ({
+      serviceHost: service.serviceHost,
+      total: service.total,
+      success: service.success,
+      paidSuccess: service.paidSuccess,
+      externalPaidSuccess: service.externalPaidSuccess,
+      selfTaggedPaidSuccess: service.selfTaggedPaidSuccess,
+      paymentRequired: service.paymentRequired,
+      clientErrors: service.clientErrors,
+      serverErrors: service.serverErrors,
+      paidUsd: microsToUsd(service.paidUsdMicros),
+      externalPaidUsd: microsToUsd(service.externalPaidUsdMicros),
+      selfTaggedPaidUsd: microsToUsd(service.selfTaggedPaidUsdMicros),
+      averageLatencyMs: roundAverage(service.totalDurationMs, service.total),
+      lastSeenAt: service.lastSeenAt,
+      lastRouteKey: service.lastRouteKey,
+      lastPath: service.lastPath,
+      routeCount: Array.isArray(service.routeKeysSeen) ? service.routeKeysSeen.length : 0,
+      routeKeys: Array.isArray(service.routeKeysSeen) ? [...service.routeKeysSeen].sort() : [],
+    }))
     .filter((service) => service.total > 0)
     .sort((left, right) => {
       if (right.externalPaidUsd !== left.externalPaidUsd) {
@@ -1299,54 +794,11 @@ function buildSummary(snapshot, storage) {
 
       return left.serviceHost.localeCompare(right.serviceHost);
     });
-  const facilitators = Object.values(snapshot.facilitators)
-    .map((facilitator) => {
-      const provider =
-        normalizeFacilitatorProvider(facilitator.provider) ??
-        providerFromFacilitatorUrl(facilitator.facilitatorUrl);
-      return {
-        facilitatorId:
-          String(facilitator.facilitatorId ?? "").trim() ||
-          buildFacilitatorId(provider, facilitator.facilitatorUrl) ||
-          "unknown-facilitator",
-        provider,
-        facilitatorUrl: normalizeFacilitatorUrl(facilitator.facilitatorUrl),
-        mode: String(facilitator.mode ?? "").trim().toLowerCase() || null,
-        total: facilitator.total,
-        success: facilitator.success,
-        paidSuccess: facilitator.paidSuccess,
-        paymentRequired: facilitator.paymentRequired,
-        clientErrors: facilitator.clientErrors,
-        serverErrors: facilitator.serverErrors,
-        paidUsd: microsToUsd(facilitator.paidUsdMicros),
-        averageLatencyMs: roundAverage(facilitator.totalDurationMs, facilitator.total),
-        fallbackUsedCount: numericValue(facilitator.fallbackUsedCount),
-        lastSeenAt: facilitator.lastSeenAt,
-        lastRouteKey: sanitizeRouteKeyForDisplay(facilitator.lastRouteKey),
-        lastPath: facilitator.lastPath,
-      };
-    })
-    .filter((facilitator) => facilitator.total > 0)
-    .sort((left, right) => {
-      if (right.total !== left.total) {
-        return right.total - left.total;
-      }
-
-      if (right.paidUsd !== left.paidUsd) {
-        return right.paidUsd - left.paidUsd;
-      }
-
-      return left.facilitatorId.localeCompare(right.facilitatorId);
-    });
-  const fallbackSelections = facilitators.reduce(
-    (sum, facilitator) => sum + numericValue(facilitator.fallbackUsedCount),
-    0,
-  );
   const selfTaggedRequests = allCallers.reduce(
     (sum, source) => sum + (source.sourceKind === "self-tagged" ? source.total : 0),
     0,
   );
-  const derivedPaidUsdMicros = activeRoutes.reduce(
+  const derivedPaidUsdMicros = routes.reduce(
     (sum, route) => sum + usdToMicros(route.paidUsd ?? 0),
     0,
   );
@@ -1380,9 +832,6 @@ function buildSummary(snapshot, storage) {
     totalPaidUsdMicros > 0 &&
     snapshot.totals.paidSuccess > 0 &&
     unattributedHistoricalPaidSuccess > 0;
-  const trafficQuality = buildTrafficQuality(allCallers, {
-    referenceTime: snapshot.updatedAt,
-  });
 
   return {
     generatedAt: new Date().toISOString(),
@@ -1404,26 +853,19 @@ function buildSummary(snapshot, storage) {
       averageLatencyMs: roundAverage(snapshot.totals.totalDurationMs, snapshot.totals.total),
       uniqueCallersSeen: allCallers.length,
       uniqueServicesSeen: services.length,
-      uniqueFacilitatorsSeen: facilitators.length,
-      fallbackSelections,
       selfTaggedRequests,
       anonymousRequests: Math.max(0, snapshot.totals.total - selfTaggedRequests),
-      uniqueRoutesSeen: activeRoutes.filter((route) => route.total > 0).length,
+      uniqueRoutesSeen: routes.filter((route) => route.total > 0).length,
       attributedPaidSuccess,
       attributedExternalPaidSuccess,
       attributedSelfTaggedPaidSuccess,
       unattributedHistoricalPaidSuccess,
       historicalPaidRevenueBackfilled,
-      retiredRoutesRemoved: retiredRoutes.length,
-      retiredRouteRequests: retiredRouteRequestCount,
-      retiredRoutePaymentRequired,
     },
-    routes: activeRoutes,
+    routes,
     callers,
     services,
-    facilitators,
     hourly,
-    trafficQuality,
   };
 }
 
@@ -1443,26 +885,31 @@ function createRedisClient(options = {}) {
   });
 }
 
-function getMetricsRedisKeys(routeKey, hourStart, sourceId, serviceHost, facilitatorId) {
+function getMetricsNamespace(options = {}) {
+  const env = options.env ?? process.env;
+  const configuredNamespace = options.namespace ?? env.METRICS_NAMESPACE;
+  const normalized = String(configuredNamespace ?? DEFAULT_METRICS_NAMESPACE).trim();
+  return normalized || DEFAULT_METRICS_NAMESPACE;
+}
+
+function getMetricsRedisKeys(routeKey, hourStart, sourceId, serviceHost, namespace) {
+  const metricsNamespace = namespace || DEFAULT_METRICS_NAMESPACE;
+
   return {
-    startedAt: `${METRICS_NAMESPACE}:started-at`,
-    updatedAt: `${METRICS_NAMESPACE}:updated-at`,
-    totals: `${METRICS_NAMESPACE}:totals`,
-    routeKeys: `${METRICS_NAMESPACE}:route-keys`,
-    sourceKeys: `${METRICS_NAMESPACE}:source-keys`,
-    serviceKeys: `${METRICS_NAMESPACE}:service-keys`,
-    facilitatorKeys: `${METRICS_NAMESPACE}:facilitator-keys`,
-    route: routeKey ? `${METRICS_NAMESPACE}:route:${encodeURIComponent(routeKey)}` : null,
-    hour: hourStart ? `${METRICS_NAMESPACE}:hour:${hourStart}` : null,
-    source: sourceId ? `${METRICS_NAMESPACE}:source:${encodeURIComponent(sourceId)}` : null,
+    startedAt: `${metricsNamespace}:started-at`,
+    updatedAt: `${metricsNamespace}:updated-at`,
+    totals: `${metricsNamespace}:totals`,
+    routeKeys: `${metricsNamespace}:route-keys`,
+    sourceKeys: `${metricsNamespace}:source-keys`,
+    serviceKeys: `${metricsNamespace}:service-keys`,
+    route: routeKey ? `${metricsNamespace}:route:${encodeURIComponent(routeKey)}` : null,
+    hour: hourStart ? `${metricsNamespace}:hour:${hourStart}` : null,
+    source: sourceId ? `${metricsNamespace}:source:${encodeURIComponent(sourceId)}` : null,
     service: serviceHost
-      ? `${METRICS_NAMESPACE}:service:${encodeURIComponent(serviceHost)}`
+      ? `${metricsNamespace}:service:${encodeURIComponent(serviceHost)}`
       : null,
     serviceRoutes: serviceHost
-      ? `${METRICS_NAMESPACE}:service-routes:${encodeURIComponent(serviceHost)}`
-      : null,
-    facilitator: facilitatorId
-      ? `${METRICS_NAMESPACE}:facilitator:${encodeURIComponent(facilitatorId)}`
+      ? `${metricsNamespace}:service-routes:${encodeURIComponent(serviceHost)}`
       : null,
   };
 }
@@ -1531,54 +978,18 @@ function queueCounterUpdates(pipeline, key, event) {
   }
 }
 
-function queueCompactCounterUpdates(pipeline, key, event) {
-  pipeline.hincrby(key, "total", 1);
-  pipeline.hincrby(key, "totalDurationMs", event.durationMs);
-
-  if (event.statusCode >= 200 && event.statusCode < 300) {
-    pipeline.hincrby(key, "success", 1);
-    if (event.wasPaid) {
-      pipeline.hincrby(key, "paidSuccess", 1);
-      const paidUsdMicros = getEventPaidUsdMicros(event);
-      if (paidUsdMicros > 0) {
-        pipeline.hincrby(key, "paidUsdMicros", paidUsdMicros);
-      }
-    }
-    return;
-  }
-
-  if (event.statusCode === 402) {
-    pipeline.hincrby(key, "paymentRequired", 1);
-    return;
-  }
-
-  if (event.statusCode >= 500) {
-    pipeline.hincrby(key, "serverErrors", 1);
-    return;
-  }
-
-  if (event.statusCode >= 400) {
-    pipeline.hincrby(key, "clientErrors", 1);
-  }
-}
-
-function createRedisMetricsStore(routeCatalog, redis) {
+function createRedisMetricsStore(routeCatalog, redis, options = {}) {
   const storage = {
     kind: "redis",
     persistent: true,
     label: "Upstash Redis via Vercel integration",
   };
   const routeCatalogMap = new Map(routeCatalog.map((route) => [route.key, route]));
+  const namespace = getMetricsNamespace(options);
 
   return {
     storage,
     async record(event) {
-      const serviceHost = normalizeServiceHost(event.serviceHost);
-      const facilitatorProvider = normalizeFacilitatorProvider(event.facilitatorProvider);
-      const facilitatorUrl = normalizeFacilitatorUrl(event.facilitatorUrl);
-      const facilitatorId =
-        String(event.facilitatorId ?? "").trim() ||
-        buildFacilitatorId(facilitatorProvider, facilitatorUrl);
       const route = routeCatalogMap.get(event.routeKey) ?? {
         key: event.routeKey,
         method: event.method,
@@ -1590,10 +1001,6 @@ function createRedisMetricsStore(routeCatalog, redis) {
       };
       const metricsEvent = {
         ...event,
-        serviceHost,
-        facilitatorId,
-        facilitatorProvider,
-        facilitatorUrl,
         routePriceUsdMicros: event.routePriceUsdMicros ?? route.priceUsdMicros ?? 0,
       };
       const hourStart = toIsoHour(event.at);
@@ -1601,15 +1008,17 @@ function createRedisMetricsStore(routeCatalog, redis) {
         event.routeKey,
         hourStart,
         event.sourceId,
-        serviceHost,
-        facilitatorId,
+        event.serviceHost,
+        namespace,
       );
 
       const pipeline = redis.pipeline();
       pipeline.setnx(keys.startedAt, event.at);
       pipeline.set(keys.updatedAt, event.at);
-      queueCompactCounterUpdates(pipeline, keys.totals, metricsEvent);
+      queueCounterUpdates(pipeline, keys.totals, metricsEvent);
       pipeline.sadd(keys.routeKeys, event.routeKey);
+      pipeline.sadd(keys.sourceKeys, event.sourceId);
+      pipeline.sadd(keys.serviceKeys, event.serviceHost);
       pipeline.hset(keys.route, {
         key: route.key,
         method: route.method,
@@ -1622,40 +1031,48 @@ function createRedisMetricsStore(routeCatalog, redis) {
         lastStatus: String(event.statusCode),
         lastPath: event.path,
       });
-      queueCompactCounterUpdates(pipeline, keys.route, metricsEvent);
+      queueCounterUpdates(pipeline, keys.route, metricsEvent);
       pipeline.hset(keys.hour, {
         hourStart,
       });
-      queueCompactCounterUpdates(pipeline, keys.hour, metricsEvent);
+      queueCounterUpdates(pipeline, keys.hour, metricsEvent);
+      pipeline.hset(keys.source, {
+        sourceId: event.sourceId,
+        sourceKind: event.sourceKind,
+        agentClass: event.agentClass,
+        lastSeenAt: event.at,
+        lastRouteKey: event.routeKey,
+        lastPath: event.path,
+      });
+      queueCounterUpdates(pipeline, keys.source, metricsEvent);
+      pipeline.hset(keys.service, {
+        serviceHost: event.serviceHost,
+        lastSeenAt: event.at,
+        lastRouteKey: event.routeKey,
+        lastPath: event.path,
+      });
+      queueCounterUpdates(pipeline, keys.service, metricsEvent);
+      pipeline.sadd(keys.serviceRoutes, event.routeKey);
       pipeline.expire(keys.hour, MAX_HOURLY_BUCKETS * 60 * 60);
-      if (facilitatorId && keys.facilitator) {
-        pipeline.sadd(keys.facilitatorKeys, facilitatorId);
-        pipeline.hset(keys.facilitator, {
-          facilitatorId,
-          provider: facilitatorProvider ?? "",
-          facilitatorUrl: facilitatorUrl ?? "",
-          mode: String(metricsEvent.facilitatorMode ?? "").trim().toLowerCase(),
-          lastSeenAt: event.at,
-          lastStatus: String(event.statusCode),
-          lastRouteKey: event.routeKey,
-          lastPath: event.path,
-        });
-        queueCompactCounterUpdates(pipeline, keys.facilitator, metricsEvent);
-        if (metricsEvent.facilitatorFallbackUsed) {
-          pipeline.hincrby(keys.facilitator, "fallbackUsedCount", 1);
-        }
-      }
       await pipeline.exec();
     },
     async getSummary() {
-      const keys = getMetricsRedisKeys();
-      const [startedAt, updatedAt, rawTotals, recordedRouteKeys, recordedFacilitatorIds] =
+      const keys = getMetricsRedisKeys(null, null, null, null, namespace);
+      const [
+        startedAt,
+        updatedAt,
+        rawTotals,
+        recordedRouteKeys,
+        recordedSourceKeys,
+        recordedServiceKeys,
+      ] =
         await Promise.all([
           redis.get(keys.startedAt),
           redis.get(keys.updatedAt),
           redis.hgetall(keys.totals),
           redis.smembers(keys.routeKeys),
-          redis.smembers(keys.facilitatorKeys),
+          redis.smembers(keys.sourceKeys),
+          redis.smembers(keys.serviceKeys),
         ]);
 
       const snapshot = createSnapshot(routeCatalog);
@@ -1673,7 +1090,7 @@ function createRedisMetricsStore(routeCatalog, redis) {
       if (routeKeys.length > 0) {
         const routePipeline = redis.pipeline();
         for (const routeKey of routeKeys) {
-          routePipeline.hgetall(getMetricsRedisKeys(routeKey).route);
+          routePipeline.hgetall(getMetricsRedisKeys(routeKey, null, null, null, namespace).route);
         }
         const routeStates = await routePipeline.exec();
 
@@ -1710,7 +1127,7 @@ function createRedisMetricsStore(routeCatalog, redis) {
       if (recentHours.length > 0) {
         const hourPipeline = redis.pipeline();
         for (const hourStart of recentHours) {
-          hourPipeline.hgetall(getMetricsRedisKeys(null, hourStart).hour);
+          hourPipeline.hgetall(getMetricsRedisKeys(null, hourStart, null, null, namespace).hour);
         }
         const hourStates = await hourPipeline.exec();
 
@@ -1726,31 +1143,57 @@ function createRedisMetricsStore(routeCatalog, redis) {
         });
       }
 
-      const facilitatorIds = Array.from(
-        new Set([...(recordedFacilitatorIds ?? []).map((entry) => String(entry))]),
-      );
-      if (facilitatorIds.length > 0) {
-        const facilitatorPipeline = redis.pipeline();
-        for (const facilitatorId of facilitatorIds) {
-          facilitatorPipeline.hgetall(getMetricsRedisKeys(null, null, null, null, facilitatorId).facilitator);
+      const sourceKeys = Array.from(new Set((recordedSourceKeys ?? []).map(String)));
+      if (sourceKeys.length > 0) {
+        const sourcePipeline = redis.pipeline();
+        for (const sourceId of sourceKeys) {
+          sourcePipeline.hgetall(
+            getMetricsRedisKeys(null, null, sourceId, null, namespace).source,
+          );
         }
-        const facilitatorStates = await facilitatorPipeline.exec();
+        const sourceStates = await sourcePipeline.exec();
 
-        facilitatorIds.forEach((facilitatorId, index) => {
-          const savedState = facilitatorStates[index] ?? {};
-          const state = createFacilitatorState({
-            facilitatorId: savedState?.facilitatorId ?? facilitatorId,
-            provider: normalizeFacilitatorProvider(savedState?.provider),
-            facilitatorUrl: normalizeFacilitatorUrl(savedState?.facilitatorUrl),
-            mode: String(savedState?.mode ?? "").trim().toLowerCase() || null,
-            fallbackUsedCount: numericValue(savedState?.fallbackUsedCount),
+        sourceKeys.forEach((sourceId, index) => {
+          const savedState = sourceStates[index] ?? {};
+          const sourceState = createSourceState({
+            sourceId,
+            sourceKind: savedState?.sourceKind ?? "anonymous",
+            agentClass: savedState?.agentClass ?? "unknown",
           });
-          mergeCounterValues(state, savedState);
-          state.fallbackUsedCount = numericValue(savedState?.fallbackUsedCount);
-          state.lastSeenAt = savedState?.lastSeenAt ?? null;
-          state.lastRouteKey = savedState?.lastRouteKey ?? null;
-          state.lastPath = savedState?.lastPath ?? null;
-          snapshot.facilitators[facilitatorId] = state;
+
+          mergeCounterValues(sourceState, savedState);
+          sourceState.lastSeenAt = savedState?.lastSeenAt ?? null;
+          sourceState.lastRouteKey = savedState?.lastRouteKey ?? null;
+          sourceState.lastPath = savedState?.lastPath ?? null;
+          snapshot.sources[sourceId] = sourceState;
+        });
+      }
+
+      const serviceHosts = Array.from(new Set((recordedServiceKeys ?? []).map(String)));
+      if (serviceHosts.length > 0) {
+        const servicePipeline = redis.pipeline();
+        for (const serviceHost of serviceHosts) {
+          const serviceKeys = getMetricsRedisKeys(null, null, null, serviceHost, namespace);
+          servicePipeline.hgetall(serviceKeys.service);
+          servicePipeline.smembers(serviceKeys.serviceRoutes);
+        }
+        const serviceStates = await servicePipeline.exec();
+
+        serviceHosts.forEach((serviceHost, index) => {
+          const savedState = serviceStates[index * 2] ?? {};
+          const routeKeysSeen = Array.from(
+            new Set(((serviceStates[index * 2 + 1] ?? []).map(String))),
+          );
+          const serviceState = createServiceState({
+            serviceHost: savedState?.serviceHost ?? serviceHost,
+          });
+
+          mergeCounterValues(serviceState, savedState);
+          serviceState.lastSeenAt = savedState?.lastSeenAt ?? null;
+          serviceState.lastRouteKey = savedState?.lastRouteKey ?? null;
+          serviceState.lastPath = savedState?.lastPath ?? null;
+          serviceState.routeKeysSeen = routeKeysSeen;
+          snapshot.services[serviceHost] = serviceState;
         });
       }
 
@@ -1834,20 +1277,6 @@ async function loadFileSnapshot(filePath, routeCatalog) {
       }
     }
 
-    if (parsed.facilitators && typeof parsed.facilitators === "object") {
-      for (const [facilitatorId, savedFacilitator] of Object.entries(parsed.facilitators)) {
-        snapshot.facilitators[facilitatorId] = {
-          ...createFacilitatorState({ facilitatorId }),
-          ...savedFacilitator,
-          facilitatorId,
-          provider: normalizeFacilitatorProvider(savedFacilitator?.provider),
-          facilitatorUrl: normalizeFacilitatorUrl(savedFacilitator?.facilitatorUrl),
-          mode: String(savedFacilitator?.mode ?? "").trim().toLowerCase() || null,
-          fallbackUsedCount: numericValue(savedFacilitator?.fallbackUsedCount),
-        };
-      }
-    }
-
     if (parsed.hourly && typeof parsed.hourly === "object") {
       snapshot.hourly = parsed.hourly;
     }
@@ -1901,7 +1330,7 @@ function createMetricsStore(options = {}) {
   const filePath = options.filePath ?? options.env?.METRICS_STORE_FILE;
 
   if (redisClient) {
-    return createRedisMetricsStore(routeCatalog, redisClient);
+    return createRedisMetricsStore(routeCatalog, redisClient, options);
   }
 
   if (filePath) {
@@ -1922,12 +1351,13 @@ function createMetricsMiddleware(options = {}) {
     options.resolveMetricRouteKey ?? createRouteResolver(routeCatalog);
   const describeRequestSource =
     options.describeRequestSource ?? createRequestSourceDescriber(attribution);
-  const resolveRequestFacilitator =
-    options.describeRequestFacilitator ?? describeRequestFacilitator;
   const routeCatalogMap = new Map(routeCatalog.map((route) => [route.key, route]));
+  const shouldTrackRequest =
+    options.shouldTrackRequest ??
+    ((req) => req.path.startsWith("/api/"));
 
   return function metricsMiddleware(req, res, next) {
-    if (!req.path.startsWith("/api/")) {
+    if (!shouldTrackRequest(req)) {
       next();
       return;
     }
@@ -1936,7 +1366,6 @@ function createMetricsMiddleware(options = {}) {
 
     res.on("finish", () => {
       const source = describeRequestSource(req);
-      const facilitator = resolveRequestFacilitator(req, res);
       const routeKey = resolveMetricRouteKey(req.method, req.path);
       const route = routeCatalogMap.get(routeKey);
       const event = {
@@ -1952,11 +1381,6 @@ function createMetricsMiddleware(options = {}) {
         sourceId: source.sourceId,
         sourceKind: source.sourceKind,
         agentClass: source.agentClass,
-        facilitatorId: facilitator?.facilitatorId ?? null,
-        facilitatorProvider: facilitator?.provider ?? null,
-        facilitatorUrl: facilitator?.facilitatorUrl ?? null,
-        facilitatorMode: facilitator?.mode ?? null,
-        facilitatorFallbackUsed: Boolean(facilitator?.fallbackUsed),
       };
 
       Promise.resolve(store.record(event)).catch((error) => {
@@ -1976,8 +1400,7 @@ function createMetricsMiddleware(options = {}) {
 }
 
 function hasMetricsAccess(req, password) {
-  const expectedPassword = normalizeSecret(password);
-  if (!expectedPassword) {
+  if (!password) {
     return true;
   }
 
@@ -1994,8 +1417,8 @@ function hasMetricsAccess(req, password) {
     }
 
     const username = decoded.slice(0, separatorIndex);
-    const providedPassword = normalizeSecret(decoded.slice(separatorIndex + 1));
-    return username === DASHBOARD_USERNAME && providedPassword === expectedPassword;
+    const providedPassword = decoded.slice(separatorIndex + 1);
+    return username === DASHBOARD_USERNAME && providedPassword === password;
   } catch (error) {
     return false;
   }
@@ -2065,8 +1488,8 @@ function renderHourlyTable(hourly) {
               <span>${escapeHtml(formatInteger(bucket.total))}</span>
             </div>
           </td>
-          <td>${escapeHtml(formatInteger(bucket.paidSuccess ?? 0))}</td>
-          <td>${escapeHtml(formatUsdAmount(bucket.paidUsd ?? 0))}</td>
+          <td>${escapeHtml(formatInteger(bucket.externalPaidSuccess ?? 0))}</td>
+          <td>${escapeHtml(formatUsdAmount(bucket.externalPaidUsd ?? 0))}</td>
           <td>${escapeHtml(formatInteger(bucket.paymentRequired))}</td>
           <td>${escapeHtml(formatInteger(bucket.serverErrors))}</td>
           <td>${escapeHtml(formatInteger(bucket.averageLatencyMs))} ms</td>
@@ -2083,8 +1506,8 @@ function renderHourlyTable(hourly) {
           <tr>
             <th scope="col">Hour</th>
             <th scope="col">Requests</th>
-            <th scope="col">Paid</th>
-            <th scope="col">Revenue</th>
+            <th scope="col">External paid</th>
+            <th scope="col">External USD</th>
             <th scope="col">402</th>
             <th scope="col">5xx</th>
             <th scope="col">Avg latency</th>
@@ -2119,13 +1542,14 @@ const DASHBOARD_ROUTE_GROUPS = [
     title: "Government & Civic Data",
     description:
       "Public-sector datasets covering economics, regulations, elections, legislation, and population statistics.",
-    prefixes: ["/api/census", "/api/bls", "/api/congress", "/api/sec", "/api/courts", "/api/sanctions"],
+    prefixes: ["/api/census", "/api/bls", "/api/congress", "/api/sec", "/api/courts", "/api/sanctions", "/api/fec"],
     categoryPrefixes: ["data/government"],
     keywords: [
       "census",
       "labor statistics",
       "bls",
       "congress",
+      "fec",
       "government",
       "election",
       "legislation",
@@ -2216,10 +1640,6 @@ const DASHBOARD_ROUTE_GROUPS = [
 ];
 
 function isDashboardHiddenRoute(route = {}) {
-  if (isRetiredRoute(route)) {
-    return true;
-  }
-
   return route.description === "Unconfigured route" && route.priceLabel === "Free";
 }
 
@@ -2259,20 +1679,20 @@ function buildDashboardRouteGroups(routes = []) {
     visibleRoutes,
     hiddenCount: Math.max(0, routes.length - visibleRoutes.length),
     groups: groups
-    .map((group) => ({
+      .map((group) => ({
         ...group,
         requestCount: group.routes.reduce((sum, route) => sum + route.total, 0),
-        paidSuccess: group.routes.reduce(
-          (sum, route) => sum + (route.paidSuccess ?? 0),
+        externalPaidSuccess: group.routes.reduce(
+          (sum, route) => sum + (route.externalPaidSuccess ?? 0),
           0,
         ),
-        paidUsd: group.routes.reduce(
-          (sum, route) => sum + (route.paidUsd ?? 0),
+        externalPaidUsd: group.routes.reduce(
+          (sum, route) => sum + (route.externalPaidUsd ?? 0),
           0,
         ),
         routes: [...group.routes].sort((left, right) => {
-          if ((right.paidUsd ?? 0) !== (left.paidUsd ?? 0)) {
-            return (right.paidUsd ?? 0) - (left.paidUsd ?? 0);
+          if ((right.externalPaidUsd ?? 0) !== (left.externalPaidUsd ?? 0)) {
+            return (right.externalPaidUsd ?? 0) - (left.externalPaidUsd ?? 0);
           }
 
           if (right.total !== left.total) {
@@ -2297,8 +1717,9 @@ function renderRoutesTable(routes, options = {}) {
           </th>
           <td>${escapeHtml(route.priceLabel)}</td>
           <td>${escapeHtml(formatInteger(route.total))}</td>
+          <td>${escapeHtml(formatInteger(route.externalPaidSuccess ?? 0))}</td>
+          <td>${escapeHtml(formatUsdAmount(route.externalPaidUsd ?? 0))}</td>
           <td>${escapeHtml(formatInteger(route.paidSuccess))}</td>
-          <td>${escapeHtml(formatUsdAmount(route.paidUsd ?? 0))}</td>
           <td>${escapeHtml(formatInteger(route.paymentRequired))}</td>
           <td>${escapeHtml(formatInteger(route.serverErrors))}</td>
           <td>${escapeHtml(formatTimestamp(route.lastSeenAt))}</td>
@@ -2318,8 +1739,9 @@ function renderRoutesTable(routes, options = {}) {
             <th scope="col">Route</th>
             <th scope="col">Price</th>
             <th scope="col">Requests</th>
-            <th scope="col">Paid</th>
-            <th scope="col">Revenue</th>
+            <th scope="col">External paid</th>
+            <th scope="col">External USD</th>
+            <th scope="col">All paid</th>
             <th scope="col">402</th>
             <th scope="col">5xx</th>
             <th scope="col">Last seen</th>
@@ -2359,7 +1781,7 @@ function renderRouteGroups(routes) {
             )}</p>
           </div>
           ${renderRoutesTable(group.routes, {
-            caption: `${group.title} route totals, paid request counts, and settled revenue.`,
+            caption: `${group.title} route totals, buyer conversions, and external revenue.`,
           })}
         </section>
       `;
@@ -2426,14 +1848,16 @@ function renderCallersTable(callers) {
 }
 
 function renderServicesTable(services) {
-  // A semantic table keeps host-level attribution debugging navigable for screen readers and keyboard users.
+  // A semantic table keeps the seller-surface breakdown navigable for screen readers and keyboard users.
   const rows = services
     .map((service) => {
       return `
         <tr>
           <th scope="row">
-            <div class="route-key">${escapeHtml(formatObservedHostLabel(service.serviceHost))}</div>
-            <div class="route-detail">${escapeHtml(formatObservedHostDetail(service))}</div>
+            <div class="route-key">${escapeHtml(service.serviceHost)}</div>
+            <div class="route-detail">${escapeHtml(
+              `${formatInteger(service.routeCount)} active routes seen for this seller surface`,
+            )}</div>
           </th>
           <td>${escapeHtml(formatInteger(service.total))}</td>
           <td>${escapeHtml(formatInteger(service.externalPaidSuccess ?? 0))}</td>
@@ -2449,75 +1873,22 @@ function renderServicesTable(services) {
     .join("");
 
   if (!rows) {
-    return `<p class="empty-state">No observed hosts have recorded traffic yet.</p>`;
+    return `<p class="empty-state">No seller surfaces have recorded traffic yet.</p>`;
   }
 
   return `
     <div class="table-scroll">
       <table>
-        <caption>Traffic grouped by observed request host. Counts can include production domains, aliases, preview hosts, localhost, or raw IP host headers, so use this table for attribution debugging rather than product counts.</caption>
+        <caption>Traffic grouped by seller host so shared route metrics can be separated by product surface.</caption>
         <thead>
           <tr>
-            <th scope="col">Observed host</th>
+            <th scope="col">Seller host</th>
             <th scope="col">Requests</th>
             <th scope="col">External paid</th>
             <th scope="col">External USD</th>
             <th scope="col">All paid</th>
             <th scope="col">402</th>
             <th scope="col">Routes live</th>
-            <th scope="col">Last route</th>
-            <th scope="col">Last seen</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderFacilitatorsTable(facilitators) {
-  const rows = facilitators
-    .map((facilitator) => {
-      const label = facilitator.provider
-        ? facilitator.provider
-        : facilitator.facilitatorUrl || facilitator.facilitatorId;
-      const detail = facilitator.facilitatorUrl || "No facilitator URL captured";
-      return `
-        <tr>
-          <th scope="row">
-            <div class="route-key">${escapeHtml(label)}</div>
-            <div class="route-detail">${escapeHtml(detail)}</div>
-          </th>
-          <td>${escapeHtml(facilitator.mode || "unknown")}</td>
-          <td>${escapeHtml(formatInteger(facilitator.total))}</td>
-          <td>${escapeHtml(formatInteger(facilitator.paidSuccess))}</td>
-          <td>${escapeHtml(formatUsdAmount(facilitator.paidUsd ?? 0))}</td>
-          <td>${escapeHtml(formatInteger(facilitator.paymentRequired))}</td>
-          <td>${escapeHtml(formatInteger(facilitator.fallbackUsedCount ?? 0))}</td>
-          <td>${escapeHtml(facilitator.lastRouteKey || "Unknown")}</td>
-          <td>${escapeHtml(formatTimestamp(facilitator.lastSeenAt))}</td>
-        </tr>
-      `;
-    })
-    .join("");
-
-  if (!rows) {
-    return `<p class="empty-state">No facilitator attribution has been captured yet.</p>`;
-  }
-
-  return `
-    <div class="table-scroll">
-      <table>
-        <caption>Per-facilitator request distribution with fallback-selection counts.</caption>
-        <thead>
-          <tr>
-            <th scope="col">Facilitator</th>
-            <th scope="col">Mode</th>
-            <th scope="col">Requests</th>
-            <th scope="col">Paid 2xx</th>
-            <th scope="col">Revenue</th>
-            <th scope="col">402</th>
-            <th scope="col">Fallback picks</th>
             <th scope="col">Last route</th>
             <th scope="col">Last seen</th>
           </tr>
@@ -2535,9 +1906,26 @@ function renderDashboardPage(summary, options = {}) {
   const authNotice = options.passwordProtected
     ? "Protected with HTTP Basic auth."
     : "Public access is enabled. Set METRICS_DASHBOARD_PASSWORD to protect this dashboard.";
+  const externalTrafficRatio =
+    summary.totals.total > 0
+      ? summary.totals.anonymousRequests / summary.totals.total
+      : 0;
+  const externalPaidShare =
+    summary.totals.paidSuccess > 0
+      ? summary.totals.externalPaidSuccess / summary.totals.paidSuccess
+      : 0;
+  const hasHistoricalRevenueGap = (summary.totals.unattributedHistoricalPaidSuccess ?? 0) > 0;
+  const revenueActiveServices = (summary.services || []).filter(
+    (service) => (service.externalPaidUsd ?? 0) > 0,
+  ).length;
+  const topService =
+    (summary.services || []).find(
+      (service) => (service.externalPaidUsd ?? 0) > 0 || service.total > 0,
+    ) ?? null;
   const topRoute =
     summary.routes.find(
-      (route) => !isDashboardHiddenRoute(route) && ((route.paidUsd ?? 0) > 0 || route.total > 0),
+      (route) =>
+        !isDashboardHiddenRoute(route) && ((route.externalPaidUsd ?? 0) > 0 || route.total > 0),
     ) ?? null;
 
   // Semantic landmarks and tables keep the dashboard usable with screen readers and keyboard-only navigation.
@@ -2549,9 +1937,19 @@ function renderDashboardPage(summary, options = {}) {
       { className: "metric-card-revenue" },
     ),
     renderSummaryCard(
-      "Paid requests",
-      formatInteger(summary.totals.paidSuccess ?? 0),
-      "All paid requests are counted together",
+      "Tracked external revenue",
+      formatUsdAmount(summary.totals.externalPaidUsd ?? 0),
+      hasHistoricalRevenueGap
+        ? `${formatInteger(summary.totals.unattributedHistoricalPaidSuccess ?? 0)} older paid calls predate external split tracking`
+        : `${formatInteger(summary.totals.externalPaidSuccess ?? 0)} non-self-tagged paid calls recorded`,
+      { className: "metric-card-positive" },
+    ),
+    renderSummaryCard(
+      "Tracked external paid calls",
+      formatInteger(summary.totals.externalPaidSuccess ?? 0),
+      hasHistoricalRevenueGap
+        ? `${formatInteger(summary.totals.attributedExternalPaidSuccess ?? 0)} attributable anonymous paid calls`
+        : `${formatPercent(externalPaidShare)} of paid traffic came from non-self-tagged buyers`,
       { className: "metric-card-positive" },
     ),
     renderSummaryCard(
@@ -2561,20 +1959,26 @@ function renderDashboardPage(summary, options = {}) {
       { className: "metric-card-warm" },
     ),
     renderSummaryCard(
-      "Configured routes",
-      formatInteger(summary.totals.uniqueRoutesSeen ?? 0),
-      "Routes with recorded traffic in the current store",
+      "Seller surfaces",
+      formatInteger(summary.totals.uniqueServicesSeen ?? 0),
+      `${formatInteger(revenueActiveServices)} seller surfaces have external revenue`,
     ),
     renderSummaryCard(
-      "Facilitators observed",
-      formatInteger(summary.totals.uniqueFacilitatorsSeen ?? 0),
-      `${formatInteger(summary.totals.fallbackSelections ?? 0)} fallback selections recorded`,
+      "Traffic mix",
+      formatPercent(externalTrafficRatio),
+      `${formatInteger(summary.totals.anonymousRequests ?? 0)} anonymous requests vs ${formatInteger(summary.totals.selfTaggedRequests ?? 0)} self-tagged`,
+    ),
+    renderSummaryCard(
+      "Operator paid checks",
+      formatUsdAmount(summary.totals.selfTaggedPaidUsd ?? 0),
+      hasHistoricalRevenueGap
+        ? `${formatInteger(summary.totals.attributedSelfTaggedPaidSuccess ?? 0)} attributable self-tagged paid calls`
+        : `${formatInteger(summary.totals.selfTaggedPaidSuccess ?? 0)} self-tagged paid verifications`,
     ),
     renderSummaryCard(
       "Total requests",
       formatInteger(summary.totals.total),
-      "All API requests counted together",
-      { className: "metric-card-warm" },
+      `Seen across ${formatInteger(summary.totals.uniqueRoutesSeen)} configured routes`,
     ),
     renderSummaryCard(
       "Average latency",
@@ -2584,9 +1988,9 @@ function renderDashboardPage(summary, options = {}) {
   ].join("");
   const routeGroups = renderRouteGroups(summary.routes);
   const routesDescription = [
-    `Showing ${formatInteger(routeGroups.visibleCount)} configured routes grouped by category and sorted by settled revenue first.`,
+    `Showing ${formatInteger(routeGroups.visibleCount)} configured routes grouped by category and sorted by external revenue first.`,
     routeGroups.hiddenCount
-      ? `${formatInteger(routeGroups.hiddenCount)} legacy or retired rows hidden.`
+      ? `${formatInteger(routeGroups.hiddenCount)} legacy free probe rows hidden.`
       : null,
   ]
     .filter(Boolean)
@@ -2597,7 +2001,7 @@ function renderDashboardPage(summary, options = {}) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AurelianFlo APIs Metrics</title>
+    <title>x402 Data Bazaar Metrics</title>
     <style>
       :root {
         --bg: #f3efe7;
@@ -2909,31 +2313,6 @@ function renderDashboardPage(summary, options = {}) {
         font-weight: 700;
       }
 
-      .collapsible-panel {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.55);
-      }
-
-      .collapsible-summary {
-        cursor: pointer;
-        padding: 0.85rem 1rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-      }
-
-      .collapsible-summary small {
-        color: var(--muted);
-        font-weight: 400;
-      }
-
-      .collapsible-content {
-        padding: 0.4rem 1rem 1rem;
-      }
-
       @media (max-width: 720px) {
         .page-shell { width: min(100% - 1rem, 1120px); padding-top: 1rem; }
         header, section { border-radius: 20px; padding: 1rem; }
@@ -2951,10 +2330,13 @@ function renderDashboardPage(summary, options = {}) {
     <a class="skip-link" href="#metrics-main">Skip to metrics</a>
     <div class="page-shell">
       <header>
-        <p class="eyebrow">AurelianFlo APIs</p>
+        <p class="eyebrow">x402 Data Bazaar</p>
         <h1>Revenue & Demand Dashboard</h1>
-        <p class="lede">Track total requests, paid calls, settled revenue, and the route families that are converting into paid usage.</p>
+        <p class="lede">See which seller surfaces and route families are turning marketplace demand into settled revenue, while keeping self-verification traffic separate from external buyers.</p>
         <div class="hero-chips" aria-label="Current leaders">
+          <p class="hero-chip"><strong>Top seller:</strong> ${escapeHtml(
+            topService?.serviceHost || "No seller traffic yet",
+          )}</p>
           <p class="hero-chip"><strong>Top route:</strong> ${escapeHtml(
             topRoute?.key || "No route traffic yet",
           )}</p>
@@ -2966,7 +2348,7 @@ function renderDashboardPage(summary, options = {}) {
           <div class="section-header">
             <div>
               <h2 id="summary-heading">Revenue Snapshot</h2>
-              <p>Started ${escapeHtml(formatTimestamp(summary.startedAt))} and last updated ${escapeHtml(formatTimestamp(summary.updatedAt))}. Settled revenue is counted as one aggregate total across all paid requests.</p>
+              <p>Started ${escapeHtml(formatTimestamp(summary.startedAt))} and last updated ${escapeHtml(formatTimestamp(summary.updatedAt))}. Settled revenue is backfilled from paid route counts and route prices; external revenue only counts non-self-tagged paid 2xx responses when the store captured that split.</p>
             </div>
             <a class="refresh-link" href="/ops/metrics">Refresh Snapshot</a>
           </div>
@@ -2977,7 +2359,7 @@ function renderDashboardPage(summary, options = {}) {
           <div class="section-header">
             <div>
               <h2 id="notes-heading">How To Read This</h2>
-              <p>This dashboard is intentionally aggregate-first. It tracks total requests, total paid calls, total settled revenue, and route-level performance.</p>
+              <p>The dashboard leads with buyer revenue first, then shows which hosts and route families are converting that demand.</p>
             </div>
           </div>
           <div class="notice-grid">
@@ -2991,21 +2373,21 @@ function renderDashboardPage(summary, options = {}) {
               <p>${escapeHtml(authNotice)}</p>
             </article>
             <article class="notice">
-              <h3>Attribution Scope</h3>
-              <p>${escapeHtml("Internal and external paid traffic are no longer split in the dashboard.")}</p>
+              <h3>Caller Attribution</h3>
+              <p>${escapeHtml(summary.attribution?.privacy || "Anonymous caller attribution is unavailable.")}</p>
               <p>${escapeHtml(
-                "Revenue is displayed as one total across all settled paid requests.",
+                `Tag your own probes with ${summary.attribution?.selfTagHeaderName || DEFAULT_SELF_TAG_HEADER_NAME}: ${summary.attribution?.selfTagValueHint || DEFAULT_SELF_TAG_HEADER_VALUE} so they stay separate from marketplace traffic.`,
               )}</p>
             </article>
             <article class="notice">
               <h3>Revenue Coverage</h3>
               <p>${escapeHtml(
                 summary.totals.historicalPaidRevenueBackfilled
-                  ? "Historical settled revenue was backfilled from route-level paid counts."
+                  ? `Historical settled revenue was backfilled from route-level paid counts. ${formatInteger(summary.totals.unattributedHistoricalPaidSuccess ?? 0)} older paid calls do not have a trustworthy external-vs-self split.`
                   : "Revenue totals are based on directly recorded paid events in the current store.",
               )}</p>
               <p>${escapeHtml(
-                "Route-level totals still show which endpoints are being used and which ones are actually settling revenue.",
+                "Use self-tagged probes going forward so external buyer revenue stays clean without any later cleanup.",
               )}</p>
             </article>
           </div>
@@ -3015,36 +2397,30 @@ function renderDashboardPage(summary, options = {}) {
           <div class="section-header">
             <div>
               <h2 id="hourly-heading">Last 24 Hours</h2>
-              <p>Hourly request buckets with total paid volume and settled revenue. This panel is collapsed by default.</p>
+              <p>Hourly request buckets with external paid revenue layered in so conversion spikes are easier to spot.</p>
             </div>
           </div>
-          <details class="collapsible-panel">
-            <summary class="collapsible-summary">
-              <span>Show last 24-hour metrics</span>
-              <small>Click to expand</small>
-            </summary>
-            <div class="collapsible-content">
-              ${renderHourlyTable(summary.hourly)}
-            </div>
-          </details>
+          ${renderHourlyTable(summary.hourly)}
         </section>
 
-        <section aria-labelledby="facilitators-heading">
+        <section aria-labelledby="services-heading">
           <div class="section-header">
             <div>
-              <h2 id="facilitators-heading">Facilitator Routing</h2>
-              <p>Provider usage split across configured facilitators, including fallback picks. This panel is collapsed by default.</p>
+              <h2 id="services-heading">Seller Surfaces</h2>
+              <p>Shared metrics grouped by request host so each deployed seller surface can be judged on external revenue, not just traffic volume.</p>
             </div>
           </div>
-          <details class="collapsible-panel">
-            <summary class="collapsible-summary">
-              <span>Show facilitator routing metrics</span>
-              <small>Click to expand</small>
-            </summary>
-            <div class="collapsible-content">
-              ${renderFacilitatorsTable(summary.facilitators ?? [])}
+          ${renderServicesTable(summary.services || [])}
+        </section>
+
+        <section aria-labelledby="callers-heading">
+          <div class="section-header">
+            <div>
+              <h2 id="callers-heading">Top Callers</h2>
+              <p>Repeat probe patterns stay visible here without storing raw caller identities.</p>
             </div>
-          </details>
+          </div>
+          ${renderCallersTable(summary.callers || [])}
         </section>
 
         <section aria-labelledby="routes-heading">
@@ -3054,15 +2430,7 @@ function renderDashboardPage(summary, options = {}) {
               <p>${escapeHtml(routesDescription)}</p>
             </div>
           </div>
-          <details class="collapsible-panel">
-            <summary class="collapsible-summary">
-              <span>Show route catalog breakdown</span>
-              <small>Click to expand</small>
-            </summary>
-            <div class="collapsible-content">
-              ${routeGroups.content}
-            </div>
-          </details>
+          ${routeGroups.content}
         </section>
       </main>
     </div>

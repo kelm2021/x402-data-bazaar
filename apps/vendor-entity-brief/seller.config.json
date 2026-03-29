@@ -23,6 +23,29 @@
       "minScore": "90",
       "limit": "3"
     },
+    "querySchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Vendor legal name to resolve and screen (required)"
+        },
+        "country": {
+          "type": "string",
+          "description": "Preferred jurisdiction filter (ISO alpha-2)"
+        },
+        "minScore": {
+          "type": "string",
+          "description": "Minimum OFAC name-match score threshold"
+        },
+        "limit": {
+          "type": "string",
+          "description": "Maximum candidate entities or matches"
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
     "outputExample": {
       "success": true,
       "data": {

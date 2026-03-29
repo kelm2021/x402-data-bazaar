@@ -1,0 +1,1101 @@
+{
+  "packageName": "generic-parameter-simulator",
+  "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+  "serviceName": "Generic Parameter Simulator",
+  "serviceDescription": "Paid x402 API for generic Monte Carlo simulation workflows. Agents can estimate probabilities, compare scenarios, run sensitivity analyses, generate forecasts, compose multi-model outcomes, and optimize parameters.",
+  "baseUrl": "https://x402.aurelianflo.com",
+  "port": 4020,
+  "network": "eip155:8453",
+  "routes": [
+    {
+      "key": "POST /api/sim/probability",
+      "method": "POST",
+      "routePath": "/api/sim/probability",
+      "expressPath": "/api/sim/probability",
+      "resourcePath": "/api/sim/probability",
+      "canonicalPath": "/api/sim/probability",
+      "price": "0.05",
+      "category": "modeling/probability",
+      "tags": [
+        "simulation",
+        "monte-carlo",
+        "probability",
+        "decision-modeling"
+      ],
+      "description": "Estimate outcome probability for a single scenario using Monte Carlo sampling over parameter uncertainty.",
+      "bodyType": "json",
+      "inputExample": {
+        "parameters": {
+          "demand_signal": 0.72,
+          "execution_quality": 0.65,
+          "pricing_pressure": -0.35
+        },
+        "weights": {
+          "demand_signal": 1.2,
+          "execution_quality": 1,
+          "pricing_pressure": 0.9
+        },
+        "uncertainty": {
+          "demand_signal": 0.12,
+          "execution_quality": 0.1,
+          "pricing_pressure": 0.2
+        },
+        "bias": 0,
+        "threshold": 0.25
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "parameters"
+        ],
+        "properties": {
+          "parameters": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "uncertainty": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "bias": {
+            "type": "number"
+          },
+          "threshold": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "simulation_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "success_rule": "score >= threshold"
+        },
+        "outcome_probability": 0.6743,
+        "confidence_interval_95": {
+          "low": 0.665,
+          "high": 0.6835
+        },
+        "score_distribution": {
+          "mean": 0.3921,
+          "stddev": 0.245,
+          "min": -0.4821,
+          "p10": 0.0783,
+          "p50": 0.3915,
+          "p90": 0.704,
+          "max": 1.2364
+        },
+        "parameter_contributions": {
+          "demand_signal": {
+            "mean_sample": 0.72,
+            "weight": 1.2,
+            "mean_contribution": 0.864
+          },
+          "execution_quality": {
+            "mean_sample": 0.65,
+            "weight": 1,
+            "mean_contribution": 0.65
+          },
+          "pricing_pressure": {
+            "mean_sample": -0.35,
+            "weight": 0.9,
+            "mean_contribution": -0.315
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "simulation_meta",
+          "outcome_probability",
+          "confidence_interval_95",
+          "score_distribution",
+          "parameter_contributions"
+        ],
+        "properties": {
+          "simulation_meta": {
+            "type": "object"
+          },
+          "outcome_probability": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "confidence_interval_95": {
+            "type": "object",
+            "required": [
+              "low",
+              "high"
+            ],
+            "properties": {
+              "low": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "high": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "additionalProperties": false
+          },
+          "score_distribution": {
+            "type": "object"
+          },
+          "parameter_contributions": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "key": "POST /api/sim/compare",
+      "method": "POST",
+      "routePath": "/api/sim/compare",
+      "expressPath": "/api/sim/compare",
+      "resourcePath": "/api/sim/compare",
+      "canonicalPath": "/api/sim/compare",
+      "price": "0.06",
+      "category": "modeling/comparison",
+      "tags": [
+        "simulation",
+        "scenario-compare",
+        "decision-modeling"
+      ],
+      "description": "Compare baseline and candidate scenarios and return uplift deltas with confidence diagnostics.",
+      "bodyType": "json",
+      "inputExample": {
+        "baseline": {
+          "parameters": {
+            "demand_signal": 0.65,
+            "execution_quality": 0.6,
+            "pricing_pressure": -0.25
+          },
+          "threshold": 0.25
+        },
+        "candidate": {
+          "parameters": {
+            "demand_signal": 0.78,
+            "execution_quality": 0.68,
+            "pricing_pressure": -0.2
+          },
+          "threshold": 0.25
+        }
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "baseline",
+          "candidate"
+        ],
+        "$defs": {
+          "scenario": {
+            "type": "object",
+            "required": [
+              "parameters"
+            ],
+            "properties": {
+              "parameters": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "weights": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "uncertainty": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "bias": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "properties": {
+          "baseline": {
+            "$ref": "#/$defs/scenario"
+          },
+          "candidate": {
+            "$ref": "#/$defs/scenario"
+          },
+          "labels": {
+            "type": "object",
+            "properties": {
+              "baseline": {
+                "type": "string"
+              },
+              "candidate": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "comparison_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "baseline_label": "baseline",
+          "candidate_label": "candidate"
+        },
+        "baseline": {
+          "outcome_probability": 0.6112,
+          "confidence_interval_95": {
+            "low": 0.6018,
+            "high": 0.6204
+          },
+          "score_distribution": {
+            "mean": 0.31,
+            "stddev": 0.24
+          }
+        },
+        "candidate": {
+          "outcome_probability": 0.6948,
+          "confidence_interval_95": {
+            "low": 0.6857,
+            "high": 0.7037
+          },
+          "score_distribution": {
+            "mean": 0.39,
+            "stddev": 0.24
+          }
+        },
+        "deltas": {
+          "outcome_probability": 0.0836,
+          "mean_score": 0.08,
+          "relative_probability_change": 0.1368
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "comparison_meta",
+          "baseline",
+          "candidate",
+          "deltas"
+        ],
+        "properties": {
+          "comparison_meta": {
+            "type": "object"
+          },
+          "baseline": {
+            "type": "object"
+          },
+          "candidate": {
+            "type": "object"
+          },
+          "deltas": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "key": "POST /api/sim/sensitivity",
+      "method": "POST",
+      "routePath": "/api/sim/sensitivity",
+      "expressPath": "/api/sim/sensitivity",
+      "resourcePath": "/api/sim/sensitivity",
+      "canonicalPath": "/api/sim/sensitivity",
+      "price": "0.07",
+      "category": "modeling/sensitivity",
+      "tags": [
+        "simulation",
+        "sensitivity",
+        "feature-impact"
+      ],
+      "description": "Measure probability sensitivity for a selected parameter using plus/minus perturbation runs.",
+      "bodyType": "json",
+      "inputExample": {
+        "scenario": {
+          "parameters": {
+            "demand_signal": 0.72,
+            "execution_quality": 0.65,
+            "pricing_pressure": -0.35
+          },
+          "threshold": 0.25
+        },
+        "parameter": "demand_signal",
+        "delta": 0.1,
+        "mode": "relative"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "scenario",
+          "parameter"
+        ],
+        "$defs": {
+          "scenario": {
+            "type": "object",
+            "required": [
+              "parameters"
+            ],
+            "properties": {
+              "parameters": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "weights": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "uncertainty": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "bias": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "properties": {
+          "scenario": {
+            "$ref": "#/$defs/scenario"
+          },
+          "parameter": {
+            "type": "string",
+            "minLength": 1
+          },
+          "delta": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "absolute",
+              "relative"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "sensitivity_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "parameter": "demand_signal",
+          "mode": "relative",
+          "delta": 0.1,
+          "base_parameter_value": 0.72
+        },
+        "baseline": {
+          "outcome_probability": 0.6743,
+          "confidence_interval_95": {
+            "low": 0.665,
+            "high": 0.6835
+          }
+        },
+        "low_variant": {
+          "parameter_value": 0.648,
+          "result": {
+            "outcome_probability": 0.6311
+          }
+        },
+        "high_variant": {
+          "parameter_value": 0.792,
+          "result": {
+            "outcome_probability": 0.7184
+          }
+        },
+        "sensitivity": {
+          "probability_gradient": 0.6063,
+          "shift_low": -0.0432,
+          "shift_high": 0.0441
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "sensitivity_meta",
+          "baseline",
+          "low_variant",
+          "high_variant",
+          "sensitivity"
+        ],
+        "properties": {
+          "sensitivity_meta": {
+            "type": "object"
+          },
+          "baseline": {
+            "type": "object"
+          },
+          "low_variant": {
+            "type": "object"
+          },
+          "high_variant": {
+            "type": "object"
+          },
+          "sensitivity": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "key": "POST /api/sim/forecast",
+      "method": "POST",
+      "routePath": "/api/sim/forecast",
+      "expressPath": "/api/sim/forecast",
+      "resourcePath": "/api/sim/forecast",
+      "canonicalPath": "/api/sim/forecast",
+      "price": "0.08",
+      "category": "modeling/forecast",
+      "tags": [
+        "simulation",
+        "forecast",
+        "time-series-scenarios"
+      ],
+      "description": "Generate a forward probability path across multiple future periods under configurable trend assumptions.",
+      "bodyType": "json",
+      "inputExample": {
+        "scenario": {
+          "parameters": {
+            "demand_signal": 0.72,
+            "execution_quality": 0.65,
+            "pricing_pressure": -0.35
+          },
+          "threshold": 0.25
+        },
+        "periods": 6,
+        "drift": {
+          "demand_signal": 0.02,
+          "execution_quality": 0.01,
+          "pricing_pressure": -0.01
+        },
+        "uncertainty_growth": 0.02,
+        "growth_mode": "additive"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "scenario"
+        ],
+        "$defs": {
+          "scenario": {
+            "type": "object",
+            "required": [
+              "parameters"
+            ],
+            "properties": {
+              "parameters": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "weights": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "uncertainty": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "bias": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "properties": {
+          "scenario": {
+            "$ref": "#/$defs/scenario"
+          },
+          "periods": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120
+          },
+          "drift": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "uncertainty_growth": {
+            "type": "number",
+            "minimum": 0
+          },
+          "growth_mode": {
+            "type": "string",
+            "enum": [
+              "additive",
+              "multiplicative"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "forecast_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "periods": 6,
+          "growth_mode": "additive",
+          "uncertainty_growth": 0.02
+        },
+        "timeline": [
+          {
+            "period": 1,
+            "parameters": {
+              "demand_signal": 0.74,
+              "execution_quality": 0.66,
+              "pricing_pressure": -0.36
+            },
+            "outcome_probability": 0.6841,
+            "confidence_interval_95": {
+              "low": 0.6749,
+              "high": 0.6931
+            },
+            "mean_score": 0.41
+          }
+        ],
+        "summary": {
+          "start_probability": 0.6841,
+          "end_probability": 0.7248,
+          "net_change": 0.0407
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "forecast_meta",
+          "timeline",
+          "summary"
+        ],
+        "properties": {
+          "forecast_meta": {
+            "type": "object"
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "period",
+                "parameters",
+                "outcome_probability",
+                "confidence_interval_95",
+                "mean_score"
+              ],
+              "properties": {
+                "period": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "parameters": {
+                  "type": "object"
+                },
+                "outcome_probability": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "confidence_interval_95": {
+                  "type": "object"
+                },
+                "mean_score": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "summary": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "key": "POST /api/sim/composed",
+      "method": "POST",
+      "routePath": "/api/sim/composed",
+      "expressPath": "/api/sim/composed",
+      "resourcePath": "/api/sim/composed",
+      "canonicalPath": "/api/sim/composed",
+      "price": "0.09",
+      "category": "modeling/composed",
+      "tags": [
+        "simulation",
+        "ensemble",
+        "composition"
+      ],
+      "description": "Compose weighted scenario components into a blended probability with per-component simulation traces.",
+      "bodyType": "json",
+      "inputExample": {
+        "components": [
+          {
+            "label": "market-upside",
+            "weight": 0.5,
+            "scenario": {
+              "parameters": {
+                "demand_signal": 0.82,
+                "execution_quality": 0.7,
+                "pricing_pressure": -0.2
+              },
+              "threshold": 0.25
+            }
+          },
+          {
+            "label": "market-downside",
+            "weight": 0.5,
+            "scenario": {
+              "parameters": {
+                "demand_signal": 0.58,
+                "execution_quality": 0.58,
+                "pricing_pressure": -0.45
+              },
+              "threshold": 0.25
+            }
+          }
+        ]
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "components"
+        ],
+        "$defs": {
+          "scenario": {
+            "type": "object",
+            "required": [
+              "parameters"
+            ],
+            "properties": {
+              "parameters": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "weights": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "uncertainty": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "bias": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "properties": {
+          "components": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 25,
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "weight": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "scenario": {
+                  "$ref": "#/$defs/scenario"
+                },
+                "parameters": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "weights": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                },
+                "uncertainty": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                },
+                "bias": {
+                  "type": "number"
+                },
+                "threshold": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "weight"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "scenario"
+                  ]
+                },
+                {
+                  "required": [
+                    "parameters"
+                  ]
+                }
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "composed_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "components": 2
+        },
+        "components": [
+          {
+            "label": "market-upside",
+            "weight": 0.5,
+            "normalized_weight": 0.5,
+            "result": {
+              "outcome_probability": 0.7412
+            }
+          },
+          {
+            "label": "market-downside",
+            "weight": 0.5,
+            "normalized_weight": 0.5,
+            "result": {
+              "outcome_probability": 0.5918
+            }
+          }
+        ],
+        "composed_outcome": {
+          "outcome_probability": 0.6665,
+          "confidence_interval_95": {
+            "low": 0.6579,
+            "high": 0.6751
+          },
+          "mean_score": 0.4124
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "composed_meta",
+          "components",
+          "composed_outcome"
+        ],
+        "properties": {
+          "composed_meta": {
+            "type": "object"
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "weight",
+                "normalized_weight",
+                "result"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "weight": {
+                  "type": "number"
+                },
+                "normalized_weight": {
+                  "type": "number"
+                },
+                "result": {
+                  "type": "object"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "composed_outcome": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    {
+      "key": "POST /api/sim/optimize",
+      "method": "POST",
+      "routePath": "/api/sim/optimize",
+      "expressPath": "/api/sim/optimize",
+      "resourcePath": "/api/sim/optimize",
+      "canonicalPath": "/api/sim/optimize",
+      "price": "0.10",
+      "category": "modeling/optimization",
+      "tags": [
+        "simulation",
+        "optimization",
+        "decision-support"
+      ],
+      "description": "Search bounded parameter ranges to maximize objective value and return the recommended scenario.",
+      "bodyType": "json",
+      "inputExample": {
+        "scenario": {
+          "parameters": {
+            "demand_signal": 0.72,
+            "execution_quality": 0.65,
+            "pricing_pressure": -0.35
+          },
+          "threshold": 0.25
+        },
+        "bounds": {
+          "demand_signal": {
+            "min": 0.55,
+            "max": 0.9
+          },
+          "execution_quality": {
+            "min": 0.5,
+            "max": 0.85
+          },
+          "pricing_pressure": {
+            "min": -0.5,
+            "max": -0.1
+          }
+        },
+        "iterations": 100,
+        "objective": "outcome_probability"
+      },
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "scenario"
+        ],
+        "$defs": {
+          "scenario": {
+            "type": "object",
+            "required": [
+              "parameters"
+            ],
+            "properties": {
+              "parameters": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "weights": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "uncertainty": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "bias": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          },
+          "bound": {
+            "type": "object",
+            "required": [
+              "min",
+              "max"
+            ],
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "properties": {
+          "scenario": {
+            "$ref": "#/$defs/scenario"
+          },
+          "bounds": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "$ref": "#/$defs/bound"
+            }
+          },
+          "iterations": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "objective": {
+            "type": "string",
+            "enum": [
+              "outcome_probability",
+              "mean_score"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "optimization_meta": {
+          "simulations_run": 10000,
+          "model_version": "3.0.0",
+          "objective": "outcome_probability",
+          "iterations_evaluated": 101
+        },
+        "baseline": {
+          "parameters": {
+            "demand_signal": 0.72,
+            "execution_quality": 0.65,
+            "pricing_pressure": -0.35
+          },
+          "result": {
+            "outcome_probability": 0.6743
+          }
+        },
+        "optimum": {
+          "parameters": {
+            "demand_signal": 0.9,
+            "execution_quality": 0.83,
+            "pricing_pressure": -0.19
+          },
+          "result": {
+            "outcome_probability": 0.7815
+          },
+          "objective_value": 0.7815
+        },
+        "improvement": 0.1072,
+        "bounds": {
+          "demand_signal": {
+            "min": 0.55,
+            "max": 0.9
+          },
+          "execution_quality": {
+            "min": 0.5,
+            "max": 0.85
+          },
+          "pricing_pressure": {
+            "min": -0.5,
+            "max": -0.1
+          }
+        }
+      },
+      "outputSchema": {
+        "type": "object",
+        "required": [
+          "optimization_meta",
+          "baseline",
+          "optimum",
+          "improvement",
+          "bounds"
+        ],
+        "properties": {
+          "optimization_meta": {
+            "type": "object"
+          },
+          "baseline": {
+            "type": "object"
+          },
+          "optimum": {
+            "type": "object"
+          },
+          "improvement": {
+            "type": "number"
+          },
+          "bounds": {
+            "type": "object"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  ]
+}
