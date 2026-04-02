@@ -3942,7 +3942,13 @@ function buildOpenApiDocument(routes = routeConfig, options = {}) {
   const env = options.env || process.env;
   const metadata = getOriginMetadata(env);
   const paths = {};
-  const routeEntries = Object.entries(routes).filter(([routeKey]) => !shouldHideRouteInProduction(routeKey, { env }));
+  const catalog = buildCatalogEntries(routes, { includeDiscoveryFields: true, env });
+  const coreRouteKeys = selectCoreDiscoveryRouteKeys(catalog);
+  const profile = String(options.profile || "compact").trim().toLowerCase();
+  const includeFullProfile = profile === "full";
+  const routeEntries = Object.entries(routes)
+    .filter(([routeKey]) => !shouldHideRouteInProduction(routeKey, { env }))
+    .filter(([routeKey]) => includeFullProfile || coreRouteKeys.has(routeKey));
 
   for (const [routeKey, config] of routeEntries) {
     const [method = "GET", routePath = "/"] = String(routeKey).split(" ");
@@ -4038,8 +4044,9 @@ function buildOpenApiDocument(routes = routeConfig, options = {}) {
 
 function createOpenApiHandler(routes = routeConfig, options = {}) {
   const env = options.env || process.env;
+  const profile = options.profile || "compact";
   return function openApiHandler(_req, res) {
-    res.json(buildOpenApiDocument(routes, { env }));
+    res.json(buildOpenApiDocument(routes, { env, profile }));
   };
 }
 
@@ -4282,8 +4289,8 @@ function createApp(options = {}) {
   app.get("/openapi", (_req, res) => {
     res.redirect(308, "/openapi.json");
   });
-  app.get("/openapi.json", createOpenApiHandler(routes, { env }));
-  app.get("/openapi-full.json", createOpenApiHandler(routes, { env }));
+  app.get("/openapi.json", createOpenApiHandler(routes, { env, profile: "compact" }));
+  app.get("/openapi-full.json", createOpenApiHandler(routes, { env, profile: "full" }));
   app.get("/favicon.ico", createFaviconHandler());
   app.get("/icon.png", createFaviconHandler());
   app.get("/api/sim", createSimLandingHandler(routes, { env }));

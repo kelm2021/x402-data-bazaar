@@ -192,7 +192,26 @@ test("openapi document is publicly reachable with title and icon metadata", asyn
     assert.equal(body.info.version, "1.0.0");
     assert.equal(body.info["x-logo"].url, "https://x402.aurelianflo.com/favicon.ico");
     assert.equal(body.servers[0].url, "https://x402.aurelianflo.com");
-    assert.ok(body.paths["/api/stocks/search"]?.get);
+    assert.ok(body.paths["/api/sim/probability"]?.post);
+  });
+});
+
+test("openapi defaults to core-first while full catalog remains on openapi-full", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+
+  await withServer(app, async (baseUrl) => {
+    const compactResponse = await fetch(`${baseUrl}/openapi.json`);
+    const compactBody = await compactResponse.json();
+    const fullResponse = await fetch(`${baseUrl}/openapi-full.json`);
+    const fullBody = await fullResponse.json();
+
+    assert.equal(compactResponse.status, 200);
+    assert.equal(fullResponse.status, 200);
+    assert.ok(Object.keys(compactBody.paths).length <= 40);
+    assert.ok(Object.keys(fullBody.paths).length > Object.keys(compactBody.paths).length);
+    assert.ok(compactBody.paths["/api/sim/probability"]?.post);
+    assert.equal(compactBody.paths["/api/tools/qr/generate"], undefined);
+    assert.ok(fullBody.paths["/api/tools/qr/generate"]?.post);
   });
 });
 
