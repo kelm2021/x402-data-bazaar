@@ -40,6 +40,8 @@ const {
 const {
   createMercTrustEnforcementFromEnv,
 } = require("./lib/merc-trust-enforcement");
+const generatedCatalogDocument = require("./routes/generated-catalog.json");
+const generatedRoutes = require("./routes/generated");
 const WELL_KNOWN_X402_AURELIAN = require("./well-known-x402-aurelian.json");
 
 const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
@@ -2221,8 +2223,40 @@ function createRouteConfig(payTo = PAY_TO) {
       },
     }),
     ...createExpandedRouteConfig(payTo),
+    ...createGeneratedRouteConfig(payTo),
     ...createBundledSellerRouteConfig(),
   };
+}
+
+function createGeneratedRouteConfig(payTo = PAY_TO) {
+  const generatedRouteConfig = {};
+  const generatedEntries = Array.isArray(generatedCatalogDocument?.routes)
+    ? generatedCatalogDocument.routes
+    : [];
+
+  for (const entry of generatedEntries) {
+    const routeKey = String(entry?.key || "").trim();
+    if (!routeKey) {
+      continue;
+    }
+
+    generatedRouteConfig[routeKey] = createPricedRoute({
+      price: entry?.price || "0.005",
+      description: entry?.description || routeKey,
+      category: entry?.category || "generated",
+      tags: Array.isArray(entry?.tags) ? entry.tags : ["generated"],
+      payTo,
+      resourcePath:
+        entry?.canonicalPath
+        || entry?.resourcePath
+        || entry?.routePath
+        || getRoutePathFromKey(routeKey),
+      queryExample: isPlainObject(entry?.queryExample) ? entry.queryExample : undefined,
+      outputExample: isPlainObject(entry?.outputExample) ? entry.outputExample : undefined,
+    });
+  }
+
+  return generatedRouteConfig;
 }
 
 const routeConfig = createRouteConfig();
@@ -2360,6 +2394,7 @@ function buildCatalogEntries(routes = routeConfig, options = {}) {
     return {
       ...baseEntry,
       routeKey: key,
+      surface: getDiscoverySurfaceFromEntry(baseEntry),
       priceUsd: parseUsdPriceValue(paymentOption?.price ?? config.price ?? null),
       examplePath: getExamplePathFromResource(resourceUrl, path),
       exampleUrl: resourceUrl,
@@ -3991,6 +4026,7 @@ function mountPaidRoutes(target) {
   target.use(require("./routes/legal"));
   target.use(require("./routes/sports"));
   target.use(require("./routes/world-data"));
+  target.use(generatedRoutes);
 
   for (const route of getBundledSellerRoutes()) {
     const method = String(route?.method || "").toLowerCase();
@@ -4084,14 +4120,20 @@ function createApp(options = {}) {
   app.get("/api/system/health", createHealthHandler(routes, { env }));
   app.get("/api/system/discovery", createApiDiscoveryHandler(routes, { env }));
   app.get("/api/system/discovery/full", (req, res) => {
-    req.query = { ...req.query, profile: "full" };
-    return createApiDiscoveryHandler(routes, { env })(req, res);
+    return res.json(buildApiDiscoveryPayload(routes, {
+      env,
+      req: {
+        ...req,
+        query: { ...req.query, profile: "full" },
+      },
+    }));
   });
   app.get("/api", createApiDiscoveryHandler(routes, { env }));
   app.get("/openapi", (_req, res) => {
     res.redirect(308, "/openapi.json");
   });
   app.get("/openapi.json", createOpenApiHandler(routes, { env }));
+  app.get("/openapi-full.json", createOpenApiHandler(routes, { env }));
   app.get("/favicon.ico", createFaviconHandler());
   app.get("/icon.png", createFaviconHandler());
   app.get("/api/sim", createSimLandingHandler(routes, { env }));
