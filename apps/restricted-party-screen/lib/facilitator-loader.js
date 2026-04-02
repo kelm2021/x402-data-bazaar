@@ -7,7 +7,7 @@ const FACILITATOR_URLS = Object.freeze({
   daydreams: "https://facilitator.daydreams.systems",
   dexter: "https://x402.dexter.cash",
 });
-const DEFAULT_AUTO_FACILITATORS = Object.freeze(["coinbase", "payai", "dexter"]);
+const DEFAULT_AUTO_FACILITATORS = Object.freeze(["payai", "dexter"]);
 const SUPPORTED_X402_FACILITATORS = Object.freeze([
   "auto",
   "coinbase",
