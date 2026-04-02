@@ -3861,7 +3861,7 @@ function createHealthHandler(routes = routeConfig, options = {}) {
         title: metadata.title,
         description: metadata.description,
         baseUrl: getRequestBaseUrl(req),
-        endpointCount: payload.totalEndpoints,
+        endpointCount: payload.endpoints,
       });
       return res.type("text/html; charset=utf-8").send(html);
     }

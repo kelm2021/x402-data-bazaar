@@ -130,6 +130,7 @@ test("health root serves title/description metadata when HTML is requested", asy
       body,
       /<meta name="description" content="Curated, high-signal endpoints with x402-native access\."/i,
     );
+    assert.match(body, /Endpoints indexed: 40/i);
   });
 });
 
