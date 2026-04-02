@@ -70,19 +70,19 @@ Use payments-mcp to pay https://restricted-party-screen.vercel.app/api/ofac-sanc
 ### Short Post
 
 ```text
-Built a paid x402 OFAC sanctions and restricted-party screening endpoint for agent workflows. MCP-ready, direct pay via Coinbase Payments MCP, and SIWX-enabled for repeat access. Canonical route: https://restricted-party-screen.vercel.app/api/ofac-sanctions-screening/SBERBANK?minScore=90&limit=5
+Built a paid x402 OFAC sanctions and restricted-party screening endpoint for agent workflows. MCP-ready, direct pay via Payments MCP, and SIWX-enabled for repeat access. Canonical route: https://restricted-party-screen.vercel.app/api/ofac-sanctions-screening/SBERBANK?minScore=90&limit=5
 ```
 
 ### Developer DM
 
 ```text
-If you are building procurement, payout, or cross-border agents, I have a live x402 endpoint for OFAC-style restricted-party screening. You can call it through Coinbase Payments MCP and pay per request instead of wiring a custom integration.
+If you are building procurement, payout, or cross-border agents, I have a live x402 endpoint for OFAC-style restricted-party screening. You can call it through Payments MCP and pay per request instead of wiring a custom integration.
 ```
 
 ### README / Docs Snippet
 
 ```text
-Install Coinbase Payments MCP, then call the canonical restricted-party-screen route through MCP. The seller returns grouped matches, sanctions programs, source freshness, and a manual-review signal for agent workflows.
+Install Payments MCP, then call the canonical restricted-party-screen route through MCP. The seller returns grouped matches, sanctions programs, source freshness, and a manual-review signal for agent workflows.
 ```
 
 ## Operating Sequence

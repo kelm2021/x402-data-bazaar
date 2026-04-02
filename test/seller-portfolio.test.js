@@ -118,7 +118,7 @@ test("createPortfolioReport prioritizes discovery gaps and flags reliability ris
     },
     discoveryItems: [
       {
-        resource: "https://x402-data-bazaar.vercel.app/api/weather/current/40.7128/-74.0060",
+        resource: "https://x402.aurelianflo.com/api/weather/current/40.7128/-74.0060",
         lastUpdated: "2026-03-16T17:00:00.000Z",
       },
     ],
@@ -134,3 +134,4 @@ test("createPortfolioReport prioritizes discovery gaps and flags reliability ris
   assert.equal(nutrition.action, "hold-or-retire");
   assert.equal(nutrition.metrics.serverErrors, 2);
 });
+

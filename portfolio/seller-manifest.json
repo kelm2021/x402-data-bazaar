@@ -10,6 +10,14 @@
       "notes": "Phase-1 wedge for agent transaction checks."
     },
     {
+      "id": "generic-parameter-simulator",
+      "path": "apps/generic-parameter-simulator",
+      "classification": "core",
+      "status": "active",
+      "operatingMode": "build-and-measure",
+      "notes": "Generic parameter Monte Carlo endpoint for agent scenario probability estimation."
+    },
+    {
       "id": "calendar-business-days",
       "path": "routes/holidays.js",
       "classification": "legacy-keep",

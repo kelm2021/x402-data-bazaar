@@ -17,12 +17,15 @@ const {
   annotatePaymentRequired,
   buildPaymentRequiredFromRoute,
 } = require("./lib/payment-required-compat");
+const {
+  getConfiguredFacilitatorUrl,
+  loadCoinbaseFacilitator: loadCoinbaseFacilitatorForEnv,
+  loadFacilitator: loadFacilitatorForEnv,
+} = require("../../lib/facilitator-loader");
 
 const PAY_TO = sellerConfig.payTo;
 const X402_NETWORK = sellerConfig.network || "eip155:8453";
 const DEFAULT_TIMEOUT_SECONDS = sellerConfig.maxTimeoutSeconds || 60;
-const DEFAULT_FACILITATOR_URL =
-  "https://api.cdp.coinbase.com/platform/v2/x402";
 const CANONICAL_BASE_URL =
   process.env.PUBLIC_BASE_URL || sellerConfig.baseUrl || "https://example.vercel.app";
 
@@ -327,8 +330,11 @@ function sanitizePaymentPayloadForMatching(payload) {
 }
 
 async function loadCoinbaseFacilitator(env = process.env) {
-  const { createFacilitatorConfig } = await import("@coinbase/x402");
-  return createFacilitatorConfig(env.CDP_API_KEY_ID, env.CDP_API_KEY_SECRET);
+  return loadCoinbaseFacilitatorForEnv(env);
+}
+
+async function loadFacilitator(env = process.env) {
+  return loadFacilitatorForEnv(env);
 }
 
 function createFacilitatorClient(facilitator) {
@@ -396,7 +402,8 @@ function createPaymentResourceServer(options = {}) {
 function createPaymentGate(options = {}) {
   const routes = options.routes ?? routeConfig;
   const matchRoute = createRouteMatcher(routes);
-  const facilitatorLoader = options.facilitatorLoader ?? (() => loadCoinbaseFacilitator());
+  const paymentEnv = options.env ?? process.env;
+  const facilitatorLoader = options.facilitatorLoader ?? (() => loadFacilitator(paymentEnv));
   const initRetryCount = Math.max(1, Number(options.paymentInitRetryCount ?? 2));
   const extractFacilitatorUrl = (value) => {
     if (!value) {
@@ -428,10 +435,8 @@ function createPaymentGate(options = {}) {
   const fastUnpaidResponse = options.fastUnpaidResponse ?? false;
   let facilitatorUrl =
     extractFacilitatorUrl(
-      options.facilitatorUrl ??
-        options.env?.X402_FACILITATOR_URL ??
-        process.env.X402_FACILITATOR_URL,
-    ) ?? DEFAULT_FACILITATOR_URL;
+      options.facilitatorUrl ?? getConfiguredFacilitatorUrl(paymentEnv),
+    );
 
   let paymentReady = null;
   const isFacilitatorInitFailure = (error) =>
@@ -701,6 +706,9 @@ function createPaymentsMcpIntegration(routes = routeConfig) {
     `${CANONICAL_BASE_URL}/api/vendor-entity-brief?name=<LEGAL_ENTITY_NAME>&country=<ISO2_COUNTRY_CODE>&minScore=90&limit=3`;
 
   return {
+    integrationName: "Payments MCP",
+    installerNote:
+      "Use the package name exactly as shown for installation compatibility.",
     installerPackage: "@coinbase/payments-mcp",
     installCommands: {
       codex: "npx @coinbase/payments-mcp --client codex --auto-config",
@@ -738,11 +746,11 @@ function createPaymentsMcpIntegration(routes = routeConfig) {
     ],
     shareCopy: {
       shortPost:
-        "Built a vendor-entity-brief add-on at vendor-entity-brief.vercel.app for teams that need a short handoff artifact after a restricted-party screen. It resolves legal entities through GLEIF, layers in OFAC screening, and is ready to call through Coinbase Payments MCP.",
+        "Built a vendor-entity-brief add-on at vendor-entity-brief.vercel.app for teams that need a short handoff artifact after a restricted-party screen. It resolves legal entities through GLEIF, layers in OFAC screening, and is ready to call through Payments MCP.",
       developerDm:
         "If you are building procurement, AP, or cross-border onboarding agents, I have a live x402 vendor entity brief that combines GLEIF entity records with OFAC screening in one paid call. It works best as the follow-on step when a buyer needs a compact summary, not as the first-pass gate.",
       docsSnippet:
-        "Install Coinbase Payments MCP, then call the vendor-entity-brief route through MCP when a clean screen still needs a compact handoff summary with LEI candidates, jurisdiction context, sanctions matches, and a proceed-or-pause recommendation.",
+        "Install Payments MCP, then call the vendor-entity-brief route through MCP when a clean screen still needs a compact handoff summary with LEI candidates, jurisdiction context, sanctions matches, and a proceed-or-pause recommendation.",
     },
   };
 }
@@ -863,6 +871,7 @@ module.exports = {
   createRouteCatalog,
   createRouteConfig,
   createPaymentsMcpIntegration,
+  loadFacilitator,
   loadCoinbaseFacilitator,
   routeConfig,
   sellerConfig,

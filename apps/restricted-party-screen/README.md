@@ -106,7 +106,7 @@ For the client-side reclaim demo:
 - `SIWX_DEMO_URL`
 - `SIWX_DEMO_MAX_AMOUNT_ATOMIC`
 
-SIWX verification now defaults to Base smart-wallet verification, which matters for Coinbase smart wallets and other contract wallets reclaiming already-purchased access.
+SIWX verification now defaults to Base smart-wallet verification, which matters for smart wallets and other contract wallets reclaiming already-purchased access.
 
 ## True Reclaim Demo
 

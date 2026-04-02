@@ -18,7 +18,7 @@ As of March 16, 2026 and March 17, 2026 UTC verification:
 - production deploy is live on Vercel
 - unpaid request returns `402 Payment Required`
 - live payment settles successfully on Base
-- Coinbase Payments MCP wallet bridge can execute the paid route end-to-end
+- Payments MCP wallet bridge can execute the paid route end-to-end
 - paid request returns grouped OFAC screening results
 - shared metrics ingestion is working
 - seller health surface exposes Payments MCP integration metadata
@@ -74,14 +74,14 @@ Confirmed on March 17, 2026 via the paginated discovery API after the OFAC-route
 Repeat access still needs one more client-side step:
 
 - the seller now supports SIWX verification for smart wallets
-- Coinbase Payments MCP did not reclaim access via SIWX in live testing and instead settled a fresh payment on the second identical request
+- Payments MCP did not reclaim access via SIWX in live testing and instead settled a fresh payment on the second identical request
 - a full reclaim test now exists in `npm run restricted-party-screen:siwx-demo`
-- the current remaining gap is specifically Coinbase Payments MCP not yet sending the SIWX proof on repeat requests
+- the current remaining gap is specifically Payments MCP not yet sending the SIWX proof on repeat requests
 - upstream issue opened: `https://github.com/coinbase/payments-mcp/issues/23`
 
 ## Next Checks
 
 1. Watch CDP discovery for the stale restricted-party resource to refresh to the OFAC route or for the OFAC route to appear alongside it.
 2. Keep pushing the direct Payments MCP lane while Bazaar search catches up.
-3. Watch for Coinbase Payments MCP or another client path that actually sends SIWX proofs on repeat requests.
+3. Watch for Payments MCP or another client path that actually sends SIWX proofs on repeat requests.
 4. Measure external probes and first non-self paid buyer against the pivot gates in `docs/rebuild-blueprint.md`.

@@ -2,9 +2,13 @@ node_modules/
 .vercel/
 .playwright-cli/
 tmp/
+tmp-*
+tmp-*/
 .tmp_public_base_url.txt
 tmp_api_new_domain.json
 /docs/remote-codex-runner/runner-refresh-stage/
+ops-dashboard/payment-sweep-*.json
+ops-dashboard/payment-retest-*.json
 
 # Local environment snapshots
 .env

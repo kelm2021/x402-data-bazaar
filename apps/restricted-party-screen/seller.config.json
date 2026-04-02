@@ -86,6 +86,45 @@
         "minScore": "90",
         "limit": "3"
       },
+      "querySchema": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "type": "string",
+            "description": "Pipe-delimited list of names to screen (required)"
+          },
+          "workflow": {
+            "type": "string",
+            "description": "Workflow label for reporting context"
+          },
+          "minScore": {
+            "type": "string",
+            "description": "Minimum name-match score threshold"
+          },
+          "type": {
+            "type": "string",
+            "description": "Party type filter (e.g. Entity, Individual)"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country filter (ISO alpha-2)"
+          },
+          "program": {
+            "type": "string",
+            "description": "Sanctions program filter"
+          },
+          "list": {
+            "type": "string",
+            "description": "Sanctions list filter"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Maximum grouped matches per name"
+          }
+        },
+        "required": ["names"],
+        "additionalProperties": false
+      },
       "outputExample": {
         "success": true,
         "data": {

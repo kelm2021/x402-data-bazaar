@@ -12,6 +12,7 @@ module.exports.createMetricsStore = appModule.createMetricsStore;
 module.exports.createPaymentGate = appModule.createPaymentGate;
 module.exports.createRouteCatalog = appModule.createRouteCatalog;
 module.exports.createRouteConfig = appModule.createRouteConfig;
+module.exports.loadFacilitator = appModule.loadFacilitator;
 module.exports.loadCoinbaseFacilitator = appModule.loadCoinbaseFacilitator;
 module.exports.PAY_TO = appModule.PAY_TO;
 module.exports.X402_NETWORK = appModule.X402_NETWORK;

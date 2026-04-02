@@ -2,7 +2,6 @@ const { Router } = require("express");
 const {
   requestJson,
   sendNormalizedError,
-  withProviderFallback,
 } = require("../lib/upstream-client");
 
 const router = Router();
@@ -49,108 +48,6 @@ function normalizeCountryPayload(entry) {
     latlng: entry.latlng ?? [],
     flagPng: entry.flags?.png ?? null,
     flagSvg: entry.flags?.svg ?? null,
-  };
-}
-
-function normalizePatentsViewResults(rows = [], limit = 20) {
-  return rows.slice(0, limit).map((row) => ({
-    patentNumber: row.patent_number ?? row.patentNumber ?? null,
-    title: row.patent_title ?? row.title ?? null,
-    abstract: row.patent_abstract ?? row.abstract ?? null,
-    grantDate: row.patent_date ?? row.grantDate ?? null,
-    assignee:
-      row.assignee_organization ??
-      row.assignee ??
-      (Array.isArray(row.assignees) ? row.assignees[0]?.assignee_organization : null) ??
-      null,
-    inventors: Array.isArray(row.inventor_name)
-      ? row.inventor_name
-      : Array.isArray(row.inventors)
-        ? row.inventors
-            .map((inventor) =>
-              [inventor.inventor_first_name, inventor.inventor_last_name].filter(Boolean).join(" "),
-            )
-            .filter(Boolean)
-        : [],
-    cpc: Array.isArray(row.cpc_subgroup_id)
-      ? row.cpc_subgroup_id
-      : Array.isArray(row.cpcs)
-        ? row.cpcs.map((item) => item.cpc_subgroup_id).filter(Boolean)
-        : [],
-    url: row.patent_link ?? null,
-  }));
-}
-
-async function fetchPatentsWithFallback(query, page, perPage, fromDate, toDate) {
-  const epoKey = String(process.env.EPO_OPS_KEY || "").trim();
-  const epoSecret = String(process.env.EPO_OPS_SECRET || "").trim();
-
-  const resolved = await withProviderFallback({
-    primary: {
-      provider: "patentsview",
-      enabled: true,
-      execute: async () => {
-        const payload = {
-          q: {
-            _and: [
-              { _text_any: { patent_title: query } },
-              ...(fromDate ? [{ _gte: { patent_date: fromDate } }] : []),
-              ...(toDate ? [{ _lte: { patent_date: toDate } }] : []),
-            ],
-          },
-          f: [
-            "patent_number",
-            "patent_title",
-            "patent_abstract",
-            "patent_date",
-            "assignee_organization",
-            "inventors",
-            "cpcs",
-          ],
-          o: {
-            page,
-            per_page: perPage,
-          },
-        };
-        const raw = await requestJson({
-          provider: "patentsview",
-          url: "https://api.patentsview.org/patents/query",
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: payload,
-        });
-        const rows = Array.isArray(raw?.patents) ? raw.patents : [];
-        return normalizePatentsViewResults(rows, perPage);
-      },
-    },
-    fallback: {
-      provider: "epo-ops",
-      enabled: Boolean(epoKey && epoSecret),
-      execute: async () => {
-        const raw = await requestJson({
-          provider: "epo-ops",
-          url:
-            "https://ops.epo.org/3.2/rest-services/published-data/search/biblio" +
-            `?q=${encodeURIComponent(query)}&Range=${encodeURIComponent(
-              `${(page - 1) * perPage + 1}-${page * perPage}`,
-            )}`,
-          headers: {
-            Authorization: `Basic ${Buffer.from(`${epoKey}:${epoSecret}`).toString("base64")}`,
-            Accept: "application/json",
-          },
-        });
-        if (typeof raw === "string") {
-          return [];
-        }
-        return normalizePatentsViewResults(raw?.results || raw?.patents || [], perPage);
-      },
-    },
-  });
-
-  return {
-    results: resolved.data,
-    provider: resolved.provider,
-    fallbackUsed: resolved.fallbackUsed,
   };
 }
 
@@ -222,41 +119,9 @@ router.get("/api/country/:code", async (req, res) => {
   }
 });
 
-router.get("/api/patents/search", async (req, res) => {
-  try {
-    const query = String(req.query.q || req.query.query || "").trim();
-    if (!query) {
-      return res.status(400).json({ success: false, error: "q is required" });
-    }
-
-    const page = parsePositiveInt(req.query.page, 1, 1, 1000);
-    const perPage = parsePositiveInt(req.query.perPage, 20, 1, 100);
-    const fromDate = String(req.query.fromDate || "").trim();
-    const toDate = String(req.query.toDate || "").trim();
-    const resolved = await fetchPatentsWithFallback(query, page, perPage, fromDate, toDate);
-
-    res.json({
-      success: true,
-      data: {
-        query,
-        page,
-        perPage,
-        count: resolved.results.length,
-        results: resolved.results,
-        provider: resolved.provider,
-        fallbackUsed: resolved.fallbackUsed,
-      },
-      source: resolved.provider === "epo-ops" ? "EPO Open Patent Services" : "USPTO PatentsView",
-    });
-  } catch (error) {
-    sendNormalizedError(res, error);
-  }
-});
-
 router.parsePositiveInt = parsePositiveInt;
 router.normalizeCountryCode = normalizeCountryCode;
 router.normalizeWorldBankObservations = normalizeWorldBankObservations;
 router.normalizeCountryPayload = normalizeCountryPayload;
-router.normalizePatentsViewResults = normalizePatentsViewResults;
 
 module.exports = router;

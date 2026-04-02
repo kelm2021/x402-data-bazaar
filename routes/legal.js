@@ -60,17 +60,82 @@ function normalizeSecRecentFilings(submissions, limit = 25) {
   return entries.slice(0, limit);
 }
 
-function normalizeCourtResults(results = [], limit = 20) {
+function normalizeCourtSearchResults(results = [], limit = 20) {
   return results.slice(0, limit).map((entry) => ({
-    id: entry.id ?? null,
-    caseName: entry.case_name ?? entry.caseName ?? null,
-    docketNumber: entry.docket_number ?? null,
+    id: entry.id ?? entry.cluster_id ?? entry.docket_id ?? null,
+    clusterId: entry.cluster_id ?? null,
+    docketId: entry.docket_id ?? null,
+    caseName: entry.caseName ?? entry.caseNameFull ?? entry.case_name ?? entry.case_name_full ?? null,
+    citation: entry.citation ?? null,
+    citationCount: entry.citeCount ?? entry.citation_count ?? null,
+    docketNumber: entry.docketNumber ?? entry.docket_number ?? null,
     court: entry.court ?? entry.court_id ?? null,
-    dateFiled: entry.date_filed ?? null,
+    dateFiled: entry.dateFiled ?? entry.date_filed ?? null,
     dateCreated: entry.date_created ?? null,
-    absoluteUrl: entry.absolute_url ?? null,
+    dateArgued: entry.dateArgued ?? null,
+    absoluteUrl: entry.absolute_url ?? entry.docket_absolute_url ?? null,
     snippet: entry.snippet ?? null,
   }));
+}
+
+function normalizeCourtInfoResults(results = [], limit = 20) {
+  return results.slice(0, limit).map((entry) => ({
+    id: entry.id ?? null,
+    shortName: entry.short_name ?? null,
+    fullName: entry.full_name ?? null,
+    citationString: entry.citation_string ?? null,
+    url: entry.url ?? null,
+    jurisdiction: entry.jurisdiction ?? null,
+    parentCourt: entry.parent_court ?? null,
+    appealsTo: entry.appeals_to ?? null,
+    inUse: entry.in_use ?? null,
+    dateModified: entry.date_modified ?? null,
+  }));
+}
+
+function normalizeCitationLookupResults(results = [], limit = 20) {
+  const rows = Array.isArray(results) ? results : [];
+  return rows.slice(0, limit).map((entry) => ({
+    citation: entry.citation ?? null,
+    normalizedCitations: Array.isArray(entry.normalized_citations) ? entry.normalized_citations : [],
+    status: entry.status ?? null,
+    errorMessage: entry.error_message ?? null,
+    clusterCount: Array.isArray(entry.clusters) ? entry.clusters.length : 0,
+    clusters: (Array.isArray(entry.clusters) ? entry.clusters : []).slice(0, 10).map((cluster) => ({
+      id: cluster.id ?? null,
+      caseName: cluster.case_name ?? null,
+      absoluteUrl: cluster.absolute_url ?? null,
+      dateFiled: cluster.date_filed ?? null,
+      citationCount: cluster.citation_count ?? null,
+      precedentialStatus: cluster.precedential_status ?? null,
+    })),
+  }));
+}
+
+function normalizeClusterResults(results = [], limit = 20) {
+  const unique = new Map();
+  for (const entry of results || []) {
+    const clusterId = entry.cluster_id ?? entry.clusterId ?? null;
+    if (!clusterId || unique.has(clusterId)) {
+      continue;
+    }
+
+    unique.set(clusterId, {
+      clusterId,
+      caseName: entry.caseName ?? entry.caseNameFull ?? entry.case_name ?? null,
+      citation: entry.citation ?? null,
+      court: entry.court ?? entry.court_id ?? null,
+      dateFiled: entry.dateFiled ?? entry.date_filed ?? null,
+      absoluteUrl: entry.absolute_url ?? null,
+      snippet: entry.snippet ?? null,
+    });
+
+    if (unique.size >= limit) {
+      break;
+    }
+  }
+
+  return Array.from(unique.values());
 }
 
 async function getSecTickerMap() {
@@ -121,15 +186,50 @@ async function resolveCikFromTicker(ticker) {
   return cik;
 }
 
-async function fetchCourtListener(path, limit) {
+function buildCourtListenerHeaders(includeJsonBody = false) {
   const token = String(process.env.COURTLISTENER_API_TOKEN || "").trim();
-  const headers = token ? { Authorization: `Token ${token}` } : {};
-  const raw = await requestJson({
+  const headers = {
+    Accept: "application/json",
+  };
+  if (includeJsonBody) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (token) {
+    headers.Authorization = `Token ${token}`;
+  }
+
+  return headers;
+}
+
+function serializeCourtQuery(query = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    const normalized = String(value).trim();
+    if (!normalized) {
+      continue;
+    }
+
+    params.append(key, normalized);
+  }
+  return params.toString();
+}
+
+async function requestCourtListener(path, options = {}) {
+  const { method = "GET", query, body } = options;
+  const queryString = serializeCourtQuery(query);
+  const url = `https://www.courtlistener.com/api/rest/v4/${path}${queryString ? `?${queryString}` : ""}`;
+  return requestJson({
     provider: "courtlistener",
-    url: `https://www.courtlistener.com/api/rest/v4/${path}`,
-    headers,
+    url,
+    method,
+    headers: buildCourtListenerHeaders(body != null),
+    body,
   });
-  return normalizeCourtResults(raw?.results || [], limit);
 }
 
 router.get("/api/sec/filings/:ticker", async (req, res) => {
@@ -274,17 +374,56 @@ router.get("/api/courts/cases", async (req, res) => {
     }
 
     const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
-    const cases = await fetchCourtListener(
-      `dockets/?search=${encodeURIComponent(query)}&page_size=${limit}`,
-      limit,
-    );
+    const raw = await requestCourtListener("search/", {
+      query: {
+        q: query,
+        type: "r",
+        page_size: limit,
+      },
+    });
+    const cases = normalizeCourtSearchResults(raw?.results || [], limit);
 
     res.json({
       success: true,
       data: {
         query,
+        totalMatches: Number.isFinite(raw?.count) ? raw.count : null,
         count: cases.length,
         cases,
+        provider: "courtlistener",
+        fallbackUsed: false,
+      },
+      source: "CourtListener API",
+    });
+  } catch (error) {
+    sendNormalizedError(res, error);
+  }
+});
+
+router.get("/api/courts/opinions", async (req, res) => {
+  try {
+    const query = String(req.query.query || req.query.q || "").trim();
+    if (!query) {
+      return res.status(400).json({ success: false, error: "query is required" });
+    }
+
+    const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
+    const raw = await requestCourtListener("search/", {
+      query: {
+        q: query,
+        type: "o",
+        page_size: limit,
+      },
+    });
+    const opinions = normalizeCourtSearchResults(raw?.results || [], limit);
+
+    res.json({
+      success: true,
+      data: {
+        query,
+        totalMatches: Number.isFinite(raw?.count) ? raw.count : null,
+        count: opinions.length,
+        opinions,
         provider: "courtlistener",
         fallbackUsed: false,
       },
@@ -303,17 +442,130 @@ router.get("/api/courts/opinions/:query", async (req, res) => {
     }
 
     const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
-    const opinions = await fetchCourtListener(
-      `opinions/?search=${encodeURIComponent(query)}&page_size=${limit}`,
-      limit,
-    );
+    const raw = await requestCourtListener("search/", {
+      query: {
+        q: query,
+        type: "o",
+        page_size: limit,
+      },
+    });
+    const opinions = normalizeCourtSearchResults(raw?.results || [], limit);
 
     res.json({
       success: true,
       data: {
         query,
+        totalMatches: Number.isFinite(raw?.count) ? raw.count : null,
         count: opinions.length,
         opinions,
+        provider: "courtlistener",
+        fallbackUsed: false,
+      },
+      source: "CourtListener API",
+    });
+  } catch (error) {
+    sendNormalizedError(res, error);
+  }
+});
+
+router.get("/api/courts/citations", async (req, res) => {
+  try {
+    const citationText = String(req.query.citation || req.query.text || req.query.query || "").trim();
+    if (!citationText) {
+      return res.status(400).json({ success: false, error: "citation is required" });
+    }
+
+    const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
+    const raw = await requestCourtListener("citation-lookup/", {
+      method: "POST",
+      body: {
+        text: citationText,
+      },
+    });
+    const citations = normalizeCitationLookupResults(raw, limit);
+
+    res.json({
+      success: true,
+      data: {
+        citation: citationText,
+        count: citations.length,
+        citations,
+        provider: "courtlistener",
+        fallbackUsed: false,
+      },
+      source: "CourtListener API",
+    });
+  } catch (error) {
+    sendNormalizedError(res, error);
+  }
+});
+
+router.get("/api/courts/court-info", async (req, res) => {
+  try {
+    const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
+    const id = String(req.query.id || "").trim();
+    const query = String(req.query.query || req.query.q || "").trim();
+    const jurisdiction = String(req.query.jurisdiction || "").trim();
+    const inUseRaw = String(req.query.inUse || "").trim().toLowerCase();
+    const inUse = inUseRaw === "true" ? "true" : (inUseRaw === "false" ? "false" : "");
+
+    const raw = await requestCourtListener("courts/", {
+      query: {
+        page_size: limit,
+        ...(id ? { id } : {}),
+        ...(query ? { full_name__icontains: query } : {}),
+        ...(jurisdiction ? { jurisdiction } : {}),
+        ...(inUse ? { in_use: inUse } : {}),
+      },
+    });
+    const courts = normalizeCourtInfoResults(raw?.results || [], limit);
+
+    res.json({
+      success: true,
+      data: {
+        filters: {
+          id: id || null,
+          query: query || null,
+          jurisdiction: jurisdiction || null,
+          inUse: inUse || null,
+        },
+        totalMatches: Number.isFinite(raw?.count) ? raw.count : null,
+        count: courts.length,
+        courts,
+        provider: "courtlistener",
+        fallbackUsed: false,
+      },
+      source: "CourtListener API",
+    });
+  } catch (error) {
+    sendNormalizedError(res, error);
+  }
+});
+
+router.get("/api/courts/clusters", async (req, res) => {
+  try {
+    const query = String(req.query.query || req.query.q || "").trim();
+    if (!query) {
+      return res.status(400).json({ success: false, error: "query is required" });
+    }
+
+    const limit = parsePositiveInt(req.query.limit, 20, 1, 100);
+    const raw = await requestCourtListener("search/", {
+      query: {
+        q: query,
+        type: "o",
+        page_size: Math.min(limit * 3, 200),
+      },
+    });
+    const clusters = normalizeClusterResults(raw?.results || [], limit);
+
+    res.json({
+      success: true,
+      data: {
+        query,
+        totalMatches: Number.isFinite(raw?.count) ? raw.count : null,
+        count: clusters.length,
+        clusters,
         provider: "courtlistener",
         fallbackUsed: false,
       },
@@ -327,7 +579,11 @@ router.get("/api/courts/opinions/:query", async (req, res) => {
 router.normalizeTicker = normalizeTicker;
 router.parsePositiveInt = parsePositiveInt;
 router.normalizeSecRecentFilings = normalizeSecRecentFilings;
-router.normalizeCourtResults = normalizeCourtResults;
+router.normalizeCourtSearchResults = normalizeCourtSearchResults;
+router.normalizeCourtResults = normalizeCourtSearchResults;
+router.normalizeCourtInfoResults = normalizeCourtInfoResults;
+router.normalizeCitationLookupResults = normalizeCitationLookupResults;
+router.normalizeClusterResults = normalizeClusterResults;
 router.resolveCikFromTicker = resolveCikFromTicker;
 
 module.exports = router;

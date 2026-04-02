@@ -15,6 +15,7 @@
     "portfolio:report": "node scripts/portfolio_report.js",
     "portfolio:scaffold": "node scripts/scaffold_portfolio_seller.js",
     "portfolio:live": "node scripts/live_seller_status.js",
+    "ownership:proof": "node scripts/generate_ownership_proof.js",
     "402index:search": "node scripts/automation_http.cjs 402index-search",
     "402index:probe": "node scripts/automation_http.cjs 402index-probe",
     "402index:check": "node scripts/automation_http.cjs 402index-check",
@@ -33,6 +34,7 @@
   "type": "commonjs",
   "dependencies": {
     "@coinbase/x402": "^2.1.0",
+    "@swader/x402facilitators": "^0.0.14",
     "@upstash/redis": "^1.37.0",
     "@x402/core": "^2.6.0",
     "@x402/evm": "^2.6.0",
