@@ -1,0 +1,66 @@
+{
+  "corpus": {
+    "name": "The Saliba Signal",
+    "description": "Tony Saliba brings decades of institutional insight to the future of finance. Essential reading on RWA tokenization and institutional adoption.",
+    "articles": [
+      {
+        "slug": "what-i-m-watching-this-week",
+        "title": "What I'm Watching This Week",
+        "summary": "Three separate trends that aren't actually separate. Here's what I see.",
+        "author": {
+          "name": "Tony Saliba",
+          "slug": "tony-saliba"
+        },
+        "publishedAt": "2026-03-27T19:05:54Z",
+        "updatedAt": "2026-03-27T20:02:03Z",
+        "topics": [
+          "tokenization-infrastructure-going-live",
+          "payment-rails-follow-what-the-banks-are-building",
+          "ai-solving-the-liquidity-problem",
+          "crypto-s-institutional-build-out",
+          "how-these-trends-connect",
+          "what-i-m-positioning-for"
+        ],
+        "citations": [],
+        "sections": [
+          {
+            "heading": "Body",
+            "markdown": "I've been trading long enough to recognize when separate trends start moving together. Tokenization infrastructure, payment rails, and AI are converging right now in ways that remind me of the late '80s when electronic trading, derivatives exchanges, and real-time data feeds all came online within a few years of each other. None of them worked in isolation, but together they rewired how markets functioned.\n\nHere's what I'm tracking."
+          },
+          {
+            "heading": "Tokenization Infrastructure Going Live",
+            "markdown": "BlackRock's BUIDL fund crossed $2 billion in assets this month, making it the largest tokenized treasury fund on the market. The dollar figure gets the headlines, but what matters more is what's happening underneath. State Street, BNY Mellon, and Fidelity are running production pilots with live client assets on tokenized securities platforms.\n\nWhen three of the largest custodians in the world build the same infrastructure at the same time, they're preparing for something specific. I'm watching settlement speed as the key signal. T+0 settlement sounds boring until you understand what it unlocks. Faster settlement means capital moves faster, and faster capital movement changes what's possible in terms of leverage, arbitrage, and risk management."
+          },
+          {
+            "heading": "Payment Rails: Follow What the Banks Are Building",
+            "markdown": "JPMorgan's Kinexys platform processed over $1 trillion in repo transactions last year using blockchain settlement. Citi launched its Digital Asset Receipt system for tokenized deposits and is piloting it with institutional clients. Both are live production systems handling real money.\n\nWhen major banks independently build similar infrastructure, they're solving the same problem. Cross-border payments that take 3-5 days and cost 3-7% in fees create friction when you're moving institutional-scale capital. Tokenized deposits and programmable payment rails eliminate most of that friction."
+          },
+          {
+            "heading": "AI Solving the Liquidity Problem",
+            "markdown": "Tokenization solves access by fractionalizing a $50 million commercial real estate asset into tradeable units. But it creates a new problem: how do you provide continuous pricing for an asset that doesn't trade frequently?\n\nAI is solving that. Automated market makers trained on comparable sales data, rent rolls, and economic indicators can provide continuous pricing even when the underlying asset isn't trading. Figure Technologies and Securitize are already deploying this for real estate and private credit.\n\nIn the early days of options trading, the Black-Scholes model gave market makers confidence to quote prices because they finally had a rational framework for valuation. AI does the same thing for tokenized real-world assets. It makes markets that couldn't be made before."
+          },
+          {
+            "heading": "Crypto's Institutional Build-Out",
+            "markdown": "Bitcoin spot ETFs brought in $15 billion of net inflows in Q1 2026. The more interesting development is happening in backend infrastructure. Fidelity Digital Assets and Schwab are building custody systems, tax reporting tools, and portfolio analytics that treat digital assets the same way they treat equities and bonds.\n\nWhen Fidelity processes tokenized treasury bonds through the same systems it uses for traditional treasuries, the distinction between crypto and traditional finance starts to disappear."
+          },
+          {
+            "heading": "How These Trends Connect",
+            "markdown": "Tokenization represents assets digitally. Payment rails move value instantly. AI prices illiquid assets and provides continuous markets. Institutional adoption handles custody, compliance, and regulatory integration.\n\nWhen all the pieces come together, you get new asset classes and strategies that weren't possible before."
+          },
+          {
+            "heading": "What I'm Positioning For",
+            "markdown": "Pay attention to who's building infrastructure, not who's launching products. The rails matter more than the first applications built on top of them. Watch where institutional capital is being deployed because retail chases yields while institutions build systems. And watch for liquidity signals because the moment tokenized assets trade as easily as ETFs, adoption will accelerate fast."
+          }
+        ]
+      }
+    ]
+  },
+  "distribution": {
+    "wrapped": {
+      "originUrl": "https://saliba-signal.beehiiv.com",
+      "paymentWallet": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+      "price": "0.05",
+      "pathPattern": "/p/*"
+    }
+  }
+}

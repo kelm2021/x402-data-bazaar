@@ -1,0 +1,122 @@
+{
+  "corpus": {
+    "name": "AurelianFlo Publisher Stack Demo Corpus",
+    "description": "Sample premium content packaged for agent-buyable access.",
+    "articles": [
+      {
+        "slug": "agentic-commerce-primer",
+        "title": "Agentic Commerce Primer",
+        "summary": "How wallet-native agents move from scraping pages to buying structured utility with x402.",
+        "author": {
+          "name": "Kent Egan",
+          "slug": "kent-egan"
+        },
+        "publishedAt": "2026-03-28",
+        "updatedAt": "2026-04-01",
+        "topics": ["agent-commerce", "x402", "publisher-monetization"],
+        "citations": [
+          {
+            "title": "Introducing EmDash",
+            "url": "https://blog.cloudflare.com/emdash-wordpress/",
+            "source": "Cloudflare"
+          },
+          {
+            "title": "Cloudflare x402 Overview",
+            "url": "https://developers.cloudflare.com/agents/agentic-payments/x402/",
+            "source": "Cloudflare Docs"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Why direct agent payments matter",
+            "markdown": "Agents are no longer limited to scraping public HTML and hoping a human is on the other side of a lead form. With x402, an agent can request a resource, receive explicit payment instructions, pay from a wallet, and continue the workflow immediately."
+          },
+          {
+            "heading": "What publishers actually sell",
+            "markdown": "The real commercial unit is not page access alone. Buyers want structured utility: markdown, JSON, corpus search, citations, and route-level analytics that tell them what to buy again."
+          },
+          {
+            "heading": "Where AurelianFlo fits",
+            "markdown": "Cloudflare can gate content, but teams still need route packaging, wallet routing, search surfaces, and MCP-ready schemas. That is where AurelianFlo converts premium content into reusable agent products."
+          }
+        ]
+      },
+      {
+        "slug": "publisher-mcp-blueprint",
+        "title": "Publisher MCP Blueprint",
+        "summary": "A design for turning content collections into search, retrieval, citation, and export tools that agents can actually call.",
+        "author": {
+          "name": "Kent Egan",
+          "slug": "kent-egan"
+        },
+        "publishedAt": "2026-03-30",
+        "updatedAt": "2026-04-01",
+        "topics": ["agent-commerce", "mcp", "publisher-ops"],
+        "citations": [
+          {
+            "title": "Charge for MCP tools",
+            "url": "https://developers.cloudflare.com/agents/agentic-payments/x402/charge-for-mcp-tools/",
+            "source": "Cloudflare Docs"
+          },
+          {
+            "title": "Cloudflare Agents x402",
+            "url": "https://developers.cloudflare.com/agents/agentic-payments/x402/",
+            "source": "Cloudflare Docs"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Tool surfaces, not page templates",
+            "markdown": "A publisher-grade MCP layer should expose content search, article fetch, citation extraction, and dataset export as explicit tools with clean input schemas. Agents need deterministic calls, not ambiguous prompts."
+          },
+          {
+            "heading": "Wallet routing and commercial control",
+            "markdown": "A serious publisher surface needs route-level pricing, pay-to wallet routing, and clear examples for buyers. Without those pieces, a corpus is only partially monetized."
+          },
+          {
+            "heading": "Operational requirements",
+            "markdown": "Teams need health probes, paid validation, and route analytics so they can trust that a premium corpus still works in production after the first announcement wave fades."
+          }
+        ]
+      },
+      {
+        "slug": "emdash-monetization-playbook",
+        "title": "EmDash Monetization Playbook",
+        "summary": "How to use EmDash x402 support as the access layer, then add productized content APIs above it.",
+        "author": {
+          "name": "AurelianFlo Research",
+          "slug": "aurelianflo-research"
+        },
+        "publishedAt": "2026-04-01",
+        "updatedAt": "2026-04-01",
+        "topics": ["emdash", "publisher-monetization", "content-apis"],
+        "citations": [
+          {
+            "title": "Introducing EmDash",
+            "url": "https://blog.cloudflare.com/emdash-wordpress/",
+            "source": "Cloudflare"
+          },
+          {
+            "title": "Pay Per Crawl",
+            "url": "https://developers.cloudflare.com/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/",
+            "source": "Cloudflare Docs"
+          }
+        ],
+        "sections": [
+          {
+            "heading": "Access versus utility",
+            "markdown": "EmDash makes paid access native by letting a site owner choose the content rule, set the price, and set the wallet address. That solves access. It does not solve search, extraction, or structured export."
+          },
+          {
+            "heading": "Why productization wins",
+            "markdown": "The winning seller turns one article into multiple purchasable surfaces: article payload, markdown export, citation list, entities, topic bundle, and corpus search. Each route is a product, not a generic page fetch."
+          },
+          {
+            "heading": "Practical rollout",
+            "markdown": "Start with ten routes under the publisher domain, validate them with paid probes, publish clear examples, and then expand into MCP tools once the commercial surface is stable."
+          }
+        ]
+      }
+    ]
+  }
+}

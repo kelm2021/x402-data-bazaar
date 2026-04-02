@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-04-02T03:29:27.087Z",
+  "corpus": {
+    "name": "The Saliba Signal",
+    "description": "Tony Saliba brings decades of institutional insight to the future of finance. Essential reading on RWA tokenization and institutional adoption.",
+    "articleCount": 1
+  },
+  "files": {
+    "corpus": "publisher-corpus.json",
+    "runtimeEnv": ".env.publisher-stack",
+    "wrappedRegistration": "wrapped-registration.json"
+  },
+  "runtime": {
+    "env": {
+      "PUBLISHER_STACK_CORPUS_PATH": "./publisher-corpus.json"
+    }
+  },
+  "wrapped": {
+    "originUrl": "https://saliba-signal.beehiiv.com",
+    "paymentWallet": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
+    "price": "0.05",
+    "pathPattern": "/p/*"
+  }
+}
