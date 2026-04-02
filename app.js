@@ -42,6 +42,13 @@ const {
 } = require("./lib/merc-trust-enforcement");
 const generatedCatalogDocument = require("./routes/generated-catalog.json");
 const generatedRoutes = require("./routes/generated");
+const {
+  DEFAULT_AUTHOR_SLUG,
+  DEFAULT_SAMPLE_SLUG,
+  DEFAULT_TOPIC_SLUG,
+  buildPublisherStackExamples,
+} = require("./lib/publisher-stack");
+const createPublisherStackRouter = require("./routes/publisher-stack");
 const WELL_KNOWN_X402_AURELIAN = require("./well-known-x402-aurelian.json");
 
 const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
@@ -2224,6 +2231,7 @@ function createRouteConfig(payTo = PAY_TO) {
     }),
     ...createExpandedRouteConfig(payTo),
     ...createGeneratedRouteConfig(payTo),
+    ...createPublisherStackRouteConfig(payTo),
     ...createBundledSellerRouteConfig(),
   };
 }
@@ -2257,6 +2265,147 @@ function createGeneratedRouteConfig(payTo = PAY_TO) {
   }
 
   return generatedRouteConfig;
+}
+
+function createPublisherStackRouteConfig(payTo = PAY_TO) {
+  const examples = buildPublisherStackExamples();
+
+  return {
+    "GET /api/data/content/article/*": createPricedRoute({
+      price: "0.005",
+      description: "Structured publisher article summary by content slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "article"],
+      payTo,
+      resourcePath: `/api/data/content/article/${DEFAULT_SAMPLE_SLUG}`,
+      outputExample: { success: true, data: examples.articleSummary, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/article/*/markdown": createPricedRoute({
+      price: "0.005",
+      description: "Publisher article markdown and reading-time payload by content slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "markdown"],
+      payTo,
+      resourcePath: `/api/data/content/article/${DEFAULT_SAMPLE_SLUG}/markdown`,
+      outputExample: { success: true, data: examples.articleMarkdown, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/article/*/structured": createPricedRoute({
+      price: "0.006",
+      description: "Publisher article sections and citations by content slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "structured"],
+      payTo,
+      resourcePath: `/api/data/content/article/${DEFAULT_SAMPLE_SLUG}/structured`,
+      outputExample: { success: true, data: examples.articleStructured, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/article/*/citations": createPricedRoute({
+      price: "0.006",
+      description: "Publisher article citation bundle by content slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "citations"],
+      payTo,
+      resourcePath: `/api/data/content/article/${DEFAULT_SAMPLE_SLUG}/citations`,
+      outputExample: { success: true, data: examples.articleCitations, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/article/*/entities": createPricedRoute({
+      price: "0.006",
+      description: "Publisher article entity extraction results by content slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "entities"],
+      payTo,
+      resourcePath: `/api/data/content/article/${DEFAULT_SAMPLE_SLUG}/entities`,
+      outputExample: { success: true, data: examples.articleEntities, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/search": createPricedRoute({
+      price: "0.006",
+      description: "Search publisher articles by query text.",
+      category: "data/content",
+      tags: ["content", "publisher", "search"],
+      payTo,
+      resourcePath: "/api/data/content/search?q=agentic%20commerce",
+      queryExample: { q: "agentic commerce", limit: "3" },
+      querySchema: {
+        properties: {
+          q: { type: "string", description: "Search query text." },
+          limit: { type: "string", description: "Maximum number of results to return." },
+        },
+        required: ["q"],
+        additionalProperties: false,
+      },
+      outputExample: { success: true, data: examples.search, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/corpus/search": createPricedRoute({
+      price: "0.006",
+      description: "Search publisher corpus chunks by query text.",
+      category: "data/content",
+      tags: ["content", "publisher", "corpus-search"],
+      payTo,
+      resourcePath: "/api/data/content/corpus/search?q=wallet%20routing",
+      queryExample: { q: "wallet routing", limit: "3" },
+      querySchema: {
+        properties: {
+          q: { type: "string", description: "Search query text." },
+          limit: { type: "string", description: "Maximum number of chunks to return." },
+          chunkSize: { type: "string", description: "Optional approximate chunk size." },
+        },
+        required: ["q"],
+        additionalProperties: false,
+      },
+      outputExample: { success: true, data: examples.corpusSearch, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/topic/*": createPricedRoute({
+      price: "0.006",
+      description: "List publisher articles grouped under a topic slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "topic"],
+      payTo,
+      resourcePath: `/api/data/content/topic/${DEFAULT_TOPIC_SLUG}`,
+      outputExample: { success: true, data: examples.topic, source: "publisher-stack" },
+    }),
+    "GET /api/data/content/author/*": createPricedRoute({
+      price: "0.006",
+      description: "List publisher articles grouped under an author slug.",
+      category: "data/content",
+      tags: ["content", "publisher", "author"],
+      payTo,
+      resourcePath: `/api/data/content/author/${DEFAULT_AUTHOR_SLUG}`,
+      outputExample: { success: true, data: examples.author, source: "publisher-stack" },
+    }),
+    "POST /api/tools/content/to-dataset": createPricedRoute({
+      price: "0.008",
+      description: "Convert selected publisher articles into a dataset export.",
+      category: "tools/content",
+      tags: ["content", "publisher", "dataset"],
+      payTo,
+      resourcePath: "/api/tools/content/to-dataset",
+      inputExample: {
+        slugs: [DEFAULT_SAMPLE_SLUG, "publisher-mcp-blueprint"],
+        format: "csv",
+        fields: ["slug", "title", "author", "publishedAt", "summary"],
+      },
+      outputExample: { success: true, data: examples.dataset, source: "publisher-stack" },
+    }),
+    "POST /api/tools/content/extract-faq": createPricedRoute({
+      price: "0.008",
+      description: "Extract FAQ pairs from a publisher article or raw text.",
+      category: "tools/content",
+      tags: ["content", "publisher", "faq"],
+      payTo,
+      resourcePath: "/api/tools/content/extract-faq",
+      inputExample: { slug: "publisher-mcp-blueprint", count: 4 },
+      outputExample: { success: true, data: examples.faq, source: "publisher-stack" },
+    }),
+    "POST /api/tools/content/chunk-and-tag": createPricedRoute({
+      price: "0.008",
+      description: "Split publisher content into semantic chunks with tags.",
+      category: "tools/content",
+      tags: ["content", "publisher", "chunking"],
+      payTo,
+      resourcePath: "/api/tools/content/chunk-and-tag",
+      inputExample: { slug: DEFAULT_SAMPLE_SLUG, chunkSize: 220 },
+      outputExample: { success: true, data: examples.chunks, source: "publisher-stack" },
+    }),
+  };
 }
 
 const routeConfig = createRouteConfig();
@@ -4007,7 +4156,7 @@ function createHeadProtectedPaymentGate(paymentGate, routes = routeConfig) {
   };
 }
 
-function mountPaidRoutes(target) {
+function mountPaidRoutes(target, options = {}) {
   target.use(require("./routes/vin"));
   target.use(require("./routes/stocks"));
   target.use(require("./routes/weather"));
@@ -4027,6 +4176,7 @@ function mountPaidRoutes(target) {
   target.use(require("./routes/sports"));
   target.use(require("./routes/world-data"));
   target.use(generatedRoutes);
+  target.use(createPublisherStackRouter({ env: options.env }));
 
   for (const route of getBundledSellerRoutes()) {
     const method = String(route?.method || "").toLowerCase();
@@ -4211,7 +4361,7 @@ function createApp(options = {}) {
   );
 
   const paidRouter = express.Router();
-  mountPaidRoutes(paidRouter);
+  mountPaidRoutes(paidRouter, { env });
   if (mercTrustMiddleware) {
     app.use(protectedPaymentGate, mercTrustMiddleware, paidRouter);
   } else {
