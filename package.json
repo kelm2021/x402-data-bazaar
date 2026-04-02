@@ -14,6 +14,9 @@
     "portfolio:manifest": "node scripts/seller_manifest_report.js",
     "portfolio:report": "node scripts/portfolio_report.js",
     "portfolio:scaffold": "node scripts/scaffold_portfolio_seller.js",
+    "pipeline:endpoints": "node scripts/scaffold_endpoint_pipeline.js",
+    "pipeline:oneshot-domain": "node scripts/pipeline_domain_oneshot.js",
+    "generated:truth": "node scripts/audit_generated_truth.cjs",
     "portfolio:live": "node scripts/live_seller_status.js",
     "ownership:proof": "node scripts/generate_ownership_proof.js",
     "402index:search": "node scripts/automation_http.cjs 402index-search",
@@ -26,7 +29,17 @@
     "restricted-party-screen:distribution-pack": "node scripts/restricted_party_distribution_pack.js",
     "restricted-party-screen:dev": "npm --prefix apps/restricted-party-screen run dev",
     "restricted-party-screen:siwx-demo": "node scripts/restricted_party_siwx_reclaim_demo.js",
-    "restricted-party-screen:test": "npm --prefix apps/restricted-party-screen test"
+    "restricted-party-screen:test": "npm --prefix apps/restricted-party-screen test",
+    "sim-mcp:install": "npm --prefix apps/aurelian-sim-mcp install",
+    "sim-mcp:build": "npm --prefix apps/aurelian-sim-mcp run build",
+    "sim-mcp:dev": "npm --prefix apps/aurelian-sim-mcp run dev",
+    "sim-mcp:start": "npm --prefix apps/aurelian-sim-mcp run start",
+    "publisher-stack:import": "node scripts/import-publisher-corpus.js",
+    "publisher-stack:pack": "node scripts/build-publisher-pack.js",
+    "core40:preflight": "node scripts/core40_preflight.cjs",
+    "core40:paid:awal": "node scripts/core40_paid_sweep.cjs",
+    "core40:nightly": "node scripts/core40_nightly_monitor.cjs",
+    "402index:resync:canonical": "node scripts/resync_402index_canonical.cjs"
   },
   "keywords": [],
   "author": "",
@@ -34,13 +47,18 @@
   "type": "commonjs",
   "dependencies": {
     "@coinbase/x402": "^2.1.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@swader/x402facilitators": "^0.0.14",
     "@upstash/redis": "^1.37.0",
     "@x402/core": "^2.6.0",
     "@x402/evm": "^2.6.0",
     "@x402/express": "^2.6.0",
     "@x402/extensions": "^2.6.0",
+    "docx": "^9.6.1",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
-    "node-fetch": "^2.7.0"
+    "jimp": "^0.22.12",
+    "node-fetch": "^2.7.0",
+    "pdfkit": "^0.18.0"
   }
 }
