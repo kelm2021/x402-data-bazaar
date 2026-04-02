@@ -1,118 +1,262 @@
-# Handoff: Move x402 Facilitator Setup Beyond Coinbase
+# Handoff: 402index Category Patch Runbook
 
-Date: 2026-03-29  
+Date: 2026-03-30  
 Repo: `C:\Users\KentEgan\claude projects\x402-data-bazaar`
 
-## Goal
+## Scope
 
-Stop defaulting to Coinbase-only facilitator bootstrap and support multi-facilitator operation (including automatic failover/load-balancing) for x402 middleware.
+Patch categories on 402index for endpoints listed in:
 
-## Current State (Found in Codebase)
+- `tmp/reports/endpoints-added-today-2026-03-30.json`
 
-The code already has a good abstraction (`facilitatorLoader`) but defaults to Coinbase:
+## Credentials Used
 
-- Root app defaults to `loadCoinbaseFacilitator()` in:
-  - `app.js` (`createPaymentGate`)
-  - `app.js` (`createSettleTestHandler`)
-- Seller apps have the same Coinbase default:
-  - `apps/restricted-party-screen/app.js`
-  - `apps/vendor-entity-brief/app.js`
-  - `apps/generic-parameter-simulator/app.js`
+- Domain: `x402.aurelianflo.com`
+- 402index verification token (used for PATCH):  
+  `2567888441734cd874838b5446a43e63db05d8edf1dc7b700a36d7704afca740`
 
-Also, some integration metadata/copy still references Coinbase MCP package names:
+## Step-by-Step Procedure
 
-- `@coinbase/payments-mcp` strings in:
-  - `apps/restricted-party-screen/app.js`
-  - `apps/vendor-entity-brief/app.js`
-  - `apps/generic-parameter-simulator/app.js`
+1. Confirm current report contents and category distribution:
 
-## Recommended Implementation
-
-1. Add facilitator registry package:
-
-```bash
-npm i @swader/x402facilitators
+```powershell
+Get-Content -Path "C:\Users\KentEgan\claude projects\x402-data-bazaar\tmp\reports\endpoints-added-today-2026-03-30.json" -Raw
 ```
 
-2. Replace Coinbase-only loader with provider-selecting loader.
+2. Confirm 402index service pagination for the domain (`offset` works):
 
-Suggested pattern:
+```powershell
+@'
+const https=require('https');
+https.get('https://402index.io/api/v1/services?q=x402.aurelianflo.com&limit=200&offset=200',res=>{let d='';res.on('data',c=>d+=c);res.on('end',()=>{const j=JSON.parse(d);console.log('count',j.services.length,'total',j.total);});});
+'@ | node -
+```
 
-```js
-async function loadFacilitator(env = process.env) {
-  const provider = String(env.X402_FACILITATOR || "auto").toLowerCase();
+3. Run initial bulk patch script:
+   - Load report file
+   - Load all indexed services (`limit=200` + `offset`)
+   - Match by exact endpoint URL
+   - Category rule applied:
+     - If report row has non-`uncategorized`, keep it
+     - If `uncategorized`, set to `tools/utilities`
+   - PATCH each matched service with:
+     - `domain`
+     - `verification_token`
+     - `category`
 
-  if (provider === "coinbase") {
-    const { createFacilitatorConfig } = await import("@coinbase/x402");
-    return createFacilitatorConfig(env.CDP_API_KEY_ID, env.CDP_API_KEY_SECRET);
+```powershell
+@'
+const fs=require('fs');
+const https=require('https');
+
+const DOMAIN='x402.aurelianflo.com';
+const TOKEN='2567888441734cd874838b5446a43e63db05d8edf1dc7b700a36d7704afca740';
+const REPORT_PATH='C:/Users/KentEgan/claude projects/x402-data-bazaar/tmp/reports/endpoints-added-today-2026-03-30.json';
+const OUTPUT_PATH='C:/Users/KentEgan/claude projects/x402-data-bazaar/tmp/reports/endpoints-added-today-2026-03-30.category-patch-result.json';
+
+function get(url){return new Promise((res,rej)=>{https.get(url,r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res({status:r.statusCode,body:d}));}).on('error',rej);});}
+function patchService(id,payload){
+  const body=JSON.stringify(payload);
+  return new Promise((res,rej)=>{
+    const req=https.request(`https://402index.io/api/v1/services/${id}`,{method:'PATCH',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res({status:r.statusCode,body:d}));});
+    req.on('error',rej); req.write(body); req.end();
+  });
+}
+
+(async()=>{
+  const report=JSON.parse(fs.readFileSync(REPORT_PATH,'utf8'));
+  const added=Array.isArray(report.added_today)?report.added_today:[];
+
+  const services=[];
+  let offset=0;
+  const limit=200;
+  let total=Infinity;
+  while(offset<total){
+    const r=await get(`https://402index.io/api/v1/services?q=${encodeURIComponent(DOMAIN)}&limit=${limit}&offset=${offset}`);
+    const j=JSON.parse(r.body);
+    const batch=Array.isArray(j.services)?j.services:[];
+    total=Number(j.total||0);
+    services.push(...batch);
+    offset+=limit;
+    if(!batch.length) break;
   }
 
-  const f = await import("@swader/x402facilitators");
-  if (provider === "auto") return f.auto;
-  if (provider === "payai") return f.payai;
-  if (provider === "openx402") return f.openx402;
-  if (provider === "daydreams") return f.daydreams;
+  const byUrl=new Map();
+  for(const s of services){
+    const key=String(s.url||'');
+    if(!byUrl.has(key)) byUrl.set(key,[]);
+    byUrl.get(key).push(s);
+  }
 
-  throw new Error(`Unsupported X402_FACILITATOR: ${provider}`);
+  const summary={reportCount:added.length,servicePool:services.length,matched:0,patched:0,noop:0,missing:0,failed:0};
+  const rows=[];
+
+  for(const item of added){
+    const url=String(item.endpoint||'');
+    const candidates=byUrl.get(url)||[];
+    if(!candidates.length){
+      summary.missing++;
+      rows.push({url,status:'missing'});
+      continue;
+    }
+
+    const method=String(item.method||'').toUpperCase();
+    const match=candidates.find(s=>String(s.method||'').toUpperCase()===method) || candidates[0];
+    summary.matched++;
+
+    const sourceCategory=String(item.category||'').trim();
+    const targetCategory=(sourceCategory && sourceCategory.toLowerCase()!=='uncategorized') ? sourceCategory : 'tools/utilities';
+    const currentCategory=String(match.category||'').trim() || 'uncategorized';
+
+    if(currentCategory.toLowerCase()===targetCategory.toLowerCase()){
+      summary.noop++;
+      rows.push({url,id:match.id,status:'noop',from:currentCategory,to:targetCategory});
+      continue;
+    }
+
+    const p=await patchService(match.id,{domain:DOMAIN,verification_token:TOKEN,category:targetCategory});
+    const ok=p.status>=200&&p.status<300;
+    if(ok){
+      summary.patched++;
+      rows.push({url,id:match.id,status:'patched',from:currentCategory,to:targetCategory,httpStatus:p.status});
+    } else {
+      summary.failed++;
+      rows.push({url,id:match.id,status:'failed',from:currentCategory,to:targetCategory,httpStatus:p.status,error:p.body.slice(0,300)});
+    }
+  }
+
+  fs.writeFileSync(OUTPUT_PATH,JSON.stringify({generatedAt:new Date().toISOString(),summary,rows},null,2));
+  console.log(JSON.stringify({summary,output:OUTPUT_PATH},null,2));
+})();
+'@ | node -
+```
+
+4. Handle 402index API rate limit failures (`HTTP 402` with Lightning invoice):
+   - Retry only failed rows
+   - Sequential requests
+   - Backoff on 402 responses
+
+```powershell
+@'
+const fs=require('fs');
+const https=require('https');
+
+const DOMAIN='x402.aurelianflo.com';
+const TOKEN='2567888441734cd874838b5446a43e63db05d8edf1dc7b700a36d7704afca740';
+const REPORT='C:/Users/KentEgan/claude projects/x402-data-bazaar/tmp/reports/endpoints-added-today-2026-03-30.category-patch-result.json';
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function patch(id,category){
+  const body=JSON.stringify({domain:DOMAIN,verification_token:TOKEN,category});
+  return new Promise((res,rej)=>{
+    const req=https.request(`https://402index.io/api/v1/services/${id}`,{method:'PATCH',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res({status:r.statusCode,body:d}));});
+    req.on('error',rej); req.write(body); req.end();
+  });
 }
+
+(async()=>{
+  const j=JSON.parse(fs.readFileSync(REPORT,'utf8'));
+  const failed=j.rows.filter(r=>r.status==='failed');
+  let patched=0,stillFailed=0;
+
+  for(const row of failed){
+    let ok=false; let last=null;
+    for(let attempt=1; attempt<=5; attempt++){
+      const r=await patch(row.id,row.to);
+      last=r;
+      if(r.status>=200&&r.status<300){ok=true;break;}
+      await sleep(r.status===402 ? 2500 : 1200);
+    }
+
+    if(ok){
+      row.status='patched-retry';
+      row.httpStatus=200;
+      delete row.error;
+      patched++;
+    } else {
+      row.status='failed-final';
+      row.httpStatus=last?.status||null;
+      row.error=(last?.body||'').slice(0,300);
+      stillFailed++;
+    }
+
+    await sleep(350);
+  }
+
+  j.retry={attempted:failed.length,patched,stillFailed,completedAt:new Date().toISOString()};
+  fs.writeFileSync(REPORT,JSON.stringify(j,null,2));
+  console.log(JSON.stringify(j.retry,null,2));
+})();
+'@ | node -
 ```
 
-3. Wire this loader into existing defaults in all app variants:
+5. Verify final category state for the exact 163 report endpoints:
 
-- Root:
-  - `app.js` `createPaymentGate(...)`
-  - `app.js` `createSettleTestHandler(...)`
-- Sellers:
-  - `apps/restricted-party-screen/app.js`
-  - `apps/vendor-entity-brief/app.js`
-  - `apps/generic-parameter-simulator/app.js`
+```powershell
+@'
+const fs=require('fs');
+const https=require('https');
 
-4. Add env documentation:
+const DOMAIN='x402.aurelianflo.com';
+const REPORT_PATH='C:/Users/KentEgan/claude projects/x402-data-bazaar/tmp/reports/endpoints-added-today-2026-03-30.json';
+const OUT='C:/Users/KentEgan/claude projects/x402-data-bazaar/tmp/reports/endpoints-added-today-2026-03-30.category-verify.json';
 
-- Update `.env.example` with:
-  - `X402_FACILITATOR=auto`
-  - Optional notes for supported values (`coinbase`, `auto`, `payai`, etc.)
-- Keep CDP credentials documented only when `X402_FACILITATOR=coinbase`.
+function get(url){return new Promise((res,rej)=>{https.get(url,r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>res({status:r.statusCode,body:d}));}).on('error',rej);});}
 
-5. Optional positioning cleanup:
+(async()=>{
+  const report=JSON.parse(fs.readFileSync(REPORT_PATH,'utf8'));
+  const endpoints=(report.added_today||[]).map(e=>String(e.endpoint||''));
 
-- If desired, replace Coinbase-branded MCP references in integration docs/JSON payloads with facilitator-neutral wording.
+  const services=[];
+  let offset=0,total=Infinity,limit=200;
+  while(offset<total){
+    const r=await get(`https://402index.io/api/v1/services?q=${encodeURIComponent(DOMAIN)}&limit=${limit}&offset=${offset}`);
+    const j=JSON.parse(r.body);
+    const batch=j.services||[];
+    total=Number(j.total||0);
+    services.push(...batch);
+    offset+=limit;
+    if(!batch.length) break;
+  }
 
-## Why This Fits Current Architecture
+  const byUrl=new Map();
+  for(const s of services){byUrl.set(String(s.url||''),s);}
 
-- You already use `facilitatorLoader` injection and retry logic.
-- Middleware creation is centralized, so only loader defaults need changing.
-- This minimizes risk and avoids broad payment pipeline rewrites.
+  const rows=[]; let missing=0;
+  for(const url of endpoints){
+    const s=byUrl.get(url);
+    if(!s){missing++; rows.push({url,missing:true}); continue;}
+    rows.push({url,category:s.category||null,id:s.id});
+  }
 
-## Verification Plan
+  const byCat={};
+  for(const r of rows){if(r.missing) continue; const c=r.category||'uncategorized'; byCat[c]=(byCat[c]||0)+1;}
+  const uncat=rows.filter(r=>!r.missing && String(r.category||'').toLowerCase()==='uncategorized').length;
 
-1. Set env and boot app:
-
-```bash
-X402_FACILITATOR=auto
+  const result={generatedAt:new Date().toISOString(),checked:endpoints.length,missing,uncategorized:uncat,byCategory:byCat};
+  fs.writeFileSync(OUT,JSON.stringify({result,rows},null,2));
+  console.log(JSON.stringify({result,output:OUT},null,2));
+})();
+'@ | node -
 ```
 
-2. Hit debug endpoint:
+## Final Outcome from This Run
 
-- `GET /debug/settle-test`
-- Confirm `facilitatorUrl` is not always Coinbase-specific and supported kinds load.
+- Report endpoints checked: 
+- Matched in 402index: 
+- Uncategorized remaining: 
+- Final distribution:
+  - `tools/utilities`: 
+  - `media/images`: 
+  - `crypto/defi`: 
+  - `crypto/transactions`:
 
-3. Smoke test a paid route:
+## Output Files
 
-- Verify normal `402` challenge flow still works.
-- Verify paid settlement still returns `200`.
+- Patch log:  
+  `tmp/reports/endpoints-added-today-2026-03-30.category-patch-result.json`
+- Verification snapshot:  
+  `tmp/reports/endpoints-added-today-2026-03-30.category-verify.json`
 
-4. Regression check:
+## Security Note
 
-- Re-run tests (`node --test`, plus any app-specific test scripts).
-
-## Known Constraints
-
-- Current sellers are Base-focused (`eip155:8453`), so chosen facilitators must support Base for production parity.
-- Some facilitators require separate credentials; map env vars per provider if enabling more than no-key facilitators.
-
-## Sources Used
-
-- Facilitator registry and package guidance:
-  - https://facilitators.x402.watch/
-  - https://github.com/Swader/x402facilitators

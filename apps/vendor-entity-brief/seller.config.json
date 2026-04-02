@@ -12,7 +12,7 @@
     "routePath": "/api/vendor-entity-brief",
     "expressPath": "/api/vendor-entity-brief",
     "resourcePath": "/api/vendor-entity-brief",
-    "canonicalPath": "/api/vendor-entity-brief",
+    "canonicalPath": "/api/data/vendor-entity-brief",
     "price": "0.25",
     "category": "identity",
     "tags": ["compliance", "vendor-risk", "due-diligence", "ofac", "gleif"],

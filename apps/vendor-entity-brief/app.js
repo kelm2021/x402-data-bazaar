@@ -21,11 +21,12 @@ const {
   getConfiguredFacilitatorUrl,
   loadCoinbaseFacilitator: loadCoinbaseFacilitatorForEnv,
   loadFacilitator: loadFacilitatorForEnv,
-} = require("../../lib/facilitator-loader");
+} = require("./lib/facilitator-loader");
 
 const PAY_TO = sellerConfig.payTo;
 const X402_NETWORK = sellerConfig.network || "eip155:8453";
 const DEFAULT_TIMEOUT_SECONDS = sellerConfig.maxTimeoutSeconds || 60;
+const DEFAULT_402INDEX_VERIFICATION_HASH = "";
 const CANONICAL_BASE_URL =
   process.env.PUBLIC_BASE_URL || sellerConfig.baseUrl || "https://example.vercel.app";
 
@@ -803,6 +804,11 @@ function mountPaidRoutes(target) {
 function createApp(options = {}) {
   const env = options.env ?? process.env;
   const routes = options.routes ?? routeConfig;
+  const index402VerificationHash = String(
+    options.index402VerificationHash
+      ?? env.INDEX402_VERIFICATION_HASH
+      ?? DEFAULT_402INDEX_VERIFICATION_HASH,
+  ).trim();
   const metricsRouteCatalog = options.metricsRouteCatalog ?? createRouteCatalog(routes);
   const metricsAttribution =
     options.metricsAttribution ??
@@ -823,6 +829,12 @@ function createApp(options = {}) {
   app.set("trust proxy", 1);
   app.get("/api", createApiDiscoveryHandler(routes));
   app.get("/", createHealthHandler(routes));
+  app.get("/.well-known/402index-verify.txt", (_req, res) => {
+    if (!index402VerificationHash) {
+      return res.status(404).type("text/plain").send("");
+    }
+    return res.type("text/plain").send(index402VerificationHash);
+  });
   app.get("/integrations/payments-mcp", createPaymentsMcpIntegrationHandler(routes));
   app.get(
     "/ops/metrics",
