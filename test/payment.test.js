@@ -145,6 +145,10 @@ test("api discovery endpoint lists concrete endpoint metadata without payment", 
     assert.equal(response.headers.get("payment-required"), null);
     assert.equal(body.name, "AurelianFlo APIs");
     assert.equal(body.payment.protocol, "x402");
+    assert.equal(body.profile, "compact");
+    assert.equal(body.endpoints, 40);
+    assert.equal(body.totalEndpoints > body.endpoints, true);
+    assert.equal(body.navigation?.mode, "core40");
     assert.ok(Array.isArray(body.catalog));
     assert.ok(body.catalog.length > 0);
     assert.ok(weatherEntry);
@@ -155,6 +159,21 @@ test("api discovery endpoint lists concrete endpoint metadata without payment", 
       "https://x402.aurelianflo.com/api/weather/current/40.7128/-74.0060",
     );
     assert.equal(weatherEntry.payment.network, X402_NETWORK);
+  });
+});
+
+test("system discovery alias exposes the same core-first contract", async () => {
+  const app = createApp({ enableDebugRoutes: false });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/system/discovery`);
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.profile, "compact");
+    assert.equal(body.endpoints, 40);
+    assert.equal(body.navigation?.mode, "core40");
+    assert.equal(String(body.navigation?.expand?.full || "").includes("?profile=full"), true);
   });
 });
 
@@ -235,16 +254,18 @@ test("well-known x402 manifest is publicly reachable", async () => {
     assert.equal(standardPathResponse.status, 200);
     assert.equal(standardPathBody.version, 1);
     assert.ok(Array.isArray(standardPathBody.resources));
-    assert.ok(
-      standardPathBody.resources.some((entry) => String(entry).startsWith("GET /api/vin/")),
-    );
+    assert.equal(standardPathBody.resources.length, 40);
+    assert.equal(standardPathBody.discovery?.mode, "core40");
     assert.equal(dotWellKnownResponse.status, 200);
     assert.equal(dotWellKnownBody.name, "AurelianFlo APIs");
     assert.equal(dotWellKnownBody.website, "https://x402.aurelianflo.com");
     assert.ok(Array.isArray(dotWellKnownBody.resources));
-    assert.ok(dotWellKnownBody.resources.length >= 20);
+    assert.equal(dotWellKnownBody.resources.length, 40);
     assert.match(String(dotWellKnownBody.instructions || ""), /## Composable Simulations/);
     assert.ok(Array.isArray(dotWellKnownBody.endpoints));
+    assert.equal(dotWellKnownBody.endpoints.length, 40);
+    assert.equal(dotWellKnownBody.discovery?.mode, "core40");
+    assert.equal(dotWellKnownBody.fullEndpointCount > dotWellKnownBody.endpointCount, true);
 
     const simulationEndpoints = dotWellKnownBody.endpoints.filter(
       (endpoint) =>
@@ -256,9 +277,7 @@ test("well-known x402 manifest is publicly reachable", async () => {
       assert.ok(typeof endpoint.composability?.description === "string", endpoint.path);
     }
 
-    for (const resourceUrl of genericSimulatorResources) {
-      assert.ok(dotWellKnownBody.resources.includes(resourceUrl), resourceUrl);
-    }
+    assert.ok(dotWellKnownBody.resources.includes(`${genericSimulatorBaseUrl}/api/sim/probability`));
 
     assert.ok(!dotWellKnownBody.resources.includes(`${genericSimulatorBaseUrl}/methodology`));
     assert.ok(!dotWellKnownBody.resources.includes(`${genericSimulatorBaseUrl}/integrations/payments-mcp`));
@@ -360,11 +379,12 @@ test("api discovery includes representative all-tier expansion endpoints", async
   });
 
   await withServer(app, async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/api`);
+    const response = await fetch(`${baseUrl}/api?profile=full`);
     const body = await response.json();
     const routeKeys = new Set(body.catalog.map((entry) => entry.routeKey));
 
     assert.equal(response.status, 200);
+    assert.equal(body.profile, "full");
     assert.ok(routeKeys.has("GET /api/stocks/quote/*"));
     assert.ok(routeKeys.has("GET /api/stocks/search"));
     assert.ok(routeKeys.has("GET /api/treasury-rates"));

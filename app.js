@@ -2561,8 +2561,133 @@ function buildWellKnownEndpointEntries(routes = routeConfig, options = {}) {
       },
       rateLimit: getRateLimitHintForPath(entry.path),
       ...(composability ? { composability } : {}),
-    };
-  });
+      };
+    });
+}
+
+const DEFAULT_CORE_DISCOVERY_ALLOWLIST_ROUTE_KEYS = Object.freeze([
+  "POST /api/sim/probability",
+  "POST /api/sim/compare",
+  "POST /api/sim/sensitivity",
+  "POST /api/sim/forecast",
+  "POST /api/sim/composed",
+  "POST /api/sim/optimize",
+  "GET /api/vendor-entity-brief",
+  "GET /api/ofac-sanctions-screening/*",
+  "GET /api/restricted-party/screen/*",
+  "GET /api/vendor-onboarding/restricted-party-batch",
+  "GET /api/treasury-rates",
+  "GET /api/fed-funds-rate",
+  "GET /api/yield-curve",
+  "GET /api/mortgage-rates",
+  "GET /api/credit-spreads",
+  "GET /api/real-rates",
+  "GET /api/inflation-expectations",
+  "GET /api/bls/cpi",
+  "GET /api/bls/unemployment",
+  "GET /api/weather/current/*",
+  "GET /api/weather/current",
+  "GET /api/weather/forecast",
+  "GET /api/weather/historical",
+  "GET /api/weather/alerts/*",
+  "GET /api/weather/marine",
+  "GET /api/weather/extremes",
+  "GET /api/weather/freeze-risk",
+  "GET /api/uv-index/*",
+  "GET /api/whois/*",
+  "GET /api/dns/*",
+  "GET /api/ssl/*",
+  "GET /api/domain-availability/*",
+  "GET /api/courts/cases",
+  "GET /api/courts/opinions",
+  "GET /api/courts/citations",
+  "GET /api/courts/court-info",
+  "GET /api/vin/*",
+  "GET /api/exchange-rates/quote/*",
+  "GET /api/geocode",
+  "GET /api/reverse-geocode",
+]);
+
+function getDiscoverySurfaceFromEntry(entry = {}) {
+  const path = String(entry?.path || "").toLowerCase();
+  if (path.startsWith("/api/sim/") || path.startsWith("/api/tools/")) {
+    return "tools";
+  }
+  return "data";
+}
+
+function selectCoreDiscoveryRouteKeys(catalog = []) {
+  const available = new Set(catalog.map((entry) => String(entry?.routeKey || "").trim()).filter(Boolean));
+  const selected = DEFAULT_CORE_DISCOVERY_ALLOWLIST_ROUTE_KEYS.filter((routeKey) => available.has(routeKey));
+  if (selected.length > 0) {
+    return new Set(selected);
+  }
+
+  return new Set(
+    catalog
+      .slice(0, 40)
+      .map((entry) => String(entry?.routeKey || "").trim())
+      .filter(Boolean),
+  );
+}
+
+function buildCoreDiscoveryNavigation(baseUrl, coreRouteCount, fullRouteCount) {
+  return {
+    mode: "core40",
+    default: `${baseUrl}/api`,
+    expand: {
+      tools: `${baseUrl}/api?profile=full&surface=tools`,
+      data: `${baseUrl}/api?profile=full&surface=data`,
+      full: `${baseUrl}/api?profile=full`,
+    },
+    coreRouteCount,
+    fullRouteCount,
+  };
+}
+
+function buildApiDiscoveryPayload(routes = routeConfig, options = {}) {
+  const env = options.env || process.env;
+  const req = options.req;
+  const baseUrl = getRequestBaseUrl(req);
+  const metadata = getOriginMetadata(env);
+  const allCatalog = buildCatalogEntries(routes, { includeDiscoveryFields: true, env });
+  const requestedProfile = String(req?.query?.profile || "").trim().toLowerCase();
+  const requestedSurface = String(req?.query?.surface || "").trim().toLowerCase();
+  const useCoreProfile = !requestedProfile || requestedProfile === "compact" || requestedProfile === "core";
+  const coreRouteKeys = selectCoreDiscoveryRouteKeys(allCatalog);
+  let catalog = useCoreProfile
+    ? allCatalog.filter((entry) => coreRouteKeys.has(entry.routeKey))
+    : allCatalog;
+
+  if (requestedSurface === "tools" || requestedSurface === "data") {
+    catalog = catalog.filter((entry) => getDiscoverySurfaceFromEntry(entry) === requestedSurface);
+  }
+
+  return {
+    title: metadata.title,
+    name: metadata.title,
+    description: metadata.description,
+    version: "1.0.0",
+    generatedAt: new Date().toISOString(),
+    baseUrl,
+    discoveryUrl: `${baseUrl}/api`,
+    healthUrl: `${baseUrl}/`,
+    profile: useCoreProfile ? "compact" : "full",
+    endpoints: catalog.length,
+    totalEndpoints: allCatalog.length,
+    filteredEndpointCount: catalog.length,
+    filters: {
+      surface: requestedSurface || null,
+    },
+    navigation: buildCoreDiscoveryNavigation(baseUrl, coreRouteKeys.size, allCatalog.length),
+    catalog,
+    payment: {
+      protocol: "x402",
+      network: "Base",
+      chainId: X402_NETWORK,
+      currency: "USDC",
+    },
+  };
 }
 
 function summarizePricing(endpoints = []) {
@@ -2670,38 +2795,37 @@ function buildBundledSellerResourceUrls(options = {}) {
 function buildWellKnownManifest(manifest = WELL_KNOWN_X402_AURELIAN, routes = routeConfig, options = {}) {
   const env = options.env || process.env;
   const metadata = getOriginMetadata(env);
-  const hiddenRouteMatchers = options.hiddenRouteMatchers || buildHiddenRouteMatchers();
-  const staticResources = Array.isArray(manifest?.resources)
-    ? manifest.resources.filter(
-        (resourceUrl) => !shouldHideResourceUrlInProduction(resourceUrl, { env, hiddenRouteMatchers }),
-      )
-    : [];
-  const bundledSellerResources = buildBundledSellerResourceUrls({ env, hiddenRouteMatchers });
-  const resources = [...new Set([...staticResources, ...bundledSellerResources])];
   const endpoints = buildWellKnownEndpointEntries(routes, { env });
+  const coreRouteKeys = selectCoreDiscoveryRouteKeys(
+    buildCatalogEntries(routes, { includeDiscoveryFields: true, env }),
+  );
+  const coreEndpoints = endpoints.filter((entry) => coreRouteKeys.has(entry.routeKey));
+  const resources = [...new Set(coreEndpoints.map((entry) => entry.exampleUrl).filter(Boolean))];
   const ownershipProofs = resolveOwnershipProofs(manifest, env);
 
   return {
     ...manifest,
     title: metadata.title,
-    name: metadata.title,
-    description: metadata.description,
-    icon: `${CANONICAL_BASE_URL}/favicon.ico`,
-    resources,
-    ownershipProofs,
-    instructions: appendSimComposabilityInstructions(manifest?.instructions),
-    endpointCount: endpoints.length,
-    pricing: summarizePricing(endpoints),
-    rateLimits: {
-      policy: "Upstream provider limits apply per endpoint; see each endpoint.rateLimit entry.",
-      enforcement: "Best effort",
+      name: metadata.title,
+      description: metadata.description,
+      icon: `${CANONICAL_BASE_URL}/favicon.ico`,
+      resources,
+      ownershipProofs,
+      instructions: appendSimComposabilityInstructions(manifest?.instructions),
+      endpointCount: coreEndpoints.length,
+      fullEndpointCount: endpoints.length,
+      pricing: summarizePricing(coreEndpoints),
+      rateLimits: {
+        policy: "Upstream provider limits apply per endpoint; see each endpoint.rateLimit entry.",
+        enforcement: "Best effort",
     },
-    sla: {
-      availability: "Best effort",
-      notes: "No formal uptime SLA is guaranteed.",
-    },
-    endpoints,
-  };
+      sla: {
+        availability: "Best effort",
+        notes: "No formal uptime SLA is guaranteed.",
+      },
+      discovery: buildCoreDiscoveryNavigation(CANONICAL_BASE_URL, coreEndpoints.length, endpoints.length),
+      endpoints: coreEndpoints,
+    };
 }
 
 function getRequestBaseUrl(req) {
@@ -3546,14 +3670,14 @@ function createSettleTestHandler(options = {}) {
 function createHealthHandler(routes = routeConfig, options = {}) {
   const env = options.env || process.env;
   return function healthHandler(req, res) {
-    const catalog = buildCatalogEntries(routes);
+    const payload = buildApiDiscoveryPayload(routes, { env, req });
     const metadata = getOriginMetadata(env);
     if (shouldRenderHealthHtml(req)) {
       const html = buildOriginLandingHtml({
         title: metadata.title,
         description: metadata.description,
         baseUrl: getRequestBaseUrl(req),
-        endpointCount: catalog.length,
+        endpointCount: payload.totalEndpoints,
       });
       return res.type("text/html; charset=utf-8").send(html);
     }
@@ -3563,8 +3687,15 @@ function createHealthHandler(routes = routeConfig, options = {}) {
       name: metadata.title,
       description: metadata.description,
       version: "1.0.0",
-      endpoints: catalog.length,
-      catalog,
+      profile: payload.profile,
+      endpoints: payload.endpoints,
+      totalEndpoints: payload.totalEndpoints,
+      catalog: payload.catalog,
+      discovery: {
+        core: `${payload.baseUrl}/api`,
+        full: `${payload.baseUrl}/api?profile=full`,
+      },
+      navigation: payload.navigation,
       payment: { network: "Base", currency: "USDC", protocol: "x402" },
     });
   };
@@ -3573,28 +3704,7 @@ function createHealthHandler(routes = routeConfig, options = {}) {
 function createApiDiscoveryHandler(routes = routeConfig, options = {}) {
   const env = options.env || process.env;
   return function apiDiscoveryHandler(req, res) {
-    const baseUrl = getRequestBaseUrl(req);
-    const metadata = getOriginMetadata(env);
-    const catalog = buildCatalogEntries(routes, { includeDiscoveryFields: true });
-
-    res.json({
-      title: metadata.title,
-      name: metadata.title,
-      description: metadata.description,
-      version: "1.0.0",
-      generatedAt: new Date().toISOString(),
-      baseUrl,
-      discoveryUrl: `${baseUrl}/api`,
-      healthUrl: `${baseUrl}/`,
-      endpoints: catalog.length,
-      catalog,
-      payment: {
-        protocol: "x402",
-        network: "Base",
-        chainId: X402_NETWORK,
-        currency: "USDC",
-      },
-    });
+    res.json(buildApiDiscoveryPayload(routes, { env, req }));
   };
 }
 
@@ -3798,16 +3908,19 @@ function createWellKnownX402AurelianHandler(
 
 function buildWellKnownX402V1Manifest(routes = routeConfig, options = {}) {
   const env = options.env || process.env;
-  const resources = Object.entries(routes)
-    .filter(([routeKey]) => !shouldHideRouteInProduction(routeKey, { env }))
-    .map(([routeKey]) => {
-      const [method = "GET", routePath = "/"] = String(routeKey).split(" ");
-      return `${String(method).toUpperCase()} ${buildOpenApiPathTemplate(routePath)}`;
+  const catalog = buildCatalogEntries(routes, { includeDiscoveryFields: true, env });
+  const coreRouteKeys = selectCoreDiscoveryRouteKeys(catalog);
+  const resources = catalog
+    .filter((entry) => coreRouteKeys.has(entry.routeKey))
+    .map((entry) => {
+      const examplePath = getExamplePathFromResource(entry.exampleUrl, entry.path);
+      return `${String(entry.method || "GET").toUpperCase()} ${examplePath}`;
     });
 
   return {
     version: 1,
     resources,
+    discovery: buildCoreDiscoveryNavigation(CANONICAL_BASE_URL, resources.length, catalog.length),
   };
 }
 
@@ -3965,6 +4078,15 @@ function createApp(options = {}) {
   }
 
   app.get("/", createHealthHandler(routes, { env }));
+  app.get("/api/system", (_req, res) => {
+    res.redirect(308, "/api/system/discovery");
+  });
+  app.get("/api/system/health", createHealthHandler(routes, { env }));
+  app.get("/api/system/discovery", createApiDiscoveryHandler(routes, { env }));
+  app.get("/api/system/discovery/full", (req, res) => {
+    req.query = { ...req.query, profile: "full" };
+    return createApiDiscoveryHandler(routes, { env })(req, res);
+  });
   app.get("/api", createApiDiscoveryHandler(routes, { env }));
   app.get("/openapi", (_req, res) => {
     res.redirect(308, "/openapi.json");
