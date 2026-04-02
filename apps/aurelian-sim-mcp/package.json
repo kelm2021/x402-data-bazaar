@@ -1,0 +1,32 @@
+{
+  "name": "aurelian-sim-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server that wraps Aurelian simulation endpoints as agent tools",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "@x402/axios": "^2.6.0",
+    "@x402/core": "^2.6.0",
+    "@x402/evm": "^2.6.0",
+    "axios": "^1.11.0",
+    "express": "^5.1.0",
+    "viem": "^2.37.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
