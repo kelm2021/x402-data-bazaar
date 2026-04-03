@@ -65,10 +65,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.005000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.005000",
           "protocols": [
             "x402",
             "mpp"
@@ -196,10 +194,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.150000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.150000",
           "protocols": [
             "x402",
             "mpp"
@@ -255,10 +251,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.005000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.005000",
           "protocols": [
             "x402",
             "mpp"
@@ -347,10 +341,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.250000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.250000",
           "protocols": [
             "x402",
             "mpp"
@@ -396,10 +388,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.050000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.050000",
           "protocols": [
             "x402",
             "mpp"
@@ -486,10 +476,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.060000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.060000",
           "protocols": [
             "x402",
             "mpp"
@@ -633,10 +621,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.070000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.070000",
           "protocols": [
             "x402",
             "mpp"
@@ -748,10 +734,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.080000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.080000",
           "protocols": [
             "x402",
             "mpp"
@@ -869,10 +853,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.090000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.090000",
           "protocols": [
             "x402",
             "mpp"
@@ -1028,10 +1010,8 @@
           }
         },
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.100000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.100000",
           "protocols": [
             "x402",
             "mpp"
@@ -1131,10 +1111,8 @@
           "docx"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.015000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.015000",
           "protocols": [
             "x402",
             "mpp"
@@ -1220,10 +1198,8 @@
           "xlsx"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.015000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.015000",
           "protocols": [
             "x402",
             "mpp"
@@ -1299,10 +1275,8 @@
           "pdf"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.015000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.015000",
           "protocols": [
             "x402",
             "mpp"
@@ -1396,10 +1370,8 @@
           "pdf"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.020000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.020000",
           "protocols": [
             "x402",
             "mpp"
@@ -1471,10 +1443,8 @@
           "pdf"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.020000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.020000",
           "protocols": [
             "x402",
             "mpp"
@@ -1567,10 +1537,8 @@
           "pdf"
         ],
         "x-payment-info": {
-          "price": {
-            "mode": "fixed",
-            "amount": "0.010000"
-          },
+          "pricingMode": "fixed",
+          "price": "0.010000",
           "protocols": [
             "x402",
             "mpp"
