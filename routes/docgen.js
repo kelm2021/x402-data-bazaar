@@ -5,6 +5,27 @@ const ExcelJS = require("exceljs");
 
 const router = Router();
 
+// ─── Agent-friendly response helper ─────────────────────────────
+// If caller sends Accept: application/json, return base64-wrapped JSON
+// instead of raw binary. MCP tools and agent frameworks need this.
+function sendDocumentResponse(res, req, buffer, { filename, mimeType }) {
+  const wantsJson = (req.headers.accept || "").includes("application/json") ||
+                    req.query.format === "json";
+  if (wantsJson) {
+    return res.json({
+      type: "document",
+      filename,
+      mimeType,
+      encoding: "base64",
+      data: Buffer.from(buffer).toString("base64"),
+      sizeBytes: buffer.length,
+    });
+  }
+  res.setHeader("Content-Type", mimeType);
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  res.send(buffer);
+}
+
 // ─── DOCX Generator ─────────────────────────────────────────────
 router.post("/api/tools/docx/generate", async (req, res) => {
   const { template = "general", company = {}, title, subject, body, sections, parties, sender, recipient } = req.body || {};
@@ -17,9 +38,7 @@ router.post("/api/tools/docx/generate", async (req, res) => {
   });
 
   const buffer = await docx.Packer.toBuffer(doc);
-  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-  res.setHeader("Content-Disposition", `attachment; filename="${template}.docx"`);
-  res.send(buffer);
+  sendDocumentResponse(res, req, buffer, { filename: `${template}.docx`, mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
 });
 
 function buildDocxContent({ template, company, title, subject, body, sections, parties, sender, recipient }) {
@@ -78,9 +97,7 @@ router.post("/api/tools/xlsx/generate", async (req, res) => {
   }
 
   const buffer = await workbook.xlsx.writeBuffer();
-  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-  res.setHeader("Content-Disposition", `attachment; filename="${template}.xlsx"`);
-  res.send(Buffer.from(buffer));
+  sendDocumentResponse(res, req, Buffer.from(buffer), { filename: `${template}.xlsx`, mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
 });
 
 // ─── PDF Invoice ────────────────────────────────────────────────
@@ -91,9 +108,7 @@ router.post("/api/tools/invoice/generate", (req, res) => {
   doc.on("data", d => buffers.push(d));
   doc.on("end", () => {
     const pdf = Buffer.concat(buffers);
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${invoice_number}.pdf"`);
-    res.send(pdf);
+    sendDocumentResponse(res, req, pdf, { filename: `${invoice_number}.pdf`, mimeType: "application/pdf" });
   });
 
   const sym = currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
@@ -133,7 +148,7 @@ router.post("/api/tools/contract/generate", (req, res) => {
   const doc = new PDFDocument({ size: "LETTER", margin: 50 });
   const buffers = [];
   doc.on("data", d => buffers.push(d));
-  doc.on("end", () => { res.setHeader("Content-Type", "application/pdf"); res.send(Buffer.concat(buffers)); });
+  doc.on("end", () => { sendDocumentResponse(res, req, Buffer.concat(buffers), { filename: "contract.pdf", mimeType: "application/pdf" }); });
 
   doc.fontSize(18).text("MUTUAL NON-DISCLOSURE AGREEMENT", { align: "center" });
   doc.moveDown();
@@ -166,7 +181,7 @@ router.post("/api/tools/proposal/generate", (req, res) => {
   const doc = new PDFDocument({ size: "LETTER", margin: 50 });
   const buffers = [];
   doc.on("data", d => buffers.push(d));
-  doc.on("end", () => { res.setHeader("Content-Type", "application/pdf"); res.send(Buffer.concat(buffers)); });
+  doc.on("end", () => { sendDocumentResponse(res, req, Buffer.concat(buffers), { filename: "proposal.pdf", mimeType: "application/pdf" }); });
 
   doc.rect(0, 0, 612, 200).fill("#2563eb");
   doc.fontSize(28).fillColor("#fff").text(title, 50, 60);
@@ -204,7 +219,7 @@ router.post("/api/tools/markdown-to-pdf", (req, res) => {
   const doc = new PDFDocument({ size: "LETTER", margin: 50 });
   const buffers = [];
   doc.on("data", d => buffers.push(d));
-  doc.on("end", () => { res.setHeader("Content-Type", "application/pdf"); res.send(Buffer.concat(buffers)); });
+  doc.on("end", () => { sendDocumentResponse(res, req, Buffer.concat(buffers), { filename: `${title || "document"}.pdf`, mimeType: "application/pdf" }); });
 
   if (title) { doc.fontSize(20).text(title); doc.moveDown(0.5); }
   if (author) { doc.fontSize(10).fillColor("#666").text(`By ${author}`); doc.moveDown(); doc.fillColor("#333"); }
