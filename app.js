@@ -2158,6 +2158,9 @@ function createApp(options = {}) {
 
   app.get("/", createHealthHandler(routes));
   app.get("/api", createApiDiscoveryHandler(routes));
+  app.get("/openapi.json", (_req, res) => {
+    res.sendFile(require("path").join(__dirname, "openapi.json"));
+  });
   app.get("/.well-known/x402", (_req, res) => {
     res.redirect(308, "/.well-known/x402-aurelian.json");
   });

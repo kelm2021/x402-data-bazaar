@@ -1,0 +1,1586 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AurelianFlo",
+    "description": "Professional document generation (DOCX, XLSX, PDF), Monte Carlo simulation, and compliance screening (OFAC/sanctions/vendor due diligence) — all x402-paid.",
+    "version": "1.0.0",
+    "x-guidance": "AurelianFlo offers three endpoint families:\n\n1. **Document Generation** (POST /api/tools/*): Generate DOCX (general/NDA/report/letter), XLSX (general/invoice/tracker/data), and PDF (invoice/contract/proposal/markdown-to-pdf). Send JSON body with template name and structured data, receive binary file.\n\n2. **Monte Carlo Simulation** (POST /api/sim/*): Probability estimation, scenario comparison, sensitivity analysis, forecasting, ensemble composition, and parameter optimization. Send JSON body with parameters/weights/uncertainty.\n\n3. **Compliance Screening** (GET /api/ofac-sanctions-screening/{name}, GET /api/vendor-onboarding/restricted-party-batch, GET /api/restricted-party/screen/{name}, GET /api/vendor-entity-brief): OFAC sanctions screening, batch restricted-party checks, and vendor due diligence briefs with GLEIF entity resolution.",
+    "x-logo": {
+      "url": "https://x402.aurelianflo.com/favicon.ico",
+      "altText": "AurelianFlo"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://x402.aurelianflo.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/api/ofac-sanctions-screening/{param1}": {
+      "get": {
+        "operationId": "get_api_ofac_sanctions_screening_param1",
+        "summary": "OFAC sanctions and restricted-party screening for a person or entity name. Returns grouped potential matches, aliases, denied-party and sanctions-list context, source lists, sanctions programs, and a manual-review recommendation for vendor onboarding, payout checks, and cross-border compliance. Optional query params: minScore, type, country, program, list, limit.",
+        "description": "OFAC sanctions and restricted-party screening for a person or entity name. Returns grouped potential matches, aliases, denied-party and sanctions-list context, source lists, sanctions programs, and a manual-review recommendation for vendor onboarding, payout checks, and cross-border compliance. Optional query params: minScore, type, country, program, list, limit.",
+        "tags": [
+          "compliance",
+          "ofac",
+          "sanctions",
+          "restricted-party"
+        ],
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.005",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        }
+      }
+    },
+    "/api/vendor-onboarding/restricted-party-batch": {
+      "get": {
+        "operationId": "get_api_vendor_onboarding_restricted_party_batch",
+        "summary": "Low-friction batch restricted-party screen for up to 25 counterparties in one paid call. Returns per-name screening results, flagged counterparties, a batch-level proceed-or-pause recommendation, and machine-readable review signals for procurement, payouts, and cross-border onboarding workflows. Required query param: names separated with the pipe character (|). Optional query params: workflow, minScore, type, country, program, list, limit.",
+        "description": "Low-friction batch restricted-party screen for up to 25 counterparties in one paid call. Returns per-name screening results, flagged counterparties, a batch-level proceed-or-pause recommendation, and machine-readable review signals for procurement, payouts, and cross-border onboarding workflows. Required query param: names separated with the pipe character (|). Optional query params: workflow, minScore, type, country, program, list, limit.",
+        "tags": [
+          "compliance",
+          "ofac",
+          "sanctions",
+          "batch-screening"
+        ],
+        "parameters": [
+          {
+            "name": "names",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Pipe-delimited list of names to screen (required)"
+            },
+            "description": "Pipe-delimited list of names to screen (required)"
+          },
+          {
+            "name": "workflow",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Workflow label for reporting context"
+            },
+            "description": "Workflow label for reporting context"
+          },
+          {
+            "name": "minScore",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Minimum name-match score threshold"
+            },
+            "description": "Minimum name-match score threshold"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Party type filter (e.g. Entity, Individual)"
+            },
+            "description": "Party type filter (e.g. Entity, Individual)"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Country filter (ISO alpha-2)"
+            },
+            "description": "Country filter (ISO alpha-2)"
+          },
+          {
+            "name": "program",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sanctions program filter"
+            },
+            "description": "Sanctions program filter"
+          },
+          {
+            "name": "list",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Sanctions list filter"
+            },
+            "description": "Sanctions list filter"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Maximum grouped matches per name"
+            },
+            "description": "Maximum grouped matches per name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.15",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        }
+      }
+    },
+    "/api/restricted-party/screen/{param1}": {
+      "get": {
+        "operationId": "get_api_restricted_party_screen_param1",
+        "summary": "Legacy alias for OFAC sanctions and restricted-party screening. Returns grouped potential matches, aliases, source lists, sanctions programs, and a manual-review recommendation. Optional query params: minScore, type, country, program, list, limit.",
+        "description": "Legacy alias for OFAC sanctions and restricted-party screening. Returns grouped potential matches, aliases, source lists, sanctions programs, and a manual-review recommendation. Optional query params: minScore, type, country, program, list, limit.",
+        "tags": [
+          "compliance",
+          "ofac",
+          "sanctions",
+          "restricted-party"
+        ],
+        "parameters": [
+          {
+            "name": "param1",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.005",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        }
+      }
+    },
+    "/api/vendor-entity-brief": {
+      "get": {
+        "operationId": "get_api_vendor_entity_brief",
+        "summary": "Short vendor entity brief for procurement, payouts, and cross-border onboarding. Query by legal name and get a machine-usable GLEIF entity match summary, LEI candidate shortlist, jurisdiction and registration details, plus OFAC restricted-party screening and a proceed-or-pause recommendation when the buyer needs a compact handoff artifact.",
+        "description": "Short vendor entity brief for procurement, payouts, and cross-border onboarding. Query by legal name and get a machine-usable GLEIF entity match summary, LEI candidate shortlist, jurisdiction and registration details, plus OFAC restricted-party screening and a proceed-or-pause recommendation when the buyer needs a compact handoff artifact.",
+        "tags": [
+          "compliance",
+          "vendor-risk",
+          "due-diligence",
+          "ofac",
+          "gleif"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Vendor legal name to resolve and screen (required)"
+            },
+            "description": "Vendor legal name to resolve and screen (required)"
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Preferred jurisdiction filter (ISO alpha-2)"
+            },
+            "description": "Preferred jurisdiction filter (ISO alpha-2)"
+          },
+          {
+            "name": "minScore",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Minimum OFAC name-match score threshold"
+            },
+            "description": "Minimum OFAC name-match score threshold"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Maximum candidate entities or matches"
+            },
+            "description": "Maximum candidate entities or matches"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.25",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        }
+      }
+    },
+    "/api/sim/probability": {
+      "post": {
+        "operationId": "post_api_sim_probability",
+        "summary": "Estimate outcome probability for a single scenario using Monte Carlo sampling over parameter uncertainty.",
+        "description": "Estimate outcome probability for a single scenario using Monte Carlo sampling over parameter uncertainty.",
+        "tags": [
+          "simulation",
+          "monte-carlo",
+          "probability",
+          "decision-modeling"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.05",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "parameters"
+                ],
+                "properties": {
+                  "parameters": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                      "type": "number"
+                    }
+                  },
+                  "weights": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "number"
+                    }
+                  },
+                  "uncertainty": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "bias": {
+                    "type": "number"
+                  },
+                  "threshold": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sim/compare": {
+      "post": {
+        "operationId": "post_api_sim_compare",
+        "summary": "Compare baseline and candidate scenarios and return uplift deltas with confidence diagnostics.",
+        "description": "Compare baseline and candidate scenarios and return uplift deltas with confidence diagnostics.",
+        "tags": [
+          "simulation",
+          "scenario-compare",
+          "decision-modeling"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.06",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "baseline",
+                  "candidate"
+                ],
+                "properties": {
+                  "baseline": {
+                    "type": "object",
+                    "required": [
+                      "parameters"
+                    ],
+                    "properties": {
+                      "parameters": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "weights": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "bias": {
+                        "type": "number"
+                      },
+                      "threshold": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "candidate": {
+                    "type": "object",
+                    "required": [
+                      "parameters"
+                    ],
+                    "properties": {
+                      "parameters": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "weights": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "bias": {
+                        "type": "number"
+                      },
+                      "threshold": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "labels": {
+                    "type": "object",
+                    "properties": {
+                      "baseline": {
+                        "type": "string"
+                      },
+                      "candidate": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sim/sensitivity": {
+      "post": {
+        "operationId": "post_api_sim_sensitivity",
+        "summary": "Measure probability sensitivity for a selected parameter using plus/minus perturbation runs.",
+        "description": "Measure probability sensitivity for a selected parameter using plus/minus perturbation runs.",
+        "tags": [
+          "simulation",
+          "sensitivity",
+          "feature-impact"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.07",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "scenario",
+                  "parameter"
+                ],
+                "properties": {
+                  "scenario": {
+                    "type": "object",
+                    "required": [
+                      "parameters"
+                    ],
+                    "properties": {
+                      "parameters": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "weights": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "bias": {
+                        "type": "number"
+                      },
+                      "threshold": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "parameter": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "delta": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "absolute",
+                      "relative"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sim/forecast": {
+      "post": {
+        "operationId": "post_api_sim_forecast",
+        "summary": "Generate a forward probability path across multiple future periods under configurable trend assumptions.",
+        "description": "Generate a forward probability path across multiple future periods under configurable trend assumptions.",
+        "tags": [
+          "simulation",
+          "forecast",
+          "time-series-scenarios"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.08",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "scenario"
+                ],
+                "properties": {
+                  "scenario": {
+                    "type": "object",
+                    "required": [
+                      "parameters"
+                    ],
+                    "properties": {
+                      "parameters": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "weights": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "bias": {
+                        "type": "number"
+                      },
+                      "threshold": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "periods": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 120
+                  },
+                  "drift": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "number"
+                    }
+                  },
+                  "uncertainty_growth": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "growth_mode": {
+                    "type": "string",
+                    "enum": [
+                      "additive",
+                      "multiplicative"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sim/composed": {
+      "post": {
+        "operationId": "post_api_sim_composed",
+        "summary": "Compose weighted scenario components into a blended probability with per-component simulation traces.",
+        "description": "Compose weighted scenario components into a blended probability with per-component simulation traces.",
+        "tags": [
+          "simulation",
+          "ensemble",
+          "composition"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.09",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "components"
+                ],
+                "properties": {
+                  "components": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 25,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "weight": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "scenario": {
+                          "type": "object",
+                          "required": [
+                            "parameters"
+                          ],
+                          "properties": {
+                            "parameters": {
+                              "type": "object",
+                              "minProperties": 1,
+                              "additionalProperties": {
+                                "type": "number"
+                              }
+                            },
+                            "weights": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number"
+                              }
+                            },
+                            "uncertainty": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "number",
+                                "minimum": 0
+                              }
+                            },
+                            "bias": {
+                              "type": "number"
+                            },
+                            "threshold": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "parameters": {
+                          "type": "object",
+                          "minProperties": 1,
+                          "additionalProperties": {
+                            "type": "number"
+                          }
+                        },
+                        "weights": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "number"
+                          }
+                        },
+                        "uncertainty": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "number",
+                            "minimum": 0
+                          }
+                        },
+                        "bias": {
+                          "type": "number"
+                        },
+                        "threshold": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "weight"
+                      ],
+                      "anyOf": [
+                        {
+                          "required": [
+                            "scenario"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "parameters"
+                          ]
+                        }
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sim/optimize": {
+      "post": {
+        "operationId": "post_api_sim_optimize",
+        "summary": "Search bounded parameter ranges to maximize objective value and return the recommended scenario.",
+        "description": "Search bounded parameter ranges to maximize objective value and return the recommended scenario.",
+        "tags": [
+          "simulation",
+          "optimization",
+          "decision-support"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string"
+                    },
+                    "example": {
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "type"
+                  ]
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        },
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.1",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "scenario"
+                ],
+                "properties": {
+                  "scenario": {
+                    "type": "object",
+                    "required": [
+                      "parameters"
+                    ],
+                    "properties": {
+                      "parameters": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "weights": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number"
+                        }
+                      },
+                      "uncertainty": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "number",
+                          "minimum": 0
+                        }
+                      },
+                      "bias": {
+                        "type": "number"
+                      },
+                      "threshold": {
+                        "type": "number"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "bounds": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": {
+                      "type": "object",
+                      "required": [
+                        "min",
+                        "max"
+                      ],
+                      "properties": {
+                        "min": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "iterations": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 500
+                  },
+                  "objective": {
+                    "type": "string",
+                    "enum": [
+                      "outcome_probability",
+                      "mean_score"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/docx/generate": {
+      "post": {
+        "operationId": "post_docx_generate",
+        "summary": "Generate DOCX documents from templates (general, NDA, report, letter)",
+        "tags": [
+          "document-generation",
+          "docx"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.015000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "template"
+                ],
+                "properties": {
+                  "template": {
+                    "type": "string",
+                    "enum": [
+                      "general",
+                      "nda",
+                      "report",
+                      "letter"
+                    ]
+                  },
+                  "company": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "tagline": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    },
+    "/api/tools/xlsx/generate": {
+      "post": {
+        "operationId": "post_xlsx_generate",
+        "summary": "Generate XLSX spreadsheets from templates (general, invoice, tracker, data)",
+        "tags": [
+          "document-generation",
+          "xlsx"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.015000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "template"
+                ],
+                "properties": {
+                  "template": {
+                    "type": "string",
+                    "enum": [
+                      "general",
+                      "invoice",
+                      "tracker",
+                      "data"
+                    ]
+                  },
+                  "company": {
+                    "type": "object"
+                  },
+                  "client": {
+                    "type": "object"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "rows": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "columns": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    },
+    "/api/tools/invoice/generate": {
+      "post": {
+        "operationId": "post_pdf_invoice",
+        "summary": "Generate a professional PDF invoice",
+        "tags": [
+          "document-generation",
+          "pdf"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.015000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "to": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "address": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "invoice_number": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string"
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        },
+                        "price": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  "tax_rate": {
+                    "type": "number"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    },
+    "/api/tools/contract/generate": {
+      "post": {
+        "operationId": "post_pdf_contract",
+        "summary": "Generate a PDF contract/NDA with legal clauses and signature blocks",
+        "tags": [
+          "document-generation",
+          "pdf"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.020000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "partyA",
+                  "partyB"
+                ],
+                "properties": {
+                  "partyA": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "company": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "partyB": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "company": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "effective_date": {
+                    "type": "string"
+                  },
+                  "jurisdiction": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    },
+    "/api/tools/proposal/generate": {
+      "post": {
+        "operationId": "post_pdf_proposal",
+        "summary": "Generate a PDF business proposal with cover page, deliverables, and pricing",
+        "tags": [
+          "document-generation",
+          "pdf"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.020000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "client": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "company": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "deliverables": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "pricing": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "item": {
+                          "type": "string"
+                        },
+                        "amount": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  },
+                  "timeline": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    },
+    "/api/tools/markdown-to-pdf": {
+      "post": {
+        "operationId": "post_markdown_to_pdf",
+        "summary": "Convert Markdown text to a styled PDF",
+        "tags": [
+          "document-generation",
+          "pdf"
+        ],
+        "x-payment-info": {
+          "pricingMode": "fixed",
+          "price": "0.010000",
+          "protocols": [
+            "x402",
+            "mpp"
+          ]
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "markdown"
+                ],
+                "properties": {
+                  "markdown": {
+                    "type": "string",
+                    "description": "Markdown content to render"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "author": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Binary file"
+          },
+          "402": {
+            "description": "Payment Required"
+          }
+        }
+      }
+    }
+  },
+  "x-discovery": {
+    "ownershipProofs": []
+  }
+}
