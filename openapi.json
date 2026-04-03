@@ -65,11 +65,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.005000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.005000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         }
       }
@@ -194,11 +204,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.150000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.150000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         }
       }
@@ -251,11 +271,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.005000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.005000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         }
       }
@@ -341,11 +371,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.250000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.250000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         }
       }
@@ -388,11 +428,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.050000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.050000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -476,11 +526,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.060000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.060000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -621,11 +681,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.070000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.070000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -734,11 +804,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.080000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.080000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -853,11 +933,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.090000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.090000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1010,11 +1100,21 @@
           }
         },
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.100000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.100000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1111,11 +1211,21 @@
           "docx"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.015000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.015000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1198,11 +1308,21 @@
           "xlsx"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.015000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.015000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1275,11 +1395,21 @@
           "pdf"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.015000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.015000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1370,11 +1500,21 @@
           "pdf"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.020000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.020000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1443,11 +1583,21 @@
           "pdf"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.020000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.020000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
@@ -1537,11 +1687,21 @@
           "pdf"
         ],
         "x-payment-info": {
-          "pricingMode": "fixed",
-          "price": "0.010000",
+          "price": {
+            "mode": "fixed",
+            "amount": "0.010000"
+          },
           "protocols": [
-            "x402",
-            "mpp"
+            {
+              "x402": {}
+            },
+            {
+              "mpp": {
+                "method": "pay",
+                "intent": "exact",
+                "currency": "USDC"
+              }
+            }
           ]
         },
         "requestBody": {
