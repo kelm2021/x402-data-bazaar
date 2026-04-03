@@ -2161,6 +2161,14 @@ function createApp(options = {}) {
   app.get("/openapi.json", (_req, res) => {
     res.sendFile(require("path").join(__dirname, "openapi.json"));
   });
+  app.get("/favicon.svg", (_req, res) => {
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.sendFile(require("path").join(__dirname, "favicon.svg"));
+  });
+  app.get("/favicon.ico", (_req, res) => {
+    res.setHeader("Content-Type", "image/svg+xml");
+    res.sendFile(require("path").join(__dirname, "favicon.svg"));
+  });
   app.get("/.well-known/x402", (_req, res) => {
     res.redirect(308, "/.well-known/x402-aurelian.json");
   });
