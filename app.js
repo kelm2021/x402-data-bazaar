@@ -2050,9 +2050,9 @@ function createHealthHandler(routes = routeConfig) {
     const catalog = buildCatalogEntries(routes);
 
     res.json({
-      name: "x402 Data Bazaar",
+      name: "AurelianFlo",
       description:
-        "Real-world data APIs for AI agents -- weather, nutrition, VIN, census, FDA, and more. Pay per request with USDC on Base.",
+        "Professional document generation (DOCX, XLSX, PDF), Monte Carlo simulation, and compliance screening (OFAC/sanctions/vendor due diligence) — all x402-paid.",
       version: "1.0.0",
       endpoints: catalog.length,
       catalog,
