@@ -483,6 +483,24 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "parameters": {
+                  "demand": 0.72,
+                  "execution": 0.65,
+                  "pressure": -0.35
+                },
+                "weights": {
+                  "demand": 1.2,
+                  "execution": 1,
+                  "pressure": 0.9
+                },
+                "uncertainty": {
+                  "demand": 0.12,
+                  "execution": 0.1,
+                  "pressure": 0.2
+                },
+                "threshold": 0.25
               }
             }
           }
@@ -638,6 +656,22 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "baseline": {
+                  "parameters": {
+                    "a": 0.6,
+                    "b": 0.5
+                  },
+                  "threshold": 0.25
+                },
+                "candidate": {
+                  "parameters": {
+                    "a": 0.8,
+                    "b": 0.7
+                  },
+                  "threshold": 0.25
+                }
               }
             }
           }
@@ -761,6 +795,18 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "scenario": {
+                  "parameters": {
+                    "a": 0.7,
+                    "b": 0.6
+                  },
+                  "threshold": 0.25
+                },
+                "parameter": "a",
+                "delta": 0.1,
+                "mode": "relative"
               }
             }
           }
@@ -890,6 +936,21 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "scenario": {
+                  "parameters": {
+                    "a": 0.7,
+                    "b": 0.6
+                  },
+                  "threshold": 0.25
+                },
+                "periods": 4,
+                "drift": {
+                  "a": 0.02,
+                  "b": 0.01
+                },
+                "uncertainty_growth": 0.02
               }
             }
           }
@@ -1057,6 +1118,30 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "components": [
+                  {
+                    "label": "bull",
+                    "weight": 0.6,
+                    "scenario": {
+                      "parameters": {
+                        "signal": 0.8
+                      },
+                      "threshold": 0.3
+                    }
+                  },
+                  {
+                    "label": "bear",
+                    "weight": 0.4,
+                    "scenario": {
+                      "parameters": {
+                        "signal": -0.3
+                      },
+                      "threshold": 0.3
+                    }
+                  }
+                ]
               }
             }
           }
@@ -1196,6 +1281,26 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "example": {
+                "scenario": {
+                  "parameters": {
+                    "a": 0.7,
+                    "b": 0.5
+                  },
+                  "threshold": 0.3
+                },
+                "bounds": {
+                  "a": {
+                    "min": 0.4,
+                    "max": 1
+                  },
+                  "b": {
+                    "min": 0.2,
+                    "max": 0.9
+                  }
+                },
+                "iterations": 100
               }
             }
           }
