@@ -871,7 +871,8 @@ function createExpandedRouteConfig(payTo = PAY_TO) {
   };
 }
 
-function createRouteConfig(payTo = PAY_TO) {
+function createRouteConfigLegacy(payTo = PAY_TO) {
+  // LEGACY — kept for reference, no longer served. See createRouteConfig().
   return {
     "GET /api/vin/*": createPricedRoute({
       price: "0.008",
@@ -1435,6 +1436,32 @@ function createRouteConfig(payTo = PAY_TO) {
     "POST /api/tools/contract/generate": createPricedRoute({ price: "0.020", description: "Generate PDF contracts/NDAs", category: "document-generation", tags: ["pdf", "legal"], payTo, queryExample: { partyA: { name: "Alice Smith", company: "Acme Corp" }, partyB: { name: "Bob Jones", company: "Client Inc" }, type: "nda", effective_date: "2026-04-01", jurisdiction: "Delaware" } }),
     "POST /api/tools/proposal/generate": createPricedRoute({ price: "0.020", description: "Generate PDF proposals", category: "document-generation", tags: ["pdf", "business"], payTo, queryExample: { title: "Q2 Marketing Proposal", company: { name: "Acme Corp" }, client: { name: "Jane Doe", company: "Client Inc" }, deliverables: [{ name: "Campaign", description: "Social media campaign" }], pricing: [{ item: "Campaign", amount: 5000 }], timeline: "6 weeks" } }),
     "POST /api/tools/markdown-to-pdf": createPricedRoute({ price: "0.010", description: "Convert markdown to PDF", category: "document-generation", tags: ["pdf", "markdown"], payTo, queryExample: { markdown: "# Hello World\n\nThis is a **test** document.", title: "Test Doc", author: "Acme Corp" } }),
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Active route config — 16 verified endpoints matching openapi.json
+// ═══════════════════════════════════════════════════════════════════════
+function createRouteConfig(payTo = PAY_TO) {
+  return {
+    // ─── Compliance Screening (4 GET) ─────────────────────────
+    ...createBundledSellerRouteConfig(),
+
+    // ─── Monte Carlo Simulation (6 POST) ──────────────────────
+    "POST /api/sim/probability": createPricedRoute({ price: "0.05", description: "Estimate outcome probability for a single scenario using Monte Carlo sampling over parameter uncertainty.", category: "simulation", tags: ["simulation", "monte-carlo", "probability", "decision-modeling"], payTo, queryExample: { parameters: { demand: 0.72, execution: 0.65, pressure: -0.35 }, weights: { demand: 1.2, execution: 1.0, pressure: 0.9 }, uncertainty: { demand: 0.12, execution: 0.1, pressure: 0.2 }, threshold: 0.25 } }),
+    "POST /api/sim/compare": createPricedRoute({ price: "0.06", description: "Compare baseline and candidate scenarios and return uplift deltas with confidence diagnostics.", category: "simulation", tags: ["simulation", "scenario-compare", "decision-modeling"], payTo, queryExample: { baseline: { parameters: { a: 0.6, b: 0.5 }, threshold: 0.25 }, candidate: { parameters: { a: 0.8, b: 0.7 }, threshold: 0.25 } } }),
+    "POST /api/sim/sensitivity": createPricedRoute({ price: "0.07", description: "Measure probability sensitivity for a selected parameter using plus/minus perturbation runs.", category: "simulation", tags: ["simulation", "sensitivity", "feature-impact"], payTo, queryExample: { scenario: { parameters: { a: 0.7, b: 0.6 }, threshold: 0.25 }, parameter: "a", delta: 0.1, mode: "relative" } }),
+    "POST /api/sim/forecast": createPricedRoute({ price: "0.08", description: "Generate a forward probability path across multiple future periods under configurable trend assumptions.", category: "simulation", tags: ["simulation", "forecast", "time-series-scenarios"], payTo, queryExample: { scenario: { parameters: { a: 0.7, b: 0.6 }, threshold: 0.25 }, periods: 4, drift: { a: 0.02, b: 0.01 }, uncertainty_growth: 0.02 } }),
+    "POST /api/sim/composed": createPricedRoute({ price: "0.09", description: "Compose weighted scenario components into a blended probability with per-component simulation traces.", category: "simulation", tags: ["simulation", "ensemble", "composition"], payTo, queryExample: { components: [{ label: "bull", weight: 0.6, scenario: { parameters: { signal: 0.8 }, threshold: 0.3 } }, { label: "bear", weight: 0.4, scenario: { parameters: { signal: -0.3 }, threshold: 0.3 } }] } }),
+    "POST /api/sim/optimize": createPricedRoute({ price: "0.10", description: "Search bounded parameter ranges to maximize objective value and return the recommended scenario.", category: "simulation", tags: ["simulation", "optimization", "decision-support"], payTo, queryExample: { scenario: { parameters: { a: 0.7, b: 0.5 }, threshold: 0.3 }, bounds: { a: { min: 0.4, max: 1.0 }, b: { min: 0.2, max: 0.9 } }, iterations: 100 } }),
+
+    // ─── Document Generation (6 POST) ─────────────────────────
+    "POST /api/tools/docx/generate": createPricedRoute({ price: "0.015", description: "Generate DOCX documents from templates (general, NDA, report, letter)", category: "document-generation", tags: ["document-generation", "docx"], payTo, queryExample: { template: "general", title: "Quarterly Report", company: { name: "Acme Corp" }, sections: [{ title: "Summary", content: "Overview of Q1 results." }] } }),
+    "POST /api/tools/xlsx/generate": createPricedRoute({ price: "0.015", description: "Generate XLSX spreadsheets from templates (general, invoice, tracker, data)", category: "document-generation", tags: ["document-generation", "xlsx"], payTo, queryExample: { template: "invoice", company: { name: "Acme Corp" }, items: [{ description: "Consulting", quantity: 10, price: 150 }], title: "Invoice #1001" } }),
+    "POST /api/tools/invoice/generate": createPricedRoute({ price: "0.015", description: "Generate a professional PDF invoice", category: "document-generation", tags: ["document-generation", "pdf"], payTo, queryExample: { from: { name: "Acme Corp", address: "123 Main St" }, to: { name: "Client Inc", address: "456 Oak Ave" }, invoice_number: "INV-1001", date: "2026-04-01", items: [{ description: "Service", quantity: 1, price: 500 }], tax_rate: 8.5 } }),
+    "POST /api/tools/contract/generate": createPricedRoute({ price: "0.020", description: "Generate a PDF contract/NDA with legal clauses and signature blocks", category: "document-generation", tags: ["document-generation", "pdf"], payTo, queryExample: { partyA: { name: "Alice Smith", company: "Acme Corp" }, partyB: { name: "Bob Jones", company: "Client Inc" }, type: "nda", effective_date: "2026-04-01", jurisdiction: "Delaware" } }),
+    "POST /api/tools/proposal/generate": createPricedRoute({ price: "0.020", description: "Generate a PDF business proposal with cover page, deliverables, and pricing", category: "document-generation", tags: ["document-generation", "pdf"], payTo, queryExample: { title: "Q2 Marketing Proposal", company: { name: "Acme Corp" }, client: { name: "Jane Doe", company: "Client Inc" }, deliverables: [{ name: "Campaign", description: "Social media campaign" }], pricing: [{ item: "Campaign", amount: 5000 }], timeline: "6 weeks" } }),
+    "POST /api/tools/markdown-to-pdf": createPricedRoute({ price: "0.010", description: "Convert Markdown text to a styled PDF", category: "document-generation", tags: ["document-generation", "pdf", "markdown"], payTo, queryExample: { markdown: "# Hello World\n\nThis is a **test** document.", title: "Test Doc", author: "Acme Corp" } }),
   };
 }
 
@@ -2040,9 +2067,9 @@ function createApiDiscoveryHandler(routes = routeConfig) {
     const catalog = buildCatalogEntries(routes, { includeDiscoveryFields: true });
 
     res.json({
-      name: "x402 Data Bazaar API Discovery",
+      name: "AurelianFlo",
       description:
-        "Machine-readable endpoint catalog for indexing and health probes. Use `exampleUrl` for concrete checks.",
+        "Professional document generation (DOCX, XLSX, PDF), Monte Carlo simulation, and compliance screening (OFAC/sanctions/vendor due diligence) — all x402-paid.",
       version: "1.0.0",
       generatedAt: new Date().toISOString(),
       baseUrl,
