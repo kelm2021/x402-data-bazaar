@@ -1730,7 +1730,14 @@ function createPaymentGate(options = {}) {
   const payTo = options.payTo ?? PAY_TO;
   const routes = options.routes ?? createRouteConfig(payTo);
   const matchRoute = createRouteMatcher(routes);
-  const facilitatorLoader = options.facilitatorLoader ?? (() => loadCoinbaseFacilitator());
+  const facilitatorLoader = options.facilitatorLoader ?? (() => {
+    const envFacilitatorUrl = (options.env ?? process.env).X402_FACILITATOR_URL;
+    if (envFacilitatorUrl) {
+      const { HTTPFacilitatorClient } = require("@x402/core/server");
+      return new HTTPFacilitatorClient({ url: envFacilitatorUrl });
+    }
+    return loadCoinbaseFacilitator();
+  });
   const initRetryCount = Math.max(1, Number(options.paymentInitRetryCount ?? 2));
   const extractFacilitatorUrl = (value) => {
     if (!value) {
