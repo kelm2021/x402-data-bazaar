@@ -79,21 +79,59 @@ router.post("/api/tools/xlsx/generate", async (req, res) => {
 
   if (template === "invoice" && items) {
     sheet.columns = [
-      { header: "Description", key: "desc", width: 40 },
-      { header: "Qty", key: "qty", width: 10 },
+      { header: "Description", key: "description", width: 40 },
+      { header: "Qty", key: "quantity", width: 10 },
       { header: "Price", key: "price", width: 15 },
       { header: "Total", key: "total", width: 15 },
     ];
+    let subtotal = 0;
     for (const item of items) {
       const qty = item.quantity || 1;
       const price = item.price || 0;
-      sheet.addRow({ desc: item.description || item.name, qty, price, total: qty * price });
+      const total = qty * price;
+      subtotal += total;
+      sheet.addRow({ description: item.description || item.name || "Item", quantity: qty, price, total });
     }
+    sheet.addRow({});
+    sheet.addRow({ description: "Subtotal", total: subtotal });
+  } else if (template === "tracker" && items) {
+    sheet.columns = [
+      { header: "Task", key: "task", width: 35 },
+      { header: "Status", key: "status", width: 15 },
+      { header: "Assignee", key: "assignee", width: 20 },
+      { header: "Due Date", key: "due", width: 15 },
+      { header: "Priority", key: "priority", width: 12 },
+    ];
+    for (const item of items) {
+      sheet.addRow({
+        task: item.task || item.name || item.description || "Task",
+        status: item.status || "To Do",
+        assignee: item.assignee || "",
+        due: item.due || item.due_date || "",
+        priority: item.priority || "Medium",
+      });
+    }
+  } else if (template === "data" && (rows || items)) {
+    const dataRows = rows || items;
+    if (columns && columns.length > 0) {
+      sheet.columns = columns.map(c => ({ header: c, key: c.toLowerCase().replace(/\s+/g, "_"), width: 20 }));
+    } else if (dataRows.length > 0) {
+      const keys = Object.keys(dataRows[0]);
+      sheet.columns = keys.map(k => ({ header: k, key: k, width: 20 }));
+    }
+    for (const row of dataRows) sheet.addRow(row);
   } else if (rows && columns) {
     sheet.columns = columns.map(c => ({ header: c, key: c.toLowerCase().replace(/\s+/g, "_"), width: 20 }));
     for (const row of rows) sheet.addRow(row);
+  } else if (items) {
+    // General template with items array
+    if (items.length > 0) {
+      const keys = Object.keys(items[0]);
+      sheet.columns = keys.map(k => ({ header: k, key: k, width: 20 }));
+      for (const item of items) sheet.addRow(item);
+    }
   } else {
-    sheet.addRow(["Generated spreadsheet"]);
+    sheet.addRow(["No data provided"]);
   }
 
   const buffer = await workbook.xlsx.writeBuffer();
