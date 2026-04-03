@@ -1400,6 +1400,22 @@ function createRouteConfig(payTo = PAY_TO) {
     }),
     ...createExpandedRouteConfig(payTo),
     ...createBundledSellerRouteConfig(),
+
+    // ─── Simulation Routes ──────────────────────────────────
+    "POST /api/sim/probability": createPricedRoute({ price: "0.05", description: "Monte Carlo probability estimation", category: "simulation", tags: ["simulation", "monte-carlo"], payTo }),
+    "POST /api/sim/compare": createPricedRoute({ price: "0.06", description: "Scenario comparison with uplift deltas", category: "simulation", tags: ["simulation", "scenario-compare"], payTo }),
+    "POST /api/sim/sensitivity": createPricedRoute({ price: "0.07", description: "Parameter sensitivity analysis", category: "simulation", tags: ["simulation", "sensitivity"], payTo }),
+    "POST /api/sim/forecast": createPricedRoute({ price: "0.08", description: "Forward probability path forecast", category: "simulation", tags: ["simulation", "forecast"], payTo }),
+    "POST /api/sim/composed": createPricedRoute({ price: "0.09", description: "Weighted scenario composition", category: "simulation", tags: ["simulation", "ensemble"], payTo }),
+    "POST /api/sim/optimize": createPricedRoute({ price: "0.10", description: "Parameter optimization search", category: "simulation", tags: ["simulation", "optimization"], payTo }),
+
+    // ─── Document Generation Routes ─────────────────────────
+    "POST /api/tools/docx/generate": createPricedRoute({ price: "0.015", description: "Generate DOCX documents", category: "document-generation", tags: ["docx"], payTo }),
+    "POST /api/tools/xlsx/generate": createPricedRoute({ price: "0.015", description: "Generate XLSX spreadsheets", category: "document-generation", tags: ["xlsx"], payTo }),
+    "POST /api/tools/invoice/generate": createPricedRoute({ price: "0.015", description: "Generate PDF invoices", category: "document-generation", tags: ["pdf", "invoice"], payTo }),
+    "POST /api/tools/contract/generate": createPricedRoute({ price: "0.020", description: "Generate PDF contracts/NDAs", category: "document-generation", tags: ["pdf", "legal"], payTo }),
+    "POST /api/tools/proposal/generate": createPricedRoute({ price: "0.020", description: "Generate PDF proposals", category: "document-generation", tags: ["pdf", "business"], payTo }),
+    "POST /api/tools/markdown-to-pdf": createPricedRoute({ price: "0.010", description: "Convert markdown to PDF", category: "document-generation", tags: ["pdf", "markdown"], payTo }),
   };
 }
 
@@ -2084,6 +2100,8 @@ function mountPaidRoutes(target) {
   target.use(require("./routes/legal"));
   target.use(require("./routes/sports"));
   target.use(require("./routes/world-data"));
+  target.use(require("./routes/sim"));
+  target.use(require("./routes/docgen"));
 
   for (const route of getBundledSellerRoutes()) {
     const method = String(route?.method || "").toLowerCase();
