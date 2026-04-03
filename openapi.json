@@ -457,32 +457,68 @@
                 "properties": {
                   "parameters": {
                     "type": "object",
-                    "minProperties": 1,
+                    "description": "Named numeric parameters (e.g. demand, execution, pressure)",
+                    "properties": {
+                      "demand": {
+                        "type": "number"
+                      },
+                      "execution": {
+                        "type": "number"
+                      },
+                      "pressure": {
+                        "type": "number"
+                      }
+                    },
                     "additionalProperties": {
                       "type": "number"
                     }
                   },
                   "weights": {
                     "type": "object",
+                    "description": "Optional weights per parameter",
+                    "properties": {
+                      "demand": {
+                        "type": "number"
+                      },
+                      "execution": {
+                        "type": "number"
+                      },
+                      "pressure": {
+                        "type": "number"
+                      }
+                    },
                     "additionalProperties": {
                       "type": "number"
                     }
                   },
                   "uncertainty": {
                     "type": "object",
+                    "description": "Optional uncertainty per parameter",
+                    "properties": {
+                      "demand": {
+                        "type": "number"
+                      },
+                      "execution": {
+                        "type": "number"
+                      },
+                      "pressure": {
+                        "type": "number"
+                      }
+                    },
                     "additionalProperties": {
                       "type": "number",
                       "minimum": 0
                     }
                   },
                   "bias": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Additive bias term"
                   },
                   "threshold": {
-                    "type": "number"
+                    "type": "number",
+                    "description": "Score threshold for success"
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "parameters": {
@@ -580,7 +616,14 @@
                     "properties": {
                       "parameters": {
                         "type": "object",
-                        "minProperties": 1,
+                        "properties": {
+                          "a": {
+                            "type": "number"
+                          },
+                          "b": {
+                            "type": "number"
+                          }
+                        },
                         "additionalProperties": {
                           "type": "number"
                         }
@@ -594,8 +637,7 @@
                       "uncertainty": {
                         "type": "object",
                         "additionalProperties": {
-                          "type": "number",
-                          "minimum": 0
+                          "type": "number"
                         }
                       },
                       "bias": {
@@ -604,8 +646,7 @@
                       "threshold": {
                         "type": "number"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   },
                   "candidate": {
                     "type": "object",
@@ -615,7 +656,14 @@
                     "properties": {
                       "parameters": {
                         "type": "object",
-                        "minProperties": 1,
+                        "properties": {
+                          "a": {
+                            "type": "number"
+                          },
+                          "b": {
+                            "type": "number"
+                          }
+                        },
                         "additionalProperties": {
                           "type": "number"
                         }
@@ -629,8 +677,7 @@
                       "uncertainty": {
                         "type": "object",
                         "additionalProperties": {
-                          "type": "number",
-                          "minimum": 0
+                          "type": "number"
                         }
                       },
                       "bias": {
@@ -639,8 +686,7 @@
                       "threshold": {
                         "type": "number"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   },
                   "labels": {
                     "type": "object",
@@ -651,11 +697,9 @@
                       "candidate": {
                         "type": "string"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "baseline": {
@@ -751,7 +795,14 @@
                     "properties": {
                       "parameters": {
                         "type": "object",
-                        "minProperties": 1,
+                        "properties": {
+                          "a": {
+                            "type": "number"
+                          },
+                          "b": {
+                            "type": "number"
+                          }
+                        },
                         "additionalProperties": {
                           "type": "number"
                         }
@@ -765,8 +816,7 @@
                       "uncertainty": {
                         "type": "object",
                         "additionalProperties": {
-                          "type": "number",
-                          "minimum": 0
+                          "type": "number"
                         }
                       },
                       "bias": {
@@ -775,26 +825,25 @@
                       "threshold": {
                         "type": "number"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   },
                   "parameter": {
                     "type": "string",
-                    "minLength": 1
+                    "description": "Name of parameter to perturb"
                   },
                   "delta": {
                     "type": "number",
-                    "exclusiveMinimum": 0
+                    "description": "Perturbation amount (default 0.1)"
                   },
                   "mode": {
                     "type": "string",
                     "enum": [
                       "absolute",
                       "relative"
-                    ]
+                    ],
+                    "description": "Perturbation mode"
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "scenario": {
@@ -885,7 +934,14 @@
                     "properties": {
                       "parameters": {
                         "type": "object",
-                        "minProperties": 1,
+                        "properties": {
+                          "a": {
+                            "type": "number"
+                          },
+                          "b": {
+                            "type": "number"
+                          }
+                        },
                         "additionalProperties": {
                           "type": "number"
                         }
@@ -899,8 +955,7 @@
                       "uncertainty": {
                         "type": "object",
                         "additionalProperties": {
-                          "type": "number",
-                          "minimum": 0
+                          "type": "number"
                         }
                       },
                       "bias": {
@@ -909,23 +964,30 @@
                       "threshold": {
                         "type": "number"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   },
                   "periods": {
                     "type": "integer",
-                    "minimum": 1,
-                    "maximum": 120
+                    "description": "Number of forecast periods (default 12)"
                   },
                   "drift": {
                     "type": "object",
+                    "description": "Per-period parameter drift",
+                    "properties": {
+                      "a": {
+                        "type": "number"
+                      },
+                      "b": {
+                        "type": "number"
+                      }
+                    },
                     "additionalProperties": {
                       "type": "number"
                     }
                   },
                   "uncertainty_growth": {
                     "type": "number",
-                    "minimum": 0
+                    "description": "Per-period uncertainty growth rate"
                   },
                   "growth_mode": {
                     "type": "string",
@@ -934,8 +996,7 @@
                       "multiplicative"
                     ]
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "scenario": {
@@ -1023,101 +1084,39 @@
                 "properties": {
                   "components": {
                     "type": "array",
-                    "minItems": 1,
-                    "maxItems": 25,
+                    "description": "Weighted scenario components (max 25)",
                     "items": {
                       "type": "object",
                       "properties": {
                         "label": {
-                          "type": "string",
-                          "minLength": 1
+                          "type": "string"
                         },
                         "weight": {
-                          "type": "number",
-                          "exclusiveMinimum": 0
+                          "type": "number"
                         },
                         "scenario": {
                           "type": "object",
-                          "required": [
-                            "parameters"
-                          ],
                           "properties": {
                             "parameters": {
                               "type": "object",
-                              "minProperties": 1,
+                              "properties": {
+                                "signal": {
+                                  "type": "number"
+                                }
+                              },
                               "additionalProperties": {
                                 "type": "number"
                               }
-                            },
-                            "weights": {
-                              "type": "object",
-                              "additionalProperties": {
-                                "type": "number"
-                              }
-                            },
-                            "uncertainty": {
-                              "type": "object",
-                              "additionalProperties": {
-                                "type": "number",
-                                "minimum": 0
-                              }
-                            },
-                            "bias": {
-                              "type": "number"
                             },
                             "threshold": {
                               "type": "number"
                             }
-                          },
-                          "additionalProperties": false
-                        },
-                        "parameters": {
-                          "type": "object",
-                          "minProperties": 1,
-                          "additionalProperties": {
-                            "type": "number"
                           }
-                        },
-                        "weights": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": "number"
-                          }
-                        },
-                        "uncertainty": {
-                          "type": "object",
-                          "additionalProperties": {
-                            "type": "number",
-                            "minimum": 0
-                          }
-                        },
-                        "bias": {
-                          "type": "number"
-                        },
-                        "threshold": {
-                          "type": "number"
                         }
-                      },
-                      "required": [
-                        "weight"
-                      ],
-                      "anyOf": [
-                        {
-                          "required": [
-                            "scenario"
-                          ]
-                        },
-                        {
-                          "required": [
-                            "parameters"
-                          ]
-                        }
-                      ],
-                      "additionalProperties": false
+                      }
                     }
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "components": [
@@ -1209,7 +1208,8 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "scenario"
+                  "scenario",
+                  "bounds"
                 ],
                 "properties": {
                   "scenario": {
@@ -1220,7 +1220,14 @@
                     "properties": {
                       "parameters": {
                         "type": "object",
-                        "minProperties": 1,
+                        "properties": {
+                          "a": {
+                            "type": "number"
+                          },
+                          "b": {
+                            "type": "number"
+                          }
+                        },
                         "additionalProperties": {
                           "type": "number"
                         }
@@ -1234,8 +1241,7 @@
                       "uncertainty": {
                         "type": "object",
                         "additionalProperties": {
-                          "type": "number",
-                          "minimum": 0
+                          "type": "number"
                         }
                       },
                       "bias": {
@@ -1244,18 +1250,37 @@
                       "threshold": {
                         "type": "number"
                       }
-                    },
-                    "additionalProperties": false
+                    }
                   },
                   "bounds": {
                     "type": "object",
-                    "minProperties": 1,
+                    "description": "Parameter bounds for optimization",
+                    "properties": {
+                      "a": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      },
+                      "b": {
+                        "type": "object",
+                        "properties": {
+                          "min": {
+                            "type": "number"
+                          },
+                          "max": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
                     "additionalProperties": {
                       "type": "object",
-                      "required": [
-                        "min",
-                        "max"
-                      ],
                       "properties": {
                         "min": {
                           "type": "number"
@@ -1263,24 +1288,18 @@
                         "max": {
                           "type": "number"
                         }
-                      },
-                      "additionalProperties": false
+                      }
                     }
                   },
                   "iterations": {
                     "type": "integer",
-                    "minimum": 1,
-                    "maximum": 500
+                    "description": "Optimization iterations (default 100, max 500)"
                   },
                   "objective": {
                     "type": "string",
-                    "enum": [
-                      "outcome_probability",
-                      "mean_score"
-                    ]
+                    "description": "Optimization objective"
                   }
-                },
-                "additionalProperties": false
+                }
               },
               "example": {
                 "scenario": {
