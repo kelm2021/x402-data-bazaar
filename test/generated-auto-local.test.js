@@ -1,4 +1,5 @@
 ﻿const assert = require("node:assert/strict");
+const http = require("node:http");
 const test = require("node:test");
 const fetch = require("node-fetch");
 
@@ -7,6 +8,27 @@ const { createApp } = require("../app");
 function withServer(app, run) {
   return new Promise((resolve, reject) => {
     const server = app.listen(0, "127.0.0.1", async () => {
+      try {
+        const { port } = server.address();
+        const result = await run(`http://127.0.0.1:${port}`);
+        server.close((closeErr) => {
+          if (closeErr) {
+            reject(closeErr);
+            return;
+          }
+          resolve(result);
+        });
+      } catch (error) {
+        server.close(() => reject(error));
+      }
+    });
+  });
+}
+
+function withHttpServer(handler, run) {
+  return new Promise((resolve, reject) => {
+    const server = http.createServer(handler);
+    server.listen(0, "127.0.0.1", async () => {
       try {
         const { port } = server.address();
         const result = await run(`http://127.0.0.1:${port}`);
@@ -1576,6 +1598,36 @@ test("generated auto-local routes return computed non-stub payloads", async () =
   });
 });
 
+test("generated media routes do not fetch loopback image URLs", async () => {
+  await withHttpServer((req, res) => {
+    res.writeHead(200, { "content-type": "image/png" });
+    res.end("not-used");
+  }, async (targetBaseUrl) => {
+    const app = createApp({
+      env: {},
+      enableDebugRoutes: false,
+      paymentGate: (_req, _res, next) => next(),
+      mercTrustMiddleware: null,
+    });
+
+    await withServer(app, async (baseUrl) => {
+      const blockedUrl = `${targetBaseUrl}/test.png`;
+      const { response, payload } = await postJson(baseUrl, "/api/tools/colors/extract", {
+        imageUrl: blockedUrl,
+        text: "fallback-seed",
+      });
+
+      assert.equal(response.status, 200);
+      assert.equal(payload.success, true);
+      assert.equal(payload.data.mode, "text-fallback");
+      assert.equal(payload.data.imageUrl, blockedUrl);
+      assert.equal(payload.data.fallbackReason, "blocked_private_host");
+      assert.ok(Array.isArray(payload.data.palette));
+      assert.ok(payload.data.palette.length > 0);
+    });
+  });
+});
+
 test("generated document routes are published in discovery and OpenAPI", async () => {
   const app = createApp({
     env: {},
@@ -1585,7 +1637,7 @@ test("generated document routes are published in discovery and OpenAPI", async (
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
 
     assert.equal(discoveryResponse.status, 200);
@@ -1602,6 +1654,30 @@ test("generated document routes are published in discovery and OpenAPI", async (
       discovery.catalog.some((entry) => entry.path === "/api/tools/xlsx/generate"),
       "expected XLSX generator in /api discovery",
     );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/report/pdf/generate"),
+      "expected report PDF generator in /api discovery",
+    );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/report/docx/generate"),
+      "expected report DOCX generator in /api discovery",
+    );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/report/xlsx/generate"),
+      "expected report XLSX generator in /api discovery",
+    );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/pdf/render-html"),
+      "expected max-fidelity PDF renderer in /api discovery",
+    );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/docx/render-template"),
+      "expected template DOCX renderer in /api discovery",
+    );
+    assert.ok(
+      discovery.catalog.some((entry) => entry.path === "/api/tools/xlsx/render-template"),
+      "expected template XLSX renderer in /api discovery",
+    );
 
     const openApiResponse = await fetch(`${baseUrl}/openapi.json`);
     const openApi = await openApiResponse.json();
@@ -1610,6 +1686,12 @@ test("generated document routes are published in discovery and OpenAPI", async (
     const reportRequestSchema = openApi.paths["/api/tools/report/generate"].post.requestBody.content["application/json"].schema;
     const docxRequestSchema = openApi.paths["/api/tools/docx/generate"].post.requestBody.content["application/json"].schema;
     const xlsxRequestSchema = openApi.paths["/api/tools/xlsx/generate"].post.requestBody.content["application/json"].schema;
+    const reportPdfRequestSchema = openApi.paths["/api/tools/report/pdf/generate"].post.requestBody.content["application/json"].schema;
+    const reportDocxRequestSchema = openApi.paths["/api/tools/report/docx/generate"].post.requestBody.content["application/json"].schema;
+    const reportXlsxRequestSchema = openApi.paths["/api/tools/report/xlsx/generate"].post.requestBody.content["application/json"].schema;
+    const renderHtmlRequestSchema = openApi.paths["/api/tools/pdf/render-html"].post.requestBody.content["application/json"].schema;
+    const renderTemplateDocxSchema = openApi.paths["/api/tools/docx/render-template"].post.requestBody.content["application/json"].schema;
+    const renderTemplateXlsxSchema = openApi.paths["/api/tools/xlsx/render-template"].post.requestBody.content["application/json"].schema;
     const reportResponseSchema = openApi.paths["/api/tools/report/generate"].post.responses["200"].content["application/json"].schema;
 
     assert.ok(schemaIncludesRequiredProperty(reportRequestSchema, "report_meta"));
@@ -1618,7 +1700,92 @@ test("generated document routes are published in discovery and OpenAPI", async (
     assert.ok(schemaIncludesRequiredProperty(docxRequestSchema, "sections"));
     assert.ok(schemaIncludesRequiredProperty(xlsxRequestSchema, "report_meta"));
     assert.ok(schemaIncludesRequiredProperty(xlsxRequestSchema, "sheets"));
+    assert.ok(schemaIncludesRequiredProperty(reportPdfRequestSchema, "report_meta"));
+    assert.ok(schemaIncludesRequiredProperty(reportDocxRequestSchema, "report_meta"));
+    assert.ok(schemaIncludesRequiredProperty(reportXlsxRequestSchema, "report_meta"));
+    assert.ok(schemaIncludesRequiredProperty(renderHtmlRequestSchema, "html"));
+    assert.ok(schemaIncludesRequiredProperty(renderTemplateDocxSchema, "template"));
+    assert.ok(schemaIncludesRequiredProperty(renderTemplateXlsxSchema, "template"));
     assert.ok(schemaHasArtifactEnvelope(reportResponseSchema));
+  });
+});
+
+test("explicit document alias routes resolve to live handlers", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (_req, _res, next) => next(),
+    mercTrustMiddleware: null,
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const reportPdf = await postJson(baseUrl, "/api/tools/report/pdf/generate", {
+      report_meta: { report_type: "ops-brief", title: "Ops Brief", author: "AurelianFlo" },
+      executive_summary: ["Routes healthy."],
+      tables: {
+        health: {
+          columns: ["route", "status"],
+          rows: [{ route: "/api/tools/report/pdf/generate", status: "healthy" }],
+        },
+      },
+    });
+    assert.equal(reportPdf.response.status, 200);
+    assert.equal(reportPdf.payload.success, true);
+    assert.equal(reportPdf.payload.data.documentType, "pdf");
+
+    const reportDocx = await postJson(baseUrl, "/api/tools/report/docx/generate", {
+      report_meta: { report_type: "board-update", title: "Board Update", author: "AurelianFlo" },
+      executive_summary: ["Highlights ready."],
+      tables: {
+        pipeline: {
+          columns: ["stage", "status"],
+          rows: [{ stage: "Draft", status: "complete" }],
+        },
+      },
+    });
+    assert.equal(reportDocx.response.status, 200);
+    assert.equal(reportDocx.payload.success, true);
+    assert.equal(reportDocx.payload.data.documentType, "docx");
+
+    const reportXlsx = await postJson(baseUrl, "/api/tools/report/xlsx/generate", {
+      report_meta: { report_type: "ops-workbook", title: "Ops Workbook", author: "AurelianFlo" },
+      executive_summary: ["Workbook ready."],
+      tables: {
+        metrics: {
+          columns: ["metric", "value"],
+          rows: [{ metric: "availability", value: "99.9%" }],
+        },
+      },
+    });
+    assert.equal(reportXlsx.response.status, 200);
+    assert.equal(reportXlsx.payload.success, true);
+    assert.equal(reportXlsx.payload.data.documentType, "xlsx");
+
+    const renderHtml = await postJson(baseUrl, "/api/tools/pdf/render-html", {
+      title: "Branded HTML Brief",
+      html: "<html><body><h1>Quarterly Brief</h1><p>ARR is healthy.</p></body></html>",
+    });
+    assert.equal(renderHtml.response.status, 200);
+    assert.equal(renderHtml.payload.success, true);
+    assert.equal(renderHtml.payload.data.documentType, "pdf");
+    assert.equal(renderHtml.payload.data.capabilities.selected.lane, "max-fidelity");
+
+    const renderTemplateDocx = await postJson(baseUrl, "/api/tools/docx/render-template", {
+      title: "Mutual NDA",
+      template: "nda",
+    });
+    assert.equal(renderTemplateDocx.response.status, 200);
+    assert.equal(renderTemplateDocx.payload.success, true);
+    assert.equal(renderTemplateDocx.payload.data.documentType, "docx");
+
+    const renderTemplateXlsx = await postJson(baseUrl, "/api/tools/xlsx/render-template", {
+      title: "Revenue Tracker",
+      template: "tracker",
+      items: [{ name: "Launch docs", owner: "Ops", due_date: "2026-04-10", status: "In Progress" }],
+    });
+    assert.equal(renderTemplateXlsx.response.status, 200);
+    assert.equal(renderTemplateXlsx.payload.success, true);
+    assert.equal(renderTemplateXlsx.payload.data.documentType, "xlsx");
   });
 });
 
@@ -1631,13 +1798,14 @@ test("legacy system discovery and OpenAPI aliases resolve to live route catalogs
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api/system/discovery/core?limit=500`);
+    const discoveryResponse = await fetch(`${baseUrl}/api/system/discovery/core?limit=500&format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(Array.isArray(discovery.catalog));
     assert.ok(discovery.catalog.some((entry) => entry.path === "/api/tools/report/generate"));
+    assert.ok(discovery.catalog.some((entry) => entry.path === "/api/tools/report/pdf/generate"));
 
-    const fullDiscoveryResponse = await fetch(`${baseUrl}/api/system/discovery/full?limit=500`);
+    const fullDiscoveryResponse = await fetch(`${baseUrl}/api/system/discovery/full?limit=500&format=json`);
     const fullDiscovery = await fullDiscoveryResponse.json();
     assert.equal(fullDiscoveryResponse.status, 200);
     assert.ok(Array.isArray(fullDiscovery.catalog));
@@ -1647,11 +1815,13 @@ test("legacy system discovery and OpenAPI aliases resolve to live route catalogs
     const openApi = await openApiResponse.json();
     assert.equal(openApiResponse.status, 200);
     assert.ok(openApi.paths["/api/tools/docx/generate"]?.post);
+    assert.ok(openApi.paths["/api/tools/pdf/render-html"]?.post);
 
     const fullOpenApiResponse = await fetch(`${baseUrl}/openapi-full.json`);
     const fullOpenApi = await fullOpenApiResponse.json();
     assert.equal(fullOpenApiResponse.status, 200);
     assert.ok(fullOpenApi.paths["/api/tools/report/generate"]?.post);
+    assert.ok(fullOpenApi.paths["/api/tools/xlsx/render-template"]?.post);
   });
 });
 
@@ -1664,9 +1834,9 @@ test("public discovery surfaces stay curated while system discovery exposes full
   });
 
   await withServer(app, async (baseUrl) => {
-    const publicDiscoveryResponse = await fetch(`${baseUrl}/api`);
+    const publicDiscoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const publicDiscovery = await publicDiscoveryResponse.json();
-    const fullDiscoveryResponse = await fetch(`${baseUrl}/api/system/discovery/full?limit=500`);
+    const fullDiscoveryResponse = await fetch(`${baseUrl}/api/system/discovery/full?limit=500&format=json`);
     const fullDiscovery = await fullDiscoveryResponse.json();
 
     assert.equal(publicDiscoveryResponse.status, 200);
@@ -1677,17 +1847,19 @@ test("public discovery surfaces stay curated while system discovery exposes full
     const publicRouteKeys = new Set(publicDiscovery.catalog.map((entry) => String(entry.routeKey || "")));
     const fullRouteKeys = new Set(fullDiscovery.catalog.map((entry) => String(entry.routeKey || "")));
     const expectedPublicRouteKeys = new Set([
-      "GET /api/ofac-sanctions-screening/*",
-      "GET /api/vendor-onboarding/restricted-party-batch",
-      "GET /api/restricted-party/screen/*",
+      "GET /api/ofac-wallet-screen/:address",
+      "POST /api/workflows/compliance/wallet-sanctions-report",
       "GET /api/vendor-entity-brief",
       "POST /api/workflows/finance/cash-runway-forecast",
+      "POST /api/workflows/finance/startup-runway-forecast",
       "POST /api/workflows/finance/pricing-plan-compare",
+      "POST /api/workflows/finance/pricing-sensitivity-report",
       "POST /api/workflows/sports/nba/championship-forecast",
       "POST /api/workflows/sports/nfl/championship-forecast",
       "POST /api/workflows/sports/mlb/championship-forecast",
       "POST /api/workflows/sports/nhl/championship-forecast",
       "POST /api/workflows/vendor/risk-assessment",
+      "POST /api/workflows/vendor/due-diligence-report",
       "POST /api/sim/probability",
       "POST /api/sim/batch-probability",
       "POST /api/sim/compare",
@@ -1697,9 +1869,15 @@ test("public discovery surfaces stay curated while system discovery exposes full
       "POST /api/sim/optimize",
       "POST /api/sim/report",
       "POST /api/tools/report/generate",
+      "POST /api/tools/report/pdf/generate",
+      "POST /api/tools/report/docx/generate",
+      "POST /api/tools/report/xlsx/generate",
       "POST /api/tools/docx/generate",
       "POST /api/tools/xlsx/generate",
       "POST /api/tools/pdf/generate",
+      "POST /api/tools/pdf/render-html",
+      "POST /api/tools/docx/render-template",
+      "POST /api/tools/xlsx/render-template",
     ]);
 
     assert.deepEqual(new Set([...publicRouteKeys].sort()), new Set([...expectedPublicRouteKeys].sort()));
@@ -1718,20 +1896,53 @@ test("public discovery surfaces stay curated while system discovery exposes full
 
     assert.equal(publicOpenApiResponse.status, 200);
     assert.equal(fullOpenApiResponse.status, 200);
+    assert.equal(
+      publicOpenApi.info.title,
+      "AurelianFlo Compliance, Simulation, and Report Generation API",
+    );
+    assert.match(publicOpenApi.info.description, /vendor due diligence/i);
+    assert.match(publicOpenApi.info.description, /pricing and scenario analysis/i);
+    assert.match(publicOpenApi.info.description, /PDF, DOCX, and XLSX/i);
     assert.ok(publicOpenApi.paths["/api/tools/report/generate"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/report/pdf/generate"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/report/docx/generate"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/report/xlsx/generate"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/pdf/render-html"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/docx/render-template"]?.post);
+    assert.ok(publicOpenApi.paths["/api/tools/xlsx/render-template"]?.post);
+    assert.ok(publicOpenApi.paths["/api/workflows/compliance/wallet-sanctions-report"]?.post);
     assert.ok(publicOpenApi.paths["/api/vendor-entity-brief"]?.get);
     assert.ok(publicOpenApi.paths["/api/workflows/finance/cash-runway-forecast"]?.post);
+    assert.ok(publicOpenApi.paths["/api/workflows/finance/startup-runway-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/finance/pricing-plan-compare"]?.post);
+    assert.ok(publicOpenApi.paths["/api/workflows/finance/pricing-sensitivity-report"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/sports/nba/championship-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/sports/nfl/championship-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/sports/mlb/championship-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/sports/nhl/championship-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/vendor/risk-assessment"]?.post);
+    assert.ok(publicOpenApi.paths["/api/workflows/vendor/due-diligence-report"]?.post);
     assert.ok(publicOpenApi.paths["/api/sim/probability"]?.post);
     assert.ok(!publicOpenApi.paths["/api/tools/design/icon"]?.post);
     assert.ok(!publicOpenApi.paths["/api/weather/current/{param1}"]?.get);
     assert.ok(!publicOpenApi.paths["/api/tools/contract/generate"]?.post);
     assert.ok(fullOpenApi.paths["/api/tools/design/icon"]?.post);
+    assert.match(
+      publicOpenApi.paths["/api/workflows/compliance/wallet-sanctions-report"]?.post?.summary || "",
+      /crypto payment review/i,
+    );
+    assert.match(
+      publicOpenApi.paths["/api/workflows/vendor/due-diligence-report"]?.post?.summary || "",
+      /supplier onboarding/i,
+    );
+    assert.match(
+      publicOpenApi.paths["/api/workflows/finance/startup-runway-forecast"]?.post?.summary || "",
+      /founder- and investor-ready/i,
+    );
+    assert.match(
+      publicOpenApi.paths["/api/tools/pdf/generate"]?.post?.summary || "",
+      /client deliverables/i,
+    );
   });
 });
 
@@ -1785,7 +1996,7 @@ test("root app publishes and serves the nba playoff workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -1837,7 +2048,7 @@ test("root app publishes and serves the nfl playoff workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -1889,7 +2100,7 @@ test("root app publishes and serves the nhl playoff workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -1948,7 +2159,7 @@ test("root app publishes and serves the mlb playoff workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -2015,7 +2226,7 @@ test("root app publishes and serves the cash runway workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -2077,7 +2288,7 @@ test("root app publishes and serves the pricing scenario workflow route", async 
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(
@@ -2159,7 +2370,7 @@ test("root app publishes and serves the vendor risk workflow route", async () =>
   });
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
     const discovery = await discoveryResponse.json();
     assert.equal(discoveryResponse.status, 200);
     assert.ok(

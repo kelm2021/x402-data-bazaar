@@ -6787,6 +6787,7 @@ function createApp(options = {}) {
       onResult: options.mercTrustOnResult ?? mercTrustEnforcementOptions.onResult,
     });
   const enableDebugRoutes = options.enableDebugRoutes ?? true;
+  const enableOpsDashboards = options.enableOpsDashboards === true;
   const wellKnownX402Aurelian = options.wellKnownX402Aurelian ?? WELL_KNOWN_X402_AURELIAN;
   const mcpRegistryAuthProof = options.mcpRegistryAuthProof ?? env.MCP_REGISTRY_AUTH_PROOF;
 
@@ -6850,53 +6851,55 @@ function createApp(options = {}) {
       network: "base",
     }),
   );
-  app.get(
-    "/ops/metrics",
-    createMetricsDashboardHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
-  app.get(
-    "/ops/metrics/data",
-    createMetricsDataHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
-  app.get(
-    "/ops/business",
-    createBusinessDashboardHandler({
-      password:
-        options.businessDashboardPassword ??
-        env.BUSINESS_DASHBOARD_PASSWORD ??
-        env.METRICS_DASHBOARD_PASSWORD,
-      snapshotPath: options.businessDashboardSnapshotPath,
-      proofPath: options.businessDashboardProofPath,
-    }),
-  );
-  app.get(
-    "/ops/business/data",
-    createBusinessDataHandler({
-      password:
-        options.businessDashboardPassword ??
-        env.BUSINESS_DASHBOARD_PASSWORD ??
-        env.METRICS_DASHBOARD_PASSWORD,
-      snapshotPath: options.businessDashboardSnapshotPath,
-    }),
-  );
-  app.get(
-    "/ops/business/proof",
-    createBusinessProofHandler({
-      password:
-        options.businessDashboardPassword ??
-        env.BUSINESS_DASHBOARD_PASSWORD ??
-        env.METRICS_DASHBOARD_PASSWORD,
-      proofPath: options.businessDashboardProofPath,
-    }),
-  );
+  if (enableOpsDashboards) {
+    app.get(
+      "/ops/metrics",
+      createMetricsDashboardHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
+    app.get(
+      "/ops/metrics/data",
+      createMetricsDataHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
+    app.get(
+      "/ops/business",
+      createBusinessDashboardHandler({
+        password:
+          options.businessDashboardPassword ??
+          env.BUSINESS_DASHBOARD_PASSWORD ??
+          env.METRICS_DASHBOARD_PASSWORD,
+        snapshotPath: options.businessDashboardSnapshotPath,
+        proofPath: options.businessDashboardProofPath,
+      }),
+    );
+    app.get(
+      "/ops/business/data",
+      createBusinessDataHandler({
+        password:
+          options.businessDashboardPassword ??
+          env.BUSINESS_DASHBOARD_PASSWORD ??
+          env.METRICS_DASHBOARD_PASSWORD,
+        snapshotPath: options.businessDashboardSnapshotPath,
+      }),
+    );
+    app.get(
+      "/ops/business/proof",
+      createBusinessProofHandler({
+        password:
+          options.businessDashboardPassword ??
+          env.BUSINESS_DASHBOARD_PASSWORD ??
+          env.METRICS_DASHBOARD_PASSWORD,
+        proofPath: options.businessDashboardProofPath,
+      }),
+    );
+  }
 
   app.use(
     createMetricsMiddleware({

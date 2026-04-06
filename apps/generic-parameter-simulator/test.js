@@ -407,7 +407,7 @@ assert(invalidSeed.error?.error === "invalid_seed", "parseSimParams enforces see
 async function runHttpSmokeTests() {
   console.log("\n=== HTTP Smoke Tests ===\n");
 
-  const server = http.createServer(app);
+  const server = http.createServer(createApp({ enableOpsDashboards: true }));
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();
   const baseUrl = `http://127.0.0.1:${port}`;
@@ -488,6 +488,7 @@ async function runBatchRouteTests() {
   console.log("\n=== Batch Route Tests ===\n");
 
   const localApp = createApp({
+    enableOpsDashboards: true,
     paymentGate: (_req, _res, next) => next(),
   });
   const server = http.createServer(localApp);

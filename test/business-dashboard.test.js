@@ -143,6 +143,7 @@ test("business dashboard endpoints require auth when configured", async () => {
   const fixture = await createFixtureFiles();
   const app = createApp({
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     businessDashboardPassword: "secret",
     businessDashboardSnapshotPath: fixture.snapshotPath,
     businessDashboardProofPath: fixture.proofPath,
@@ -161,10 +162,34 @@ test("business dashboard endpoints require auth when configured", async () => {
   await fs.rm(fixture.tempRoot, { recursive: true, force: true });
 });
 
+test("business dashboard routes are disabled by default", async () => {
+  const fixture = await createFixtureFiles();
+  const app = createApp({
+    enableDebugRoutes: false,
+    businessDashboardPassword: "secret",
+    businessDashboardSnapshotPath: fixture.snapshotPath,
+    businessDashboardProofPath: fixture.proofPath,
+    paymentGate: (req, res, next) => next(),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const htmlResponse = await fetch(`${baseUrl}/ops/business`);
+    const dataResponse = await fetch(`${baseUrl}/ops/business/data`);
+    const proofResponse = await fetch(`${baseUrl}/ops/business/proof`);
+
+    assert.equal(htmlResponse.status, 404);
+    assert.equal(dataResponse.status, 404);
+    assert.equal(proofResponse.status, 404);
+  });
+
+  await fs.rm(fixture.tempRoot, { recursive: true, force: true });
+});
+
 test("business dashboard renders published proof snapshot", async () => {
   const fixture = await createFixtureFiles();
   const app = createApp({
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     businessDashboardPassword: "secret",
     businessDashboardSnapshotPath: fixture.snapshotPath,
     businessDashboardProofPath: fixture.proofPath,
@@ -194,6 +219,7 @@ test("business dashboard data and proof routes return published artifacts", asyn
   const fixture = await createFixtureFiles();
   const app = createApp({
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     businessDashboardPassword: "secret",
     businessDashboardSnapshotPath: fixture.snapshotPath,
     businessDashboardProofPath: fixture.proofPath,

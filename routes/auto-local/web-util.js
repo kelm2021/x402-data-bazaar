@@ -3,6 +3,11 @@ const net = require("node:net");
 const tls = require("node:tls");
 const { URL } = require("node:url");
 const fetch = require("node-fetch");
+const {
+  assertSafeHostname,
+  assertSafeUrlTarget,
+  fetchWithNetworkPolicy,
+} = require("./network-policy");
 
 const SOURCE = "auto-local-web-util";
 const TIMEOUT_MS = 6000;
@@ -171,14 +176,15 @@ async function handleRobots(context) {
   const attempts = [];
   for (const url of [`https://${domain}/robots.txt`, `http://${domain}/robots.txt`]) {
     try {
-      const r = await context.fetchImpl(url, { timeout: TIMEOUT_MS, redirect: "follow" });
+      const result = await fetchWithNetworkPolicy(context.fetchImpl, url, { timeout: TIMEOUT_MS, maxRedirects: 5 });
+      const r = result.response;
       const body = await r.text();
-      attempts.push({ url, status: r.status });
+      attempts.push(...result.hops);
       if (r.status === 404) {
         return ok({ endpoint: context.endpoint, domain, ok: true, found: false, robotsTxt: "", attempts, capabilities: { networkLookup: true } });
       }
       if (r.ok) {
-        return ok({ endpoint: context.endpoint, domain, ok: true, found: true, fetchedUrl: r.url || url, robotsTxt: body, parsed: parseRobots(body), attempts });
+        return ok({ endpoint: context.endpoint, domain, ok: true, found: true, fetchedUrl: result.url, robotsTxt: body, parsed: parseRobots(body), attempts });
       }
     } catch (error) {
       attempts.push({ url, error: error.message || String(error) });
@@ -213,6 +219,7 @@ async function handleSsl(context) {
   if (!domain) return fail(context.endpoint, "invalid_input", "ssl check requires valid domain.", {}, { networkLookup: true });
   const hostname = domain.split(":")[0];
   try {
+    await assertSafeHostname(hostname);
     const cert = await inspectCertificate(hostname, context.tlsConnect);
     const now = Date.now();
     const validFrom = new Date(cert.valid_from);
@@ -262,13 +269,24 @@ async function handleUrlRedirects(context) {
 
   const chain = [];
   let current = url.toString();
-  for (let i = 0; i < 10; i += 1) {
-    const method = i === 0 ? "HEAD" : "GET";
-    const r = await context.fetchImpl(current, { timeout: TIMEOUT_MS, method, redirect: "manual" });
-    const location = r.headers.get("location");
-    chain.push({ url: current, status: r.status, method, location: location || null });
-    if (r.status < 300 || r.status >= 400 || !location) break;
-    current = new URL(location, current).toString();
+  try {
+    for (let i = 0; i < 10; i += 1) {
+      await assertSafeUrlTarget(current, { allowProtocols: ["http:", "https:"] });
+      const method = i === 0 ? "HEAD" : "GET";
+      const r = await context.fetchImpl(current, { timeout: TIMEOUT_MS, method, redirect: "manual" });
+      const location = r.headers.get("location");
+      chain.push({ url: current, status: r.status, method, location: location || null });
+      if (r.status < 300 || r.status >= 400 || !location) break;
+      current = new URL(location, current).toString();
+    }
+  } catch (error) {
+    return fail(
+      context.endpoint,
+      "network_error",
+      "Unable to inspect redirect chain.",
+      { url: current, details: error.message || String(error), chain },
+      { networkLookup: true },
+    );
   }
   return ok({ endpoint: context.endpoint, url: url.toString(), finalUrl: current, chain });
 }
@@ -642,7 +660,12 @@ async function handleHeaders(context) {
     return fail(context.endpoint, "invalid_input", "headers endpoint requires a valid URL.", {}, { networkLookup: true });
   }
   try {
-    const r = await context.fetchImpl(target.toString(), { timeout: TIMEOUT_MS, method: "HEAD", redirect: "follow" });
+    const result = await fetchWithNetworkPolicy(context.fetchImpl, target, {
+      timeout: TIMEOUT_MS,
+      method: "HEAD",
+      maxRedirects: 5,
+    });
+    const r = result.response;
     const headers = {};
     r.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });
     if (isSecurityPath) {
@@ -653,14 +676,14 @@ async function handleHeaders(context) {
       };
       return ok({
         endpoint: context.endpoint,
-        url: r.url || target.toString(),
+        url: result.url,
         status: r.status,
         checks,
         score: Object.values(checks).filter(Boolean).length,
         headers,
       });
     }
-    return ok({ endpoint: context.endpoint, url: r.url || target.toString(), status: r.status, headers });
+    return ok({ endpoint: context.endpoint, url: result.url, status: r.status, headers });
   } catch (error) {
     return fail(context.endpoint, "network_error", "Unable to inspect headers.", { details: error.message || String(error) }, { networkLookup: true });
   }

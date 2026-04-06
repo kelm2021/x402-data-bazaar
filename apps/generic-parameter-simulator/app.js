@@ -816,23 +816,25 @@ function createApp(options = {}) {
     app.get(routePath, createPaidEndpointGuideHandler(routeKey, routes));
   }
 
-  app.get(
-    "/ops/metrics",
-    createMetricsDashboardHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
+  if (options.enableOpsDashboards === true) {
+    app.get(
+      "/ops/metrics",
+      createMetricsDashboardHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
 
-  app.get(
-    "/ops/metrics/data",
-    createMetricsDataHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
+    app.get(
+      "/ops/metrics/data",
+      createMetricsDataHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
+  }
 
   app.use(
     createMetricsMiddleware({

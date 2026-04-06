@@ -187,6 +187,10 @@ test("protected route returns payment requirements without a payment header", as
     assert.equal(body.accepts[0].payTo, PAY_TO);
     assert.equal(body.accepts[0].network, X402_NETWORK);
     assert.equal(body.accepts[0].amount, expectedAmount);
+    assert.equal(
+      body.accepts[0].resource,
+      "https://vendor-entity-brief.vercel.app/api/vendor-entity-brief",
+    );
   });
 });
 
@@ -259,6 +263,7 @@ test("facilitator init failures retry within the same paid request", async () =>
 test("metrics feed records the generated route for the shared dashboard", async () => {
   const app = createApp({
     env: {},
+    enableOpsDashboards: true,
     facilitatorLoader: async () => createStubFacilitator(),
   });
   const primaryRoute = getPrimaryRoute();

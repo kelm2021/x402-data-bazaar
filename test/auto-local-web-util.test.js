@@ -1,23 +1,7 @@
 ﻿const assert = require("node:assert/strict");
-const http = require("node:http");
 const test = require("node:test");
 
 const { isWebUtilPath, buildWebUtilPayload } = require("../routes/auto-local/web-util");
-
-function withHttpServer(handler, run) {
-  return new Promise((resolve, reject) => {
-    const server = http.createServer(handler);
-    server.listen(0, "127.0.0.1", async () => {
-      try {
-        const address = server.address();
-        const result = await run(address.port);
-        server.close((err) => (err ? reject(err) : resolve(result)));
-      } catch (error) {
-        server.close(() => reject(error));
-      }
-    });
-  });
-}
 
 test("isWebUtilPath identifies supported families", () => {
   assert.equal(isWebUtilPath("/api/tools/convert/json-to-xml"), true);
@@ -94,35 +78,39 @@ test("util luhn validates known valid and invalid values", async () => {
 });
 
 test("robots lookup falls back from https to http and succeeds", async () => {
-  await withHttpServer((req, res) => {
-    if (req.url === "/robots.txt") {
-      res.writeHead(200, { "content-type": "text/plain" });
-      res.end("User-agent: *\nDisallow: /private\n");
-      return;
-    }
-    res.writeHead(404);
-    res.end("");
-  }, async (port) => {
-    const payload = await buildWebUtilPayload({
-      path: "/api/tools/robots/*",
-      endpoint: "GET /api/tools/robots/*",
-      params: { domain: `127.0.0.1:${port}` },
-    });
-
-    assert.equal(payload.success, true);
-    assert.equal(payload.data.ok, true);
-    assert.equal(payload.data.found, true);
-    assert.match(String(payload.data.robotsTxt || ""), /User-agent:\s*\*/);
-    assert.ok(Array.isArray(payload.data.attempts));
-    assert.ok(payload.data.attempts.length >= 1);
+  const payload = await buildWebUtilPayload({
+    path: "/api/tools/robots/*",
+    endpoint: "GET /api/tools/robots/*",
+    params: { domain: "example.com" },
+    fetchImpl: async (url) => {
+      if (String(url).startsWith("https://")) {
+        throw new Error("tls_failed");
+      }
+      return {
+        ok: true,
+        status: 200,
+        url: String(url),
+        text: async () => "User-agent: *\nDisallow: /private\n",
+      };
+    },
   });
+
+  assert.equal(payload.success, true);
+  assert.equal(payload.data.ok, true);
+  assert.equal(payload.data.found, true);
+  assert.match(String(payload.data.robotsTxt || ""), /User-agent:\s*\*/);
+  assert.ok(Array.isArray(payload.data.attempts));
+  assert.ok(payload.data.attempts.length >= 1);
 });
 
 test("robots lookup returns explicit network failure mode when unreachable", async () => {
   const payload = await buildWebUtilPayload({
     path: "/api/tools/robots/*",
     endpoint: "GET /api/tools/robots/*",
-    params: { domain: "127.0.0.1:1" },
+    params: { domain: "example.com" },
+    fetchImpl: async () => {
+      throw new Error("connect ECONNREFUSED");
+    },
   });
 
   assert.equal(payload.success, true);
@@ -130,5 +118,26 @@ test("robots lookup returns explicit network failure mode when unreachable", asy
   assert.equal(payload.data.failureMode, "network_error");
   assert.equal(payload.data.capabilities.limited, true);
   assert.equal(payload.data.capabilities.networkLookup, true);
+});
+
+test("robots lookup blocks loopback targets before issuing a fetch", async () => {
+  let called = false;
+  const payload = await buildWebUtilPayload({
+    path: "/api/tools/robots/*",
+    endpoint: "GET /api/tools/robots/*",
+    params: { domain: "127.0.0.1:8080" },
+    fetchImpl: async () => {
+      called = true;
+      throw new Error("should_not_fetch");
+    },
+  });
+
+  assert.equal(called, false);
+  assert.equal(payload.success, true);
+  assert.equal(payload.data.ok, false);
+  assert.equal(payload.data.failureMode, "network_error");
+  assert.match(String(payload.data.message || ""), /Unable to fetch robots\.txt/i);
+  assert.ok(Array.isArray(payload.data.attempts));
+  assert.ok(payload.data.attempts.every((attempt) => String(attempt.error || "").includes("blocked_private_host")));
 });
 

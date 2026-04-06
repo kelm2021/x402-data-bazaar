@@ -1,6 +1,5 @@
 const express = require("express");
 const sellerConfig = require("./seller.config.json");
-const batchHandler = require("./handlers/batch");
 const primaryHandler = require("./handlers/primary");
 const {
   bazaarResourceServerExtension,
@@ -134,8 +133,12 @@ function buildQuerySchema(queryExample = {}) {
   };
 }
 
+function getPaymentRouteKey(route) {
+  return route.paymentRouteKey || route.key;
+}
+
 function createDiscoveryExtension(route) {
-  const querySchema = buildQuerySchema(route.queryExample);
+  const querySchema = route.querySchema || buildQuerySchema(route.queryExample);
 
   return declareDiscoveryExtension({
     ...(route.queryExample && Object.keys(route.queryExample).length
@@ -180,7 +183,7 @@ function createRouteConfig(options = {}) {
 
   return Object.fromEntries(
     getSellerRoutes().map((route) => [
-      route.key,
+      getPaymentRouteKey(route),
       createPricedRoute(route, { ...options, siwxRouteExtension }),
     ]),
   );
@@ -251,7 +254,7 @@ function getExamplePathFromResource(resourceUrl, fallbackPath = null) {
 
 function createRouteMatcher(routes = routeConfig) {
   const exactMatches = new Map();
-  const wildcardMatches = [];
+  const patternMatches = [];
 
   for (const [key, config] of Object.entries(routes)) {
     const [method, routePath] = key.split(" ");
@@ -262,8 +265,8 @@ function createRouteMatcher(routes = routeConfig) {
       routePath,
     };
 
-    if (routePath.includes("*")) {
-      wildcardMatches.push(entry);
+    if (routePath.includes("*") || routePath.includes(":") || routePath.includes("[")) {
+      patternMatches.push(entry);
     } else {
       exactMatches.set(`${entry.method} ${routePath}`, entry);
     }
@@ -276,13 +279,28 @@ function createRouteMatcher(routes = routeConfig) {
       return exactMatches.get(exactKey);
     }
 
-    for (const route of wildcardMatches) {
+    const requestSegments = requestPath.split("/").filter(Boolean);
+    for (const route of patternMatches) {
       if (route.method !== normalizedMethod) {
         continue;
       }
 
-      const prefix = route.routePath.slice(0, route.routePath.indexOf("*"));
-      if (requestPath.startsWith(prefix)) {
+      const routeSegments = String(route.routePath).split("/").filter(Boolean);
+      if (routeSegments.length !== requestSegments.length) {
+        continue;
+      }
+
+      const matched = routeSegments.every((segment, index) => {
+        if (segment === "*") {
+          return true;
+        }
+        if (segment.startsWith(":") || /^\[[^\]]+\]$/.test(segment)) {
+          return Boolean(requestSegments[index]);
+        }
+        return segment === requestSegments[index];
+      });
+
+      if (matched) {
         return route;
       }
     }
@@ -740,16 +758,11 @@ function createApiDiscoveryHandler(routes = routeConfig) {
 function createPaymentsMcpIntegration(routes = routeConfig) {
   const routeEntries = getCanonicalRouteEntries(routes);
   const primaryRoute = routeEntries[0] ?? null;
-  const vendorBatchRoute =
-    routeEntries.find((entry) => entry.path === "/api/vendor-onboarding/restricted-party-batch") ??
-    null;
   const primaryPrompt = primaryRoute
     ? `Use payments-mcp to pay ${primaryRoute.canonicalUrl} and return the JSON response.`
     : null;
   const canonicalTemplateUrl =
-    `${CANONICAL_BASE_URL}/api/ofac-sanctions-screening/<COUNTERPARTY_NAME>?minScore=90&limit=5`;
-  const vendorBatchTemplateUrl =
-    `${CANONICAL_BASE_URL}/api/vendor-onboarding/restricted-party-batch?names=<NAME_1>%7C<NAME_2>%7C<NAME_3>&workflow=vendor-onboarding&minScore=90&limit=3`;
+    `${CANONICAL_BASE_URL}/api/ofac-wallet-screen/<WALLET_ADDRESS>?asset=<ASSET>`;
   const scenarioPrompts = [
     {
       id: "smoke-test",
@@ -759,35 +772,34 @@ function createPaymentsMcpIntegration(routes = routeConfig) {
         `Use payments-mcp to pay ${canonicalTemplateUrl} and return the JSON response.`,
     },
     {
-      id: "supplier-onboarding",
-      title: "Supplier Onboarding Gate",
-      prompt: vendorBatchRoute
-        ? `Use payments-mcp to pay ${vendorBatchTemplateUrl}. Return the JSON, then tell me whether vendor onboarding should proceed or pause based on data.summary.recommendedAction.`
-        : `Use payments-mcp to pay ${canonicalTemplateUrl}. Return the JSON, then tell me whether onboarding should proceed or pause for human review based on summary.manualReviewRecommended.`,
+      id: "deposit-screen",
+      title: "Deposit Screen",
+      prompt:
+        `Before crediting funds to a wallet, use payments-mcp to pay ${canonicalTemplateUrl}. ` +
+        "Return the JSON, then tell me whether funds should clear, pause for review, or be blocked.",
     },
     {
-      id: "payout-screening",
-      title: "Payout Screening Gate",
-      prompt: `Before sending funds to <COUNTERPARTY_NAME>, use payments-mcp to pay ${canonicalTemplateUrl}. If the response shows potential matches, tell me to block payment and escalate.`,
+      id: "withdrawal-screen",
+      title: "Withdrawal Screen",
+      prompt:
+        `Before sending funds to a wallet, use payments-mcp to pay ${canonicalTemplateUrl}. ` +
+        "If the response shows a sanctions match, tell me to block payment and escalate.",
     },
     {
-      id: "cross-border-check",
-      title: "Cross-Border Counterparty Check",
-      prompt: `Use payments-mcp to pay ${canonicalTemplateUrl} for the counterparty in this transaction. Summarize the top match, the sanctions programs involved, and whether a human review is recommended.`,
-    },
-    {
-      id: "vendor-batch-screening",
-      title: "Vendor Batch Screen",
-      prompt: `Use payments-mcp to pay ${vendorBatchTemplateUrl}. Return the JSON, then summarize which counterparties are clear, which require manual review, and whether the batch should proceed or pause.`,
+      id: "wallet-check",
+      title: "Wallet Check",
+      prompt:
+        `Use payments-mcp to pay ${canonicalTemplateUrl}. ` +
+        "Summarize whether the address is on the OFAC SDN digital currency list, which sanctioned entity it maps to, and the relevant program tags.",
     },
   ];
   const shareCopy = {
     shortPost:
-      "Built a low-friction x402 restricted-party screening seller at restricted-party-screen.vercel.app for procurement, payout, and onboarding workflows. It now supports both single-name OFAC checks and a batch vendor screen through Payments MCP, with SIWX-enabled repeat access.",
+      "Built a low-friction x402 OFAC wallet screening seller at restricted-party-screen.vercel.app for onchain deposits, withdrawals, and treasury controls. Exact-match screening, public Treasury data, MCP-ready, and SIWX-enabled for repeat access.",
     developerDm:
-      "If you are building procurement, payout, or cross-border agents, I have a live x402 seller for OFAC restricted-party screening. Use the single-name route as the cheap default gate, then use the batch screen when a workflow needs a quick proceed-or-pause call across multiple counterparties.",
+      "If you are building onchain payments, treasury, or exchange controls, I have a live x402 seller for exact OFAC wallet screening. It checks a wallet address against Treasury's SDN digital currency list and returns sanctioned entity metadata in one paid call.",
     docsSnippet:
-      "Install Payments MCP, then call either the single-name OFAC route or the batch vendor-screening route through MCP. The seller returns grouped matches, sanctions programs, source freshness, and a clear manual-review signal for agent workflows.",
+      "Install Payments MCP, then call the wallet-screening route through MCP. The seller returns exact hit or clear status, sanctioned entity metadata, program tags, source freshness, and a manual-review signal for agent payment workflows.",
   };
 
   return {
@@ -870,9 +882,7 @@ function mountPaidRoutes(target) {
     if (typeof target[method] !== "function") {
       throw new Error(`Unsupported HTTP method in route key: ${route.method}`);
     }
-
-    const handler = route.handlerId === "batch" ? batchHandler : primaryHandler;
-    target[method](route.expressPath, handler);
+    target[method](route.expressPath, primaryHandler);
   }
 }
 
@@ -932,22 +942,24 @@ function createApp(options = {}) {
     "/integrations/payments-mcp",
     createPaymentsMcpIntegrationHandler(routes, { siwxPublicConfig }),
   );
-  app.get(
-    "/ops/metrics",
-    createMetricsDashboardHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
-  app.get(
-    "/ops/metrics/data",
-    createMetricsDataHandler({
-      password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
-      attribution: metricsAttribution,
-      store: metricsStore,
-    }),
-  );
+  if (options.enableOpsDashboards === true) {
+    app.get(
+      "/ops/metrics",
+      createMetricsDashboardHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
+    app.get(
+      "/ops/metrics/data",
+      createMetricsDataHandler({
+        password: options.metricsPassword ?? env.METRICS_DASHBOARD_PASSWORD,
+        attribution: metricsAttribution,
+        store: metricsStore,
+      }),
+    );
+  }
   app.use(
     createMetricsMiddleware({
       attribution: metricsAttribution,

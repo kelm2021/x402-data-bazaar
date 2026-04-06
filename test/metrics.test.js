@@ -179,6 +179,7 @@ test("metrics feed counts payment challenges by canonical route key", async () =
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     facilitatorLoader: async () => createStubFacilitator(),
   });
 
@@ -204,6 +205,7 @@ test("metrics feed groups path-based weather challenges under the wildcard route
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     facilitatorLoader: async () => createStubFacilitator(),
   });
 
@@ -228,6 +230,7 @@ test("metrics fold paid head probes into the protected get route key", async () 
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     facilitatorLoader: async () => createStubFacilitator(),
   });
 
@@ -257,6 +260,7 @@ test("metrics dashboard renders successful route volume", async () => {
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     paymentGate: (req, res, next) => next(),
   });
 
@@ -288,6 +292,7 @@ test("metrics feed separates external paid usd from self-tagged verifications", 
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     metricsSourceSalt: "test-metrics-salt",
     paymentGate: (req, res, next) => next(),
   });
@@ -333,6 +338,7 @@ test("metrics dashboard hides legacy free probe rows and groups routes by type",
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     metricsStore: createStaticMetricsStore({
       generatedAt: "2026-03-16T16:20:00.000Z",
       startedAt: "2026-03-16T15:00:00.000Z",
@@ -513,10 +519,27 @@ test("metrics dashboard hides legacy free probe rows and groups routes by type",
   });
 });
 
+test("ops metrics routes are disabled by default", async () => {
+  const app = createApp({
+    env: {},
+    enableDebugRoutes: false,
+    paymentGate: (req, res, next) => next(),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const dashboardResponse = await fetch(`${baseUrl}/ops/metrics`);
+    const dataResponse = await fetch(`${baseUrl}/ops/metrics/data`);
+
+    assert.equal(dashboardResponse.status, 404);
+    assert.equal(dataResponse.status, 404);
+  });
+});
+
 test("metrics feed tracks facilitator usage and fallback selections from request context", async () => {
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     paymentGate: (req, _res, next) => {
       req.x402Facilitator = {
         provider: "payai",
@@ -550,6 +573,7 @@ test("metrics feed derives facilitator provider from payment-required challenge 
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     facilitatorLoader: async () => createStubFacilitator(),
   });
 
@@ -573,6 +597,7 @@ test("metrics dashboard places category-tagged routes into specific groups befor
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     metricsStore: createStaticMetricsStore({
       generatedAt: "2026-03-27T18:10:00.000Z",
       startedAt: "2026-03-27T17:00:00.000Z",
@@ -718,6 +743,7 @@ test("metrics feed groups caller fingerprints without storing raw IPs or raw use
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     metricsSourceSalt: "test-metrics-salt",
     paymentGate: (req, res, next) => next(),
   });
@@ -774,6 +800,7 @@ test("metrics feed groups shared-store traffic by seller host", async () => {
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     paymentGate: (req, res, next) => next(),
   });
 
@@ -810,6 +837,7 @@ test("metrics feed canonicalizes observed hosts and merges port variants", async
   const app = createApp({
     env: {},
     enableDebugRoutes: false,
+    enableOpsDashboards: true,
     paymentGate: (req, res, next) => next(),
   });
 

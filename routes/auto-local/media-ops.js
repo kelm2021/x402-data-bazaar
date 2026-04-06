@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const Jimp = require("jimp");
 const { Resvg } = require("@resvg/resvg-js");
 const { GifCodec, GifFrame, GifUtil } = require("gifwrap");
+const { fetchWithNetworkPolicy } = require("./network-policy");
 
 const MEDIA_PATH_FRAGMENTS = [
   "/qr/",
@@ -402,7 +403,8 @@ async function readRemoteBytes(imageUrl) {
     if (!["http:", "https:"].includes(parsed.protocol)) {
       throw new Error("unsupported_protocol");
     }
-    const response = await fetch(parsed.toString(), { timeout: 5000 });
+    const result = await fetchWithNetworkPolicy(fetch, parsed, { timeout: 5000, maxRedirects: 5 });
+    const response = result.response;
     if (!response.ok) {
       throw new Error(`fetch_failed_${response.status}`);
     }
@@ -415,7 +417,7 @@ async function readRemoteBytes(imageUrl) {
       .split(";")[0]
       .trim()
       .toLowerCase();
-    return { ok: true, bytes, imageUrl: parsed.toString(), mimeType };
+    return { ok: true, bytes, imageUrl: result.url, mimeType };
   } catch (error) {
     return {
       ok: false,
