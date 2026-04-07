@@ -10,6 +10,8 @@ test("MCP tool catalog exposes a free demo tool, bundled compliance workflow, an
       "server_capabilities",
       "ofac_wallet_report",
       "ofac_wallet_screen",
+      "batch_wallet_screen",
+      "edd_report",
       "monte_carlo_report",
       "monte_carlo_decision_report",
       "report_pdf_generate",
@@ -38,6 +40,20 @@ test("tool catalog maps each flagship tool to the live route surface", () => {
   });
   assert.equal(byName.get("ofac_wallet_screen").price, 0.005);
   assert.deepEqual(byName.get("ofac_wallet_screen").required, ["address"]);
+
+  assert.deepEqual(byName.get("batch_wallet_screen").route, {
+    method: "POST",
+    pathTemplate: "/api/workflows/compliance/batch-wallet-screen",
+  });
+  assert.equal(byName.get("batch_wallet_screen").price, 0.025);
+  assert.deepEqual(byName.get("batch_wallet_screen").required, ["addresses"]);
+
+  assert.deepEqual(byName.get("edd_report").route, {
+    method: "POST",
+    pathTemplate: "/api/workflows/compliance/edd-report",
+  });
+  assert.equal(byName.get("edd_report").price, 0.09);
+  assert.deepEqual(byName.get("edd_report").required, ["subject_name", "addresses", "output_format"]);
 
   assert.deepEqual(byName.get("monte_carlo_report").route, {
     method: "POST",
@@ -77,15 +93,23 @@ test("tool catalog includes submission-ready safety annotations", () => {
   });
   assert.deepEqual(byName.get("ofac_wallet_report").annotations, {
     title: "OFAC Wallet Screen Report",
-    destructiveHint: true,
+    readOnlyHint: true,
   });
   assert.deepEqual(byName.get("ofac_wallet_screen").annotations, {
     title: "OFAC Wallet Screen",
     readOnlyHint: true,
   });
+  assert.deepEqual(byName.get("batch_wallet_screen").annotations, {
+    title: "Batch Wallet Screen",
+    readOnlyHint: true,
+  });
+  assert.deepEqual(byName.get("edd_report").annotations, {
+    title: "EDD Report",
+    readOnlyHint: true,
+  });
   assert.deepEqual(byName.get("monte_carlo_report").annotations, {
     title: "Monte Carlo Report",
-    destructiveHint: true,
+    readOnlyHint: true,
   });
   assert.deepEqual(byName.get("monte_carlo_decision_report").annotations, {
     title: "Monte Carlo Decision Report",
@@ -93,11 +117,11 @@ test("tool catalog includes submission-ready safety annotations", () => {
   });
   assert.deepEqual(byName.get("report_pdf_generate").annotations, {
     title: "Report PDF Generate",
-    destructiveHint: true,
+    readOnlyHint: true,
   });
   assert.deepEqual(byName.get("report_docx_generate").annotations, {
     title: "Report DOCX Generate",
-    destructiveHint: true,
+    readOnlyHint: true,
   });
 });
 
@@ -109,11 +133,20 @@ test("tool catalog includes parameter descriptions for directory indexing", () =
     byName.get("ofac_wallet_report").inputSchema.properties.output_format.description,
     /pdf|docx|json/i,
   );
+  assert.doesNotMatch(byName.get("ofac_wallet_report").description, /premium|one paid call/i);
   assert.match(byName.get("ofac_wallet_screen").inputSchema.properties.address.description, /wallet/i);
+  assert.match(byName.get("batch_wallet_screen").inputSchema.properties.addresses.description, /wallet/i);
+  assert.equal(byName.get("batch_wallet_screen").inputSchema.properties.addresses.type, "array");
+  assert.match(byName.get("edd_report").inputSchema.properties.subject_name.description, /subject|counterparty/i);
+  assert.equal(byName.get("edd_report").inputSchema.properties.addresses.type, "array");
+  assert.deepEqual(byName.get("edd_report").inputSchema.properties.output_format.enum, ["json", "pdf", "docx"]);
+  assert.match(byName.get("edd_report").description, /due diligence|workflow/i);
+  assert.doesNotMatch(byName.get("edd_report").description, /workflow-safe|one-call/i);
   assert.match(
     byName.get("monte_carlo_report").inputSchema.properties.output_format.description,
     /pdf|docx|json/i,
   );
+  assert.doesNotMatch(byName.get("monte_carlo_report").description, /premium|one paid call/i);
   assert.match(
     byName.get("monte_carlo_decision_report").inputSchema.properties.analysis_type.description,
     /simulation workflow/i,
@@ -122,4 +155,6 @@ test("tool catalog includes parameter descriptions for directory indexing", () =
     byName.get("report_pdf_generate").inputSchema.properties.tables.description,
     /Named tables/i,
   );
+  assert.doesNotMatch(byName.get("report_pdf_generate").description, /shared AurelianFlo report model|premium/i);
+  assert.doesNotMatch(byName.get("report_docx_generate").description, /shared AurelianFlo report model|premium/i);
 });

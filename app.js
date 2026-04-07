@@ -7,6 +7,10 @@ const {
 } = require("@x402/extensions/bazaar");
 const restrictedPartySellerConfig = require("./apps/restricted-party-screen/seller.config.json");
 const restrictedPartyPrimaryHandler = require("./apps/restricted-party-screen/handlers/primary");
+const {
+  createPaymentsMcpIntegrationHandler: createRestrictedPartyPaymentsMcpIntegrationHandler,
+  createRouteConfig: createRestrictedPartyRouteConfig,
+} = require("./apps/restricted-party-screen/app");
 const vendorEntityBriefSellerConfig = require("./apps/vendor-entity-brief/seller.config.json");
 const vendorEntityBriefPrimaryHandler = require("./apps/vendor-entity-brief/handlers/primary");
 const genericSimulatorSellerConfig = require("./apps/generic-parameter-simulator/seller.config.json");
@@ -51,6 +55,21 @@ const {
   createAurelianFloMcpExpressBridge,
   createAurelianFloMcpServerCardHandler,
 } = require("./lib/aurelianflo-mcp-bridge");
+const {
+  DEFAULT_ORIGIN_TITLE,
+  DESCRIPTION_FULL: DEFAULT_ORIGIN_DESCRIPTION,
+  DESCRIPTION_MEDIUM,
+  HEALTH_PAGE_LEDE,
+  CATALOG_PAGE_LEDE,
+  HOME_PAGE_AUDIENCE,
+  HOME_PAGE_VALUE_PROP,
+  PRIMARY_NAV_ITEMS,
+} = require("./lib/aurelianflo-profile");
+const {
+  AURELIANFLO_ALLOWED_ROUTE_KEYS,
+  buildAllowedRouteKeySet,
+  buildPublicCoreRouteKeySet,
+} = require("./lib/aurelianflo-surface");
 const WELL_KNOWN_X402_AURELIAN = require("./well-known-x402-aurelian.json");
 
 const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
@@ -63,14 +82,6 @@ const CANONICAL_BASE_URL = String(
 )
   .trim()
   .replace(/\/+$/, "");
-const WRAPPED_PRODUCT_URL = String(
-  process.env.AURELIAN_WRAPPED_URL || "https://wrap.aurelianflo.com",
-)
-  .trim()
-  .replace(/\/+$/, "");
-const DEFAULT_ORIGIN_TITLE = "AurelianFlo Compliance, Simulation, and Report Generation API";
-const DEFAULT_ORIGIN_DESCRIPTION =
-  "AurelianFlo is an x402-paid API for OFAC wallet screening, vendor due diligence, sanctions and restricted-party checks, Monte Carlo forecasting, cash runway simulation, pricing and scenario analysis, and premium PDF, DOCX, and XLSX report generation. Use it when you need compliance checks, decision-support analysis, or client-ready documents instead of raw JSON.";
 const DEFAULT_FAVICON_PNG_BASE64 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/2kQAAAAASUVORK5CYII=";
 const DEFAULT_FAVICON_PNG = Buffer.from(DEFAULT_FAVICON_PNG_BASE64, "base64");
@@ -1250,40 +1261,11 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
     },
   },
 ];
-const PUBLIC_CORE_DISCOVERY_ROUTE_KEYS = new Set([
-  "GET /api/ofac-wallet-screen/:address",
-  "POST /api/workflows/compliance/wallet-sanctions-report",
-  "GET /api/vendor-entity-brief",
-  "POST /api/workflows/finance/cash-runway-forecast",
-  "POST /api/workflows/finance/startup-runway-forecast",
-  "POST /api/workflows/finance/pricing-plan-compare",
-  "POST /api/workflows/finance/pricing-sensitivity-report",
-  "POST /api/workflows/sports/nba/championship-forecast",
-  "POST /api/workflows/sports/nfl/championship-forecast",
-  "POST /api/workflows/sports/mlb/championship-forecast",
-  "POST /api/workflows/sports/nhl/championship-forecast",
-  "POST /api/workflows/vendor/risk-assessment",
-  "POST /api/workflows/vendor/due-diligence-report",
-  "POST /api/sim/probability",
-  "POST /api/sim/batch-probability",
-  "POST /api/sim/compare",
-  "POST /api/sim/sensitivity",
-  "POST /api/sim/forecast",
-  "POST /api/sim/composed",
-  "POST /api/sim/optimize",
-  "POST /api/sim/report",
-  "POST /api/tools/report/generate",
-  "POST /api/tools/report/pdf/generate",
-  "POST /api/tools/report/docx/generate",
-  "POST /api/tools/report/xlsx/generate",
-  "POST /api/tools/docx/generate",
-  "POST /api/tools/xlsx/generate",
-  "POST /api/tools/pdf/generate",
-  "POST /api/tools/pdf/render-html",
-  "POST /api/tools/docx/render-template",
-  "POST /api/tools/xlsx/render-template",
-]);
+const FULL_DISCOVERY_ROUTE_KEYS = buildAllowedRouteKeySet();
+const PUBLIC_CORE_DISCOVERY_ROUTE_KEYS_SET = buildPublicCoreRouteKeySet();
 const FLAGSHIP_ROUTE_ORDER = [
+  "POST /api/workflows/compliance/edd-report",
+  "POST /api/workflows/compliance/batch-wallet-screen",
   "GET /api/ofac-wallet-screen/:address",
   "POST /api/sim/report",
   "POST /api/tools/report/pdf/generate",
@@ -1291,12 +1273,30 @@ const FLAGSHIP_ROUTE_ORDER = [
 ];
 const FLAGSHIP_ROUTE_KEYS = new Set(FLAGSHIP_ROUTE_ORDER);
 const FLAGSHIP_ROUTE_EDITORIAL = {
-  "GET /api/ofac-wallet-screen/:address": {
+  "POST /api/workflows/compliance/edd-report": {
     discipline: "Compliance",
     sequence: "01",
+    title: "EDD memo",
+    summary:
+      "Turn a wallet set plus case metadata into a workflow-safe enhanced due diligence memo with evidence, follow-up, and reviewer handoff fields.",
+    proof:
+      "Best when operations or compliance needs an audit-ready memo without pretending the system is providing legal approval or denial.",
+  },
+  "POST /api/workflows/compliance/batch-wallet-screen": {
+    discipline: "Compliance",
+    sequence: "02A",
+    title: "Batch wallet screening",
+    summary:
+      "Screen a wallet set in one paid call, then hand the result to operations or compliance as a single review packet.",
+    proof:
+      "Returns matched and clear wallet counts, per-wallet results, source freshness, and a structured report payload for audit-ready PDF or DOCX rendering.",
+  },
+  "GET /api/ofac-wallet-screen/:address": {
+    discipline: "Compliance",
+    sequence: "02B",
     title: "OFAC wallet screening",
     summary:
-      "Screen a wallet address before funds move. This is the fastest path to an allow, pause, or block decision in an onchain workflow.",
+      "Screen a wallet address before funds move. This is the fastest exact-match OFAC check when operations needs a workflow-safe review signal on one address.",
     proof:
       "Returns exact hit or clear status, sanctioned entity metadata, source freshness, and a structured report payload ready for PDF or DOCX rendering.",
   },
@@ -1327,6 +1327,37 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     proof:
       "Best when the report needs editing, markup, or revision in a standard document workflow.",
   },
+};
+const ROUTE_DOC_RELATED_LINKS = {
+  "POST /api/workflows/compliance/edd-report": [
+    {
+      label: "Batch screening",
+      href: "/api/workflows/compliance/batch-wallet-screen",
+      description: "Lower-priced wallet-set screening primitive underneath the EDD workflow.",
+    },
+    {
+      label: "Single-wallet screen",
+      href: "/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+      description: "Concrete exact-match OFAC example for one wallet address.",
+    },
+    {
+      label: "Payments MCP",
+      href: "/integrations/payments-mcp",
+      description: "Install and prompt templates for agent-first access to the compliance routes.",
+    },
+  ],
+  "POST /api/workflows/compliance/batch-wallet-screen": [
+    {
+      label: "EDD memo",
+      href: "/api/workflows/compliance/edd-report",
+      description: "Primary buyer-facing workflow when the screening result needs memo output.",
+    },
+    {
+      label: "Single-wallet screen",
+      href: "/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+      description: "Concrete exact-match OFAC example for a single address check.",
+    },
+  ],
 };
 const WORKFLOW_COMPATIBILITY_ALIASES = [
   {
@@ -1634,11 +1665,20 @@ function createGeneratedCatalogRouteConfig(payTo = PAY_TO, options = {}) {
 
 function shouldIncludeRouteInDiscovery(routeKey, options = {}) {
   const scope = String(options.discoveryScope || "full").toLowerCase();
-  if (scope !== "public") {
+  const env = options.env || process.env;
+  if (!isProductionRuntime(env)) {
+    if (scope === "public") {
+      return PUBLIC_CORE_DISCOVERY_ROUTE_KEYS_SET.has(routeKey);
+    }
+
     return true;
   }
 
-  return PUBLIC_CORE_DISCOVERY_ROUTE_KEYS.has(routeKey);
+  if (scope === "public") {
+    return PUBLIC_CORE_DISCOVERY_ROUTE_KEYS_SET.has(routeKey);
+  }
+
+  return FULL_DISCOVERY_ROUTE_KEYS.has(routeKey);
 }
 
 function getBundledSellerRoutes() {
@@ -3325,6 +3365,52 @@ function createRouteConfig(payTo = PAY_TO) {
   };
 }
 
+function createAllowedApiRoutesMiddleware(routes = routeConfig, options = {}) {
+  const env = options.env || process.env;
+  const matchRoute = createRouteMatcher(routes);
+  const systemPrefixes = [
+    "/api/system/",
+  ];
+  const exactPaths = new Set([
+    "/api",
+    "/api/sim",
+  ]);
+
+  return function allowedApiRoutesMiddleware(req, res, next) {
+    if (!isProductionRuntime(env)) {
+      next();
+      return;
+    }
+
+    if (!String(req.path || "").startsWith("/api")) {
+      next();
+      return;
+    }
+
+    if (exactPaths.has(req.path) || systemPrefixes.some((prefix) => req.path.startsWith(prefix))) {
+      next();
+      return;
+    }
+
+    const method = String(req.method || "").toUpperCase();
+    const matchesAllowedRoute =
+      Boolean(matchRoute(method, req.path))
+      || (method === "HEAD" && Boolean(matchRoute("GET", req.path)))
+      || ((method === "GET" || method === "HEAD") && Boolean(matchRoute("POST", req.path)));
+
+    if (matchesAllowedRoute) {
+      next();
+      return;
+    }
+
+    res.status(404).json({
+      success: false,
+      error: "Not Found",
+      code: "ENDPOINT_NOT_FOUND",
+    });
+  };
+}
+
 function applyRouteDiscoveryOverrides(routes = {}) {
   const entries = Object.entries(routes).map(([routeKey, config]) => {
     const override = ROUTE_DISCOVERY_OVERRIDES[routeKey];
@@ -3769,10 +3855,15 @@ function resolveOwnershipProofs(manifest = WELL_KNOWN_X402_AURELIAN, env = proce
 function buildBundledSellerResourceUrls(options = {}) {
   const env = options.env || process.env;
   const hiddenRouteMatchers = options.hiddenRouteMatchers || buildHiddenRouteMatchers();
+  const routes = options.routes || routeConfig;
   const resources = [];
 
-  for (const route of getBundledSellerRoutes()) {
-    const canonicalResourcePath = route?.canonicalPath || route?.resourcePath;
+  for (const [routeKey, config] of Object.entries(routes)) {
+    const canonicalResourcePath =
+      config?.canonicalPath
+      || config?.resource
+      || getPrimaryPaymentOption(config)?.resource
+      || getDisplayRoutePath(routeKey, config);
     const canonicalResourceUrl = buildCanonicalResourceUrl(canonicalResourcePath);
 
     if (!canonicalResourceUrl) {
@@ -3806,6 +3897,15 @@ function selectRoutes(routeKeys = [], routes = routeConfig) {
   return selected;
 }
 
+function getDefaultAppRoutes(payTo = PAY_TO, env = process.env) {
+  const allRoutes = applyRouteDiscoveryOverrides(createRouteConfig(payTo));
+  if (!isProductionRuntime(env)) {
+    return allRoutes;
+  }
+
+  return selectRoutes(AURELIANFLO_ALLOWED_ROUTE_KEYS, allRoutes);
+}
+
 function buildWellKnownManifest(manifest = WELL_KNOWN_X402_AURELIAN, routes = routeConfig, options = {}) {
   const env = options.env || process.env;
   const metadata = getOriginMetadata(env);
@@ -3817,7 +3917,7 @@ function buildWellKnownManifest(manifest = WELL_KNOWN_X402_AURELIAN, routes = ro
       )
     : [];
   const bundledSellerResources = includeBundledSellerResources
-    ? buildBundledSellerResourceUrls({ env, hiddenRouteMatchers })
+    ? buildBundledSellerResourceUrls({ env, hiddenRouteMatchers, routes })
     : [];
   const resources = [...new Set([...staticResources, ...bundledSellerResources])];
   const endpoints = Array.isArray(options.precomputedEndpoints)
@@ -3938,8 +4038,591 @@ function getFlagshipCatalogEntries(catalog = []) {
     }));
 }
 
+function getRouteDocRequestExample(config) {
+  const inputInfo = config?.extensions?.bazaar?.info?.input;
+  const bodyPayload = inputInfo?.body?.body;
+  if (isPlainObject(bodyPayload)) {
+    return bodyPayload;
+  }
+
+  if (isPlainObject(inputInfo?.body)) {
+    return inputInfo.body;
+  }
+
+  return null;
+}
+
+function getRouteDocRequestSchema(config) {
+  const inputSchema = config?.extensions?.bazaar?.schema?.properties?.input;
+  if (isPlainObject(inputSchema?.properties?.body)) {
+    return inlineLocalSchemaRefs(inputSchema.properties.body);
+  }
+
+  if (isPlainObject(inputSchema)) {
+    return inlineLocalSchemaRefs(inputSchema);
+  }
+
+  return null;
+}
+
+function getRouteDocOutputExample(config) {
+  return config?.extensions?.bazaar?.info?.output?.example || null;
+}
+
+function getRouteDocOutputKind(config) {
+  const outputFormatSchema =
+    config?.extensions?.bazaar?.schema?.properties?.input?.properties?.body?.properties?.output_format;
+  if (Array.isArray(outputFormatSchema?.enum) && outputFormatSchema.enum.length) {
+    return outputFormatSchema.enum.join(" | ");
+  }
+
+  return config?.extensions?.bazaar?.info?.output?.type || "json";
+}
+
+function formatRouteDocJson(value) {
+  if (value == null) {
+    return "{}";
+  }
+
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch (_error) {
+    return String(value);
+  }
+}
+
+function buildRouteDocCurlExample(options = {}) {
+  const method = String(options.method || "POST").toUpperCase();
+  const baseUrl = String(options.baseUrl || CANONICAL_BASE_URL).replace(/\/+$/, "");
+  const path = String(options.path || "/");
+  const requestExample = options.requestExample ?? {};
+  const lines = [
+    `curl -X ${method} "${baseUrl}${path}"`,
+    '  -H "Accept: application/json"',
+    '  -H "Content-Type: application/json"',
+    "  # include x402 settlement headers after the initial 402 challenge",
+    `  -d '${JSON.stringify(requestExample, null, 2)}'`,
+  ];
+  return lines.join(" \\\n");
+}
+
+function buildRouteDocHtml(options = {}) {
+  const baseUrl = String(options.baseUrl || CANONICAL_BASE_URL).replace(/\/+$/, "");
+  const title = escapeHtml(options.title || options.path || "Endpoint");
+  const description = escapeHtml(options.description || "");
+  const proof = escapeHtml(options.proof || "");
+  const method = escapeHtml(options.method || "POST");
+  const path = escapeHtml(options.path || "/");
+  const price = escapeHtml(options.price || "$0.00");
+  const discipline = escapeHtml(options.discipline || options.category || "workflow");
+  const outputKind = escapeHtml(options.outputKind || "json");
+  const requestExample = escapeHtml(formatRouteDocJson(options.requestExample));
+  const requestSchema = escapeHtml(formatRouteDocJson(options.requestSchema));
+  const outputExample = escapeHtml(formatRouteDocJson(options.outputExample));
+  const curlExample = escapeHtml(options.curlExample || "");
+  const safeBaseUrl = escapeHtml(baseUrl);
+  const jsonDocUrl = `${safeBaseUrl}${path}?format=json`;
+  const apiCatalogUrl = `${safeBaseUrl}/api`;
+  const openApiUrl = `${safeBaseUrl}/openapi.json`;
+  const mcpDocsUrl = `${safeBaseUrl}/mcp/docs`;
+  const relatedLinks = Array.isArray(options.relatedLinks) ? options.relatedLinks : [];
+  const relatedLinksMarkup = relatedLinks.length
+    ? relatedLinks
+        .map(
+          (link) => `
+          <a class="link-card" href="${escapeHtml(`${safeBaseUrl}${link.href}`)}" rel="nofollow">
+            <small>${escapeHtml(link.label)}</small>
+            <span>${escapeHtml(link.description || "")}</span>
+          </a>`,
+        )
+        .join("")
+    : '<p class="callout">This route is documented as a standalone endpoint. Use the service catalog for adjacent workflows.</p>';
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${title} / Endpoint Docs</title>
+  <meta name="description" content="${description}" />
+  <link rel="icon" href="${safeBaseUrl}/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C8942A;
+      --bright-gold: #D4A84B;
+      --foundry-black: #1A1A1A;
+      --deep-charcoal: #121210;
+      --parchment: #F5F0E8;
+      --line: rgba(212, 168, 75, 0.24);
+      --panel: rgba(245, 240, 232, 0.055);
+      --panel-strong: rgba(245, 240, 232, 0.08);
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+      --max-width: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background:
+        radial-gradient(circle at top left, rgba(212, 168, 75, 0.18), transparent 30%),
+        linear-gradient(180deg, #181816 0%, #121210 60%, #151410 100%);
+      color: var(--parchment);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      color: var(--parchment);
+      background:
+        linear-gradient(135deg, rgba(200, 148, 42, 0.045) 0%, transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+    }
+
+    a { color: inherit; }
+
+    .page {
+      width: min(var(--max-width), calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 34px 0 72px;
+    }
+
+    .rule {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent 0%, var(--bright-gold) 16%, var(--bright-gold) 84%, transparent 100%);
+      margin: 20px 0 30px;
+    }
+
+    .hero,
+    .section-head,
+    .rail-grid {
+      display: grid;
+      gap: 28px;
+    }
+
+    .hero {
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--bright-gold);
+      font-size: 0.78rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 52px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      letter-spacing: -0.02em;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: clamp(3.4rem, 8vw, 5.9rem);
+      line-height: 0.95;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(245, 240, 232, 0.8);
+      line-height: 1.72;
+    }
+
+    .lede {
+      margin-top: 24px;
+      max-width: 760px;
+      font-size: 1.05rem;
+    }
+
+    .meta-card,
+    .section,
+    .note-card,
+    .link-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.04));
+      box-shadow: var(--shadow);
+    }
+
+    .meta-card {
+      padding: 28px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 16px;
+      margin-top: 16px;
+    }
+
+    .meta-item small,
+    .link-card small {
+      display: block;
+      color: rgba(245, 240, 232, 0.5);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      margin-bottom: 8px;
+    }
+
+    .meta-item b {
+      color: var(--bright-gold);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .meta-item span,
+    .link-card span {
+      display: block;
+      color: rgba(245, 240, 232, 0.82);
+      line-height: 1.55;
+    }
+
+    .section {
+      padding: 28px;
+      margin-top: 30px;
+    }
+
+    .section-head p {
+      max-width: 760px;
+    }
+
+    .rail-grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      align-items: start;
+    }
+
+    .callout {
+      border-left: 2px solid var(--bright-gold);
+      padding-left: 16px;
+      margin-top: 18px;
+      color: rgba(245, 240, 232, 0.78);
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: rgba(245, 240, 232, 0.9);
+    }
+
+    .code-block {
+      padding: 18px;
+      background: rgba(12, 12, 10, 0.72);
+      border: 1px solid rgba(245, 240, 232, 0.08);
+      overflow: auto;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .link-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .link-card {
+      padding: 18px;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease;
+    }
+
+    .link-card:hover {
+      transform: translateX(4px);
+      border-color: rgba(212, 168, 75, 0.4);
+    }
+
+    .footer-note {
+      margin-top: 40px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      color: rgba(245, 240, 232, 0.58);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 1040px) {
+      .hero,
+      .rail-grid,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100vw - 22px, var(--max-width));
+        padding: 22px 0 50px;
+      }
+
+      h1 {
+        font-size: clamp(3rem, 15vw, 4.8rem);
+      }
+
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="rule"></div>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">${discipline}</div>
+        <h1>${title}</h1>
+        <p class="lede">${description}</p>
+        <p class="callout">Browser note: GET on this URL serves human-readable docs. Paid execution still requires <strong>${method}</strong> with x402 settlement.</p>
+        ${proof ? `<p class="callout">${proof}</p>` : ""}
+      </div>
+
+      <aside class="meta-card">
+        <h3>Route summary</h3>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <small>Method</small>
+            <b>${method}</b>
+            <span>${path}</span>
+          </div>
+          <div class="meta-item">
+            <small>Price</small>
+            <b>${price}</b>
+            <span>x402 on Base</span>
+          </div>
+          <div class="meta-item">
+            <small>Category</small>
+            <b>${discipline}</b>
+            <span>Public discovery route</span>
+          </div>
+          <div class="meta-item">
+            <small>Output</small>
+            <b>${outputKind}</b>
+            <span>See example below</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Example request body</h2>
+          <p>Use this payload shape for the paid ${method} call.</p>
+        </div>
+      </div>
+      <div class="code-block"><pre>${requestExample}</pre></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Request schema</h2>
+          <p>The canonical body contract as exposed through discovery and OpenAPI.</p>
+        </div>
+      </div>
+      <div class="code-block"><pre>${requestSchema}</pre></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Example response</h2>
+          <p>A representative output payload for the route.</p>
+        </div>
+      </div>
+      <div class="code-block"><pre>${outputExample}</pre></div>
+    </section>
+
+    <section class="section rail-grid">
+      <div class="stack">
+        <div>
+          <h2>cURL</h2>
+          <p>Use this as the starting point for HTTP execution after the initial 402 challenge.</p>
+        </div>
+        <div class="code-block"><pre>${curlExample}</pre></div>
+      </div>
+
+      <aside class="stack">
+        <div>
+          <h2>Links</h2>
+          <p>Canonical docs and machine-readable surfaces for this route.</p>
+        </div>
+        <div class="link-stack">
+          <a class="link-card" href="${jsonDocUrl}" rel="nofollow">
+            <small>JSON docs</small>
+            <span>Route-level machine-readable docs.</span>
+          </a>
+          <a class="link-card" href="${apiCatalogUrl}" rel="nofollow">
+            <small>Service catalog</small>
+            <span>Featured public routes at <code>/api</code>.</span>
+          </a>
+          <a class="link-card" href="${openApiUrl}" rel="nofollow">
+            <small>OpenAPI</small>
+            <span>Canonical OpenAPI contract for HTTP clients.</span>
+          </a>
+          <a class="link-card" href="${mcpDocsUrl}" rel="nofollow">
+            <small>MCP docs</small>
+            <span>Remote MCP surface for agent-first access.</span>
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Related routes</h2>
+          <p>Use these when you want the lower-level primitive, the buyer-facing memo workflow, or the agent install surface around this endpoint.</p>
+        </div>
+      </div>
+      <div class="link-stack">
+        ${relatedLinksMarkup}
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <span>${method} docs page</span>
+      <span>${path}</span>
+      <span>${price}</span>
+      <span>x402 / Base / USDC</span>
+    </footer>
+  </main>
+</body>
+</html>`;
+}
+
+function createRouteDocsHandler(routeKey, config, options = {}) {
+  return function routeDocsHandler(req, res) {
+    const env = options.env || process.env;
+    const baseUrl = getRequestBaseUrl(req);
+    const catalogEntry = buildCatalogEntries(
+      { [routeKey]: config },
+      {
+        includeDiscoveryFields: true,
+        env,
+        discoveryScope: "full",
+      },
+    )[0];
+
+    if (!catalogEntry) {
+      return res.status(404).json({
+        success: false,
+        error: "Route docs unavailable",
+      });
+    }
+
+    const requestExample = getRouteDocRequestExample(config);
+    const requestSchema = getRouteDocRequestSchema(config);
+    const outputExample = getRouteDocOutputExample(config);
+    const editorial = FLAGSHIP_ROUTE_EDITORIAL[catalogEntry.routeKey] || null;
+    const payload = {
+      title: editorial?.title || catalogEntry.path,
+      routeKey: catalogEntry.routeKey,
+      method: catalogEntry.method,
+      path: catalogEntry.path,
+      description: catalogEntry.description,
+      proof: editorial?.proof || "",
+      discipline: editorial?.discipline || catalogEntry.category,
+      category: catalogEntry.category,
+      price: catalogEntry.price,
+      outputKind: getRouteDocOutputKind(config),
+      docsOnlyGet: true,
+      requestExample,
+      requestSchema,
+      outputExample,
+      relatedLinks: ROUTE_DOC_RELATED_LINKS[catalogEntry.routeKey] || [],
+      curlExample: buildRouteDocCurlExample({
+        method: catalogEntry.method,
+        baseUrl,
+        path: catalogEntry.path,
+        requestExample,
+      }),
+      links: {
+        apiCatalog: `${baseUrl}/api`,
+        openApi: `${baseUrl}/openapi.json`,
+        mcpDocs: `${baseUrl}/mcp/docs`,
+      },
+    };
+
+    if (String(req.query?.format || "").toLowerCase() === "json" || !shouldRenderHealthHtml(req)) {
+      return res.json(payload);
+    }
+
+    const html = buildRouteDocHtml({
+      ...payload,
+      baseUrl,
+    });
+    return res.type("text/html; charset=utf-8").send(html);
+  };
+}
+
+function mountPublicPostRouteDocs(target, routes = routeConfig, options = {}) {
+  for (const [routeKey, config] of Object.entries(routes)) {
+    const displayRouteKey = getDisplayRouteKey(routeKey, config);
+    const [method = "GET"] = String(displayRouteKey).split(" ");
+    if (method.toUpperCase() !== "POST") {
+      continue;
+    }
+
+    if (
+      shouldHideRouteInProduction(displayRouteKey, options)
+      || !shouldIncludeRouteInDiscovery(displayRouteKey, {
+        ...options,
+        discoveryScope: "public",
+      })
+    ) {
+      continue;
+    }
+
+    const routePath = getDisplayRoutePath(routeKey, config);
+    if (
+      !routePath
+      || routePath.includes("*")
+      || Object.prototype.hasOwnProperty.call(routes, `GET ${routePath}`)
+    ) {
+      continue;
+    }
+
+    target.get(routePath, createRouteDocsHandler(routeKey, config, options));
+  }
+}
+
 function buildMcpDocHtml({ title, summary, sections = [], links = [] }) {
-  const safeTitle = escapeHtml(title || "AurelianFlo MCP");
+  const safeTitle = escapeHtml(title || "AurelianFlo");
   const safeSummary = escapeHtml(summary || "");
   const sectionsMarkup = sections
     .map((section) => {
@@ -4024,12 +4707,20 @@ function buildOriginLandingHtml(options = {}) {
   const description = escapeHtml(options.description || DEFAULT_ORIGIN_DESCRIPTION);
   const baseUrl = String(options.baseUrl || CANONICAL_BASE_URL).replace(/\/+$/, "");
   const safeBaseUrl = escapeHtml(baseUrl);
-  const wrappedUrl = escapeHtml(String(options.wrappedUrl || WRAPPED_PRODUCT_URL).replace(/\/+$/, ""));
   const endpointCount = Number(options.endpointCount || 0);
   const catalogUrl = `${safeBaseUrl}/api`;
   const openApiUrl = `${safeBaseUrl}/openapi.json`;
   const mcpUrl = `${safeBaseUrl}/mcp`;
   const serverCardUrl = `${safeBaseUrl}/.well-known/mcp/server-card.json`;
+  const ctaMarkup = PRIMARY_NAV_ITEMS.map((item) => {
+    const href = item.href === "catalog"
+      ? catalogUrl
+      : item.href === "openapi"
+        ? openApiUrl
+        : escapeHtml(String(item.href || "").replace(/\/+$/, ""));
+    const variant = String(item.variant || "secondary");
+    return `<a class="btn btn-${variant}" href="${href}" rel="nofollow">${escapeHtml(item.label || "")}</a>`;
+  }).join("");
 
   return `<!doctype html>
 <html lang="en">
@@ -4593,15 +5284,13 @@ function buildOriginLandingHtml(options = {}) {
       <div>
         <div class="eyebrow">AurelianFlo</div>
         <h1 class="headline">${title}</h1>
-        <p class="lede">Onchain compliance, decision analysis, and premium reporting.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="${catalogUrl}" rel="nofollow">Catalog</a>
-          <a class="btn btn-secondary" href="${openApiUrl}" rel="nofollow">OpenAPI</a>
-          <a class="btn btn-tertiary" href="${wrappedUrl}" rel="nofollow">App</a>
-        </div>
+        <p class="lede">${escapeHtml(HEALTH_PAGE_LEDE)}</p>
+        <p class="section-copy">${escapeHtml(HOME_PAGE_AUDIENCE)}</p>
+        <p class="section-copy">${escapeHtml(HOME_PAGE_VALUE_PROP)}</p>
+        <div class="cta-row">${ctaMarkup}</div>
         <div class="kicker-row">
           <div class="kicker-pill">USDC on Base</div>
-          <div class="kicker-pill">Remote MCP ready</div>
+          <div class="kicker-pill">Works with AI agents via MCP</div>
           <div class="kicker-pill">No API keys required</div>
         </div>
       </div>
@@ -4613,15 +5302,15 @@ function buildOriginLandingHtml(options = {}) {
         <div class="signal-grid">
           <div class="signal-stat">
             <strong>Compliance</strong>
-            <span>OFAC wallet screening.</span>
+            <span>EDD memos and OFAC wallet screening.</span>
           </div>
           <div class="signal-stat">
             <strong>Reports</strong>
-            <span>Wallet screening reports and Monte Carlo decision memos.</span>
+            <span>EDD memos, screening reports, and Monte Carlo decision memos.</span>
           </div>
           <div class="signal-stat">
             <strong>Documents</strong>
-            <span>PDF and DOCX output from a shared report model.</span>
+            <span>PDF, DOCX, and XLSX document output for review and handoff.</span>
           </div>
           <div class="signal-stat">
             <strong>Protocol</strong>
@@ -4640,38 +5329,38 @@ function buildOriginLandingHtml(options = {}) {
       <div class="discipline-grid">
         <article class="discipline">
           <div class="discipline-label">01 / Compliance</div>
-          <h3>OFAC wallet screening.</h3>
+          <h3>EDD memo.</h3>
           <ul>
-            <li>Lead endpoint: GET /api/ofac-wallet-screen/:address</li>
-            <li>Allow, pause, or block outcome</li>
-            <li>Exact-match onchain screening plus report payload</li>
+            <li>Lead endpoint: POST /api/workflows/compliance/edd-report</li>
+            <li>Status labels, evidence summary, and required follow-up</li>
+            <li>One-call JSON, PDF, or DOCX output for audit handoff</li>
           </ul>
         </article>
         <article class="discipline">
-          <div class="discipline-label">02 / Decision Analysis</div>
+          <div class="discipline-label">02 / Compliance</div>
+          <h3>Wallet screening primitives.</h3>
+          <ul>
+            <li>Lead endpoints: POST /api/workflows/compliance/batch-wallet-screen and GET /api/ofac-wallet-screen/:address</li>
+            <li>Low-cost checks for agent and operations workflows</li>
+            <li>Best used directly or underneath the EDD memo workflow</li>
+          </ul>
+        </article>
+        <article class="discipline">
+          <div class="discipline-label">03 / Decision Analysis</div>
           <h3>Monte Carlo reports.</h3>
           <ul>
             <li>Lead endpoint: POST /api/sim/report</li>
             <li>Structured decision memo from supported simulation workflows</li>
-            <li>Executive summary, metrics, and workbook-ready tables</li>
-          </ul>
-        </article>
-        <article class="discipline">
-          <div class="discipline-label">03 / Documents</div>
-          <h3>PDF reports.</h3>
-          <ul>
-            <li>Lead endpoint: POST /api/tools/report/pdf/generate</li>
-            <li>Fixed-layout compliance memo</li>
-            <li>Distribution and audit handoff</li>
+            <li>Executive summary, metrics, and structured tables</li>
           </ul>
         </article>
         <article class="discipline">
           <div class="discipline-label">04 / Documents</div>
-          <h3>DOCX reports.</h3>
+          <h3>Report artifacts.</h3>
           <ul>
-            <li>Lead endpoint: POST /api/tools/report/docx/generate</li>
-            <li>Word-native compliance memo</li>
-            <li>Revision and markup workflow</li>
+            <li>Lead endpoints: POST /api/tools/report/pdf/generate and POST /api/tools/report/docx/generate</li>
+            <li>Fixed-layout and editable handoff artifacts</li>
+            <li>Used directly for building-block workflows and legacy report payloads</li>
           </ul>
         </article>
       </div>
@@ -4685,11 +5374,11 @@ function buildOriginLandingHtml(options = {}) {
           <div class="list-grid">
             <div class="list-row">
               <strong>Scope</strong>
-              <span>Wallet screening, Monte Carlo decision analysis, and document generation.</span>
+              <span>EDD memos, wallet screening, Monte Carlo decision analysis, and document generation.</span>
             </div>
             <div class="list-row">
               <strong>Flow</strong>
-              <span>Screen, model, deliver.</span>
+              <span>Review, screen, model, deliver.</span>
             </div>
             <div class="list-row">
               <strong>Output</strong>
@@ -4746,7 +5435,7 @@ function buildOriginLandingHtml(options = {}) {
 
 function buildApiDiscoveryHtml(options = {}) {
   const title = escapeHtml(options.title || DEFAULT_ORIGIN_TITLE);
-  const description = escapeHtml(options.description || DEFAULT_ORIGIN_DESCRIPTION);
+  const description = escapeHtml(options.description || DESCRIPTION_MEDIUM);
   const baseUrl = String(options.baseUrl || CANONICAL_BASE_URL).replace(/\/+$/, "");
   const safeBaseUrl = escapeHtml(baseUrl);
   const openApiUrl = `${safeBaseUrl}/openapi.json`;
@@ -4769,6 +5458,8 @@ function buildApiDiscoveryHtml(options = {}) {
       const price = escapeHtml(entry.price || "$0.00");
       const examplePath = escapeHtml(entry.examplePath || entry.path || "");
       const exampleUrl = escapeHtml(entry.exampleUrl || `${safeBaseUrl}${entry.examplePath || entry.path || ""}`);
+      const routeActionLabel = entry.method === "GET" ? "Inspect example" : "Open docs";
+      const routePathLabel = entry.method === "GET" ? "Example path" : "Docs path";
 
       return `
         <article class="flagship-card">
@@ -4785,10 +5476,10 @@ function buildApiDiscoveryHtml(options = {}) {
           </div>
           <div class="route-foot">
             <div>
-              <small>Example path</small>
+              <small>${routePathLabel}</small>
               <span>${examplePath}</span>
             </div>
-            <a href="${exampleUrl}" rel="nofollow">Inspect example</a>
+            <a href="${exampleUrl}" rel="nofollow">${routeActionLabel}</a>
           </div>
         </article>`;
     })
@@ -5293,7 +5984,7 @@ function buildApiDiscoveryHtml(options = {}) {
       <div>
         <div class="eyebrow">AurelianFlo</div>
         <h1>Service catalog.</h1>
-        <p class="lede">Onchain compliance, Monte Carlo decision analysis, and premium document output.</p>
+        <p class="lede">${escapeHtml(CATALOG_PAGE_LEDE)}</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="${jsonCatalogUrl}" rel="nofollow">JSON</a>
           <a class="btn btn-secondary" href="${openApiUrl}" rel="nofollow">OpenAPI</a>
@@ -5340,11 +6031,11 @@ function buildApiDiscoveryHtml(options = {}) {
           <div class="bullet-list">
             <div class="bullet">
               <strong>Compliance</strong>
-              <span>OFAC wallet screening for allow, pause, or block decisions.</span>
+              <span>EDD memos for compliance review handoff, with OFAC wallet screening underneath.</span>
             </div>
             <div class="bullet">
-              <strong>Screening report</strong>
-              <span><code>/api/ofac-wallet-screen/:address</code> returns a reviewable report payload.</span>
+              <strong>Flagship workflow</strong>
+              <span><code>/api/workflows/compliance/edd-report</code> returns a reviewable memo as JSON, PDF, or DOCX.</span>
             </div>
             <div class="bullet">
               <strong>Decision reports</strong>
@@ -5352,7 +6043,7 @@ function buildApiDiscoveryHtml(options = {}) {
             </div>
             <div class="bullet">
               <strong>Document output</strong>
-              <span>PDF and DOCX generation return the final document.</span>
+              <span>PDF, DOCX, and XLSX generation return the final document.</span>
             </div>
           </div>
         </article>
@@ -5407,9 +6098,9 @@ function createAurelianFloMcpDocsHandler() {
   return function aurelianFloMcpDocsHandler(req, res) {
     const baseUrl = getRequestBaseUrl(req);
     const html = buildMcpDocHtml({
-      title: "AurelianFlo MCP Docs",
+      title: "AurelianFlo",
       summary:
-        "Remote MCP server for bundled OFAC wallet screening and Monte Carlo reporting, with json, PDF, or DOCX output. Start with server_capabilities. Use the direct origin for paid execution.",
+        "Remote MCP server for OFAC screening, vendor diligence, Monte Carlo reporting, finance scenario workflows, and document output. Start with server_capabilities and use the direct origin for paid execution.",
       links: [
         { label: "MCP Endpoint", value: `${baseUrl}/mcp`, href: `${baseUrl}/mcp` },
         {
@@ -5425,26 +6116,29 @@ function createAurelianFloMcpDocsHandler() {
           heading: "Tools",
           items: [
             "server_capabilities: Free connection and capability check with direct and Smithery-hosted modes.",
+            "edd_report: Enhanced due diligence memo with status labels, evidence summary, required follow-up, and json, pdf, or docx output.",
+            "batch_wallet_screen: Batch OFAC wallet screening with structured JSON output for a whole wallet set.",
             "ofac_wallet_report: One-call OFAC wallet screening with json, pdf, or docx output.",
             "ofac_wallet_screen: Exact-match OFAC wallet screening with the structured report payload returned in JSON.",
             "monte_carlo_report: One-call Monte Carlo report with json, pdf, or docx output.",
             "monte_carlo_decision_report: Structured decision report from supported simulation workflows.",
-            "report_pdf_generate: PDF output from the shared report model.",
-            "report_docx_generate: DOCX output from the shared report model.",
+            "report_pdf_generate: Generate a PDF from a structured report payload.",
+            "report_docx_generate: Generate a DOCX document from a structured report payload.",
           ],
         },
         {
           heading: "Bundles",
           items: [
-            "Compliance bundle: ofac_wallet_report returns the screening result plus json, pdf, or docx output in one call.",
+            "Compliance bundle: edd_report turns a wallet set plus case metadata into a reviewable memo with json, pdf, or docx output, and batch_wallet_screen handles the lower-level batch screening pass.",
             "Decision-analysis bundle: monte_carlo_report returns the simulation report plus json, pdf, or docx output in one call.",
-            "Building blocks: monte_carlo_decision_report plus report_pdf_generate or report_docx_generate remains available for clients that want to control each step.",
+            "Building blocks: edd_report or batch_wallet_screen plus report_pdf_generate or report_docx_generate remains available for compliance clients that want to control the artifact step.",
+            "Simulation building blocks: monte_carlo_decision_report plus report_pdf_generate or report_docx_generate remains available for clients that want to control each step.",
           ],
         },
         {
           heading: "Proof",
           items: [
-            "Compliance canary: ofac_wallet_report screened 0x098B716B8Aaf21512996dC57EB0615e2383E2f96, matched Lazarus Group, and generated a paid PDF artifact on Base.",
+            "Compliance canary: edd_report screened a two-wallet counterparty set, flagged Lazarus Group exposure, returned workflow_status manual_review_required, and generated a paid PDF artifact on Base.",
             "Simulation canary: monte_carlo_report preferred candidate, returned candidate outperformance 0.5903, expected score gap 0.2831, and probability uplift 0.0753, then generated a paid PDF artifact on Base.",
             "Both bundled tools have been exercised against the production MCP endpoint with settled transactions.",
           ],
@@ -5453,6 +6147,8 @@ function createAurelianFloMcpDocsHandler() {
           heading: "Example prompts",
           items: [
             "Call server_capabilities to verify the server, payment model, and connection modes without paying first.",
+            "Prepare an enhanced due diligence memo for a counterparty wallet set with edd_report.",
+            "Screen a batch of treasury or counterparty wallets with batch_wallet_screen and return the review signal.",
             "Screen 0x098B716B8Aaf21512996dC57EB0615e2383E2f96 and return a PDF with ofac_wallet_report.",
             "Screen 0x098B716B8Aaf21512996dC57EB0615e2383E2f96 and return the JSON report only with ofac_wallet_screen.",
             "Generate a compare-style simulation report and return a PDF with monte_carlo_report.",
@@ -5484,7 +6180,7 @@ function createAurelianFloMcpDocsHandler() {
             "CLI connection: smithery mcp add aurelianflo/core",
             "Hosted gateway: codex mcp add aurelianflo-core --url https://core--aurelianflo.run.tools",
             "Use server_capabilities first on the Smithery-hosted connection.",
-            "The bundled compliance workflow is exposed as ofac_wallet_report.",
+            "The bundled compliance workflows are exposed as edd_report, batch_wallet_screen, and ofac_wallet_report.",
             "The bundled simulation workflow is exposed as monte_carlo_report.",
             "Paid execution is currently available through the direct origin at https://x402.aurelianflo.com/mcp.",
             "OAuth-capable clients should follow the Smithery authorization URL when the hosted gateway returns auth_required.",
@@ -5501,7 +6197,7 @@ function createAurelianFloMcpPrivacyHandler() {
   return function aurelianFloMcpPrivacyHandler(req, res) {
     const baseUrl = getRequestBaseUrl(req);
     const html = buildMcpDocHtml({
-      title: "AurelianFlo MCP Privacy",
+      title: "AurelianFlo",
       summary: "Privacy information for the AurelianFlo remote MCP server.",
       links: [
         { label: "Docs", value: `${baseUrl}/mcp/docs`, href: `${baseUrl}/mcp/docs` },
@@ -5543,7 +6239,7 @@ function createAurelianFloMcpSupportHandler() {
   return function aurelianFloMcpSupportHandler(req, res) {
     const baseUrl = getRequestBaseUrl(req);
     const html = buildMcpDocHtml({
-      title: "AurelianFlo MCP Support",
+      title: "AurelianFlo",
       summary: "Support information for the AurelianFlo remote MCP server.",
       links: [
         { label: "Support Email", value: "support@aurelianflo.com", href: "mailto:support@aurelianflo.com" },
@@ -6623,15 +7319,15 @@ function buildCoreWellKnownX402Manifest(routes = routeConfig, options = {}) {
   return buildWellKnownManifest(
     {
       ...WELL_KNOWN_X402_AURELIAN,
-      description: "Bundled OFAC wallet screening reports plus separate Monte Carlo decision reports and PDF or DOCX artifact generation.",
+      description: "Core AurelianFlo tools for OFAC screening, due diligence memos, Monte Carlo decision reports, and document output.",
       resources,
       instructions: [
         "# AurelianFlo Core Tools",
         "",
-        "- OFAC wallet screening",
+        "- Enhanced due diligence memos",
+        "- Batch and single-wallet OFAC screening",
         "- Monte Carlo decision reports",
-        "- Report PDF generation",
-        "- Report DOCX generation",
+        "- Report PDF and DOCX generation",
         "",
         "For the broader machine-readable inventory, use GET /api or /.well-known/x402-aurelian.json.",
       ].join("\n"),
@@ -6746,7 +7442,7 @@ function createApp(options = {}) {
     || DEFAULT_402INDEX_VERIFICATION_HASH,
   ).trim();
   const payTo = options.payTo ?? PAY_TO;
-  const routes = options.routes ?? createRouteConfig(payTo);
+  const routes = options.routes ?? getDefaultAppRoutes(payTo, env);
   const metricsRouteCatalog = options.metricsRouteCatalog ?? createRouteCatalog(routes);
   const metricsAttribution =
     options.metricsAttribution ??
@@ -6796,6 +7492,9 @@ function createApp(options = {}) {
   const fullApiDiscoveryHandler = createApiDiscoveryHandler(routes, { env, discoveryScope: "full" });
   const openApiHandler = createOpenApiHandler(routes, { env, discoveryScope: "public" });
   const fullOpenApiHandler = createOpenApiHandler(routes, { env, discoveryScope: "full" });
+  const restrictedPartyPaymentsMcpIntegrationHandler =
+    options.restrictedPartyPaymentsMcpIntegrationHandler
+    || createRestrictedPartyPaymentsMcpIntegrationHandler(createRestrictedPartyRouteConfig(payTo));
   app.use(express.json());
   app.use(createSimCompatibleResponseMiddleware());
 
@@ -6809,6 +7508,8 @@ function createApp(options = {}) {
   if (productionInactiveRoutesMiddleware) {
     app.use(productionInactiveRoutesMiddleware);
   }
+
+  app.use(createAllowedApiRoutesMiddleware(routes, { env }));
 
   app.get("/", createHealthHandler(routes, { env }));
   app.get("/api", apiDiscoveryHandler);
@@ -6826,8 +7527,10 @@ function createApp(options = {}) {
   app.get("/mcp/privacy", createAurelianFloMcpPrivacyHandler());
   app.get("/mcp/support", createAurelianFloMcpSupportHandler());
   app.get("/api/sim", createSimLandingHandler(routes, { env }));
+  app.get("/integrations/payments-mcp", restrictedPartyPaymentsMcpIntegrationHandler);
   app.get("/.well-known/x402", createWellKnownX402Handler(routes, { env }));
   app.get("/.well-known/x402.json", createWellKnownX402Handler(routes, { env }));
+  mountPublicPostRouteDocs(app, routes, { env });
   app.get("/.well-known/402index-verify.txt", (_req, res) => {
     if (!index402VerificationHash) {
       return res.status(404).type("text/plain").send("");

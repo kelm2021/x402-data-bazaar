@@ -1,221 +1,360 @@
 {
   "packageName": "restricted-party-screen",
   "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
-  "serviceName": "Restricted Party Screen",
-  "serviceDescription": "Paid x402 API for OFAC sanctions and restricted-party screening in agentic commerce, vendor onboarding, payouts, cross-border trade, and compliance workflows.",
+  "serviceName": "AurelianFlo",
+  "serviceDescription": "AurelianFlo compliance API for exact-match OFAC SDN digital currency address screening in onchain payment, treasury, and compliance workflows.",
   "baseUrl": "https://restricted-party-screen.vercel.app",
   "port": 3000,
   "network": "eip155:8453",
   "routes": [
     {
-      "key": "GET /api/ofac-sanctions-screening/*",
+      "key": "GET /api/ofac-wallet-screen/:address",
+      "paymentRouteKey": "GET /api/ofac-wallet-screen/[address]",
       "method": "GET",
-      "routePath": "/api/ofac-sanctions-screening/*",
-      "expressPath": "/api/ofac-sanctions-screening/:name",
-      "resourcePath": "/api/ofac-sanctions-screening/SBERBANK",
-      "canonicalPath": "/api/data/ofac-sanctions-screening/SBERBANK",
+      "routePath": "/api/ofac-wallet-screen/:address",
+      "paymentRoutePath": "/api/ofac-wallet-screen/[address]",
+      "expressPath": "/api/ofac-wallet-screen/:address",
+      "resourcePath": "/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+      "canonicalPath": "/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
       "price": "0.005",
-      "category": "identity",
-      "tags": ["compliance", "ofac", "sanctions", "restricted-party"],
-      "description": "OFAC sanctions and restricted-party screening for a person or entity name. Returns grouped potential matches, aliases, denied-party and sanctions-list context, source lists, sanctions programs, and a manual-review recommendation for vendor onboarding, payout checks, and cross-border compliance. Optional query params: minScore, type, country, program, list, limit.",
+      "category": "compliance",
+      "tags": ["compliance", "ofac", "sanctions", "wallet", "crypto", "onchain"],
+      "description": "Exact-match OFAC SDN wallet screening for sanctioned digital currency addresses. Screens one wallet address against Treasury's public SDN advanced XML and returns hit or clear status, asset coverage, sanctioned entity metadata, sanctions programs, list source, listing date, and a manual-review signal for onchain payment and treasury controls.",
       "queryExample": {
-        "minScore": "90",
-        "limit": "5"
-      },
-      "outputExample": {
-        "success": true,
-        "data": {
-          "query": {
-            "name": "SBERBANK",
-            "minScore": 90,
-            "limit": 5
-          },
-          "summary": {
-            "matchCount": 1,
-            "exactMatchCount": 1,
-            "manualReviewRecommended": true
-          },
-          "matches": [
-            {
-              "id": 18715,
-              "primaryName": "AKTSIONERNE TOVARYSTVO SBERBANK",
-              "aliases": [
-                "JOINT STOCK COMPANY SBERBANK",
-                "JSC SBERBANK"
-              ],
-              "type": "Entity",
-              "programs": [
-                "RUSSIA-EO14024",
-                "UKRAINE-EO13662"
-              ],
-              "lists": [
-                "SDN",
-                "Non-SDN"
-              ],
-              "addresses": [
-                "46 Volodymyrska street"
-              ],
-              "bestNameScore": 100,
-              "manualReviewRecommended": true
-            }
-          ],
-          "sourceFreshness": {
-            "sdnLastUpdated": "2026-03-13T00:00:00",
-            "consolidatedLastUpdated": "2026-01-08T00:00:00"
-          },
-          "screeningOnly": true
-        },
-        "source": "OFAC Sanctions List Service"
-      }
-    },
-    {
-      "key": "GET /api/vendor-onboarding/restricted-party-batch",
-      "method": "GET",
-      "handlerId": "batch",
-      "routePath": "/api/vendor-onboarding/restricted-party-batch",
-      "expressPath": "/api/vendor-onboarding/restricted-party-batch",
-      "resourcePath": "/api/vendor-onboarding/restricted-party-batch",
-      "canonicalPath": "/api/data/vendor-onboarding/restricted-party-batch",
-      "price": "0.15",
-      "category": "identity",
-      "tags": ["compliance", "ofac", "sanctions", "batch-screening"],
-      "description": "Low-friction batch restricted-party screen for up to 25 counterparties in one paid call. Returns per-name screening results, flagged counterparties, a batch-level proceed-or-pause recommendation, and machine-readable review signals for procurement, payouts, and cross-border onboarding workflows. Required query param: names separated with the pipe character (|). Optional query params: workflow, minScore, type, country, program, list, limit.",
-      "queryExample": {
-        "names": "SBERBANK|VTB BANK PJSC|GAZPROMBANK",
-        "workflow": "vendor-onboarding",
-        "minScore": "90",
-        "limit": "3"
+        "asset": "ETH"
       },
       "querySchema": {
         "type": "object",
         "properties": {
-          "names": {
+          "asset": {
             "type": "string",
-            "description": "Pipe-delimited list of names to screen (required)"
-          },
-          "workflow": {
-            "type": "string",
-            "description": "Workflow label for reporting context"
-          },
-          "minScore": {
-            "type": "string",
-            "description": "Minimum name-match score threshold"
-          },
-          "type": {
-            "type": "string",
-            "description": "Party type filter (e.g. Entity, Individual)"
-          },
-          "country": {
-            "type": "string",
-            "description": "Country filter (ISO alpha-2)"
-          },
-          "program": {
-            "type": "string",
-            "description": "Sanctions program filter"
-          },
-          "list": {
-            "type": "string",
-            "description": "Sanctions list filter"
-          },
-          "limit": {
-            "type": "string",
-            "description": "Maximum grouped matches per name"
+            "description": "Optional asset or network ticker filter, such as ETH, USDC, XBT, TRX, ARB, or BSC."
           }
         },
-        "required": ["names"],
+        "required": [],
         "additionalProperties": false
       },
       "outputExample": {
         "success": true,
         "data": {
-          "workflow": "vendor-onboarding",
           "query": {
-            "names": [
-              "SBERBANK",
-              "VTB BANK PJSC",
-              "GAZPROMBANK"
-            ],
-            "screenedCount": 3,
-            "minScore": 90,
-            "limit": 3
+            "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+            "normalizedAddress": "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+            "asset": "ETH"
           },
           "summary": {
-            "status": "manual-review-required",
-            "screenedCount": 3,
-            "flaggedCount": 2,
-            "clearCount": 1,
-            "manualReviewRecommended": true,
-            "recommendedAction": "pause-and-review"
+            "status": "match",
+            "matchCount": 1,
+            "exactAddressMatch": true,
+            "manualReviewRecommended": true
           },
-          "flaggedCounterparties": [
+          "matches": [
             {
-              "name": "SBERBANK",
-              "matchCount": 1
+              "entryId": "27307",
+              "profileId": "27307",
+              "identityId": "19011",
+              "entityName": "Lazarus Group",
+              "aliases": ["Hidden Cobra"],
+              "asset": "ETH",
+              "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+              "normalizedAddress": "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+              "listName": "SDN List",
+              "listedOn": "2019-09-13",
+              "measures": ["Block", "Program"],
+              "programs": ["DPRK3"],
+              "sourceType": "Digital Currency Address - ETH"
             }
-          ]
+          ],
+          "sourceFreshness": {
+            "sourceUrl": "https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml",
+            "refreshedAt": "2026-04-06T02:00:00.000Z",
+            "datasetPublishedAt": "2026-04-06T02:00:00.000Z",
+            "addressCount": 2,
+            "coveredAssets": ["ETH", "XBT"]
+          },
+          "screeningOnly": true
         },
-        "source": "OFAC Sanctions List Service"
+        "source": "OFAC SDN Advanced XML"
       }
     },
     {
-      "key": "GET /api/restricted-party/screen/*",
-      "method": "GET",
-      "routePath": "/api/restricted-party/screen/*",
-      "expressPath": "/api/restricted-party/screen/:name",
-      "resourcePath": "/api/restricted-party/screen/SBERBANK",
-      "canonicalPath": "/api/data/restricted-party/screen/SBERBANK",
+      "key": "POST /api/workflows/compliance/wallet-sanctions-report",
+      "method": "POST",
+      "routePath": "/api/workflows/compliance/wallet-sanctions-report",
+      "expressPath": "/api/workflows/compliance/wallet-sanctions-report",
+      "resourcePath": "/api/workflows/compliance/wallet-sanctions-report",
+      "canonicalPath": "/api/workflows/compliance/wallet-sanctions-report",
       "price": "0.005",
-      "category": "identity",
-      "tags": ["compliance", "ofac", "sanctions", "restricted-party"],
-      "description": "Legacy alias for OFAC sanctions and restricted-party screening. Returns grouped potential matches, aliases, source lists, sanctions programs, and a manual-review recommendation. Optional query params: minScore, type, country, program, list, limit.",
-      "queryExample": {
-        "minScore": "90",
-        "limit": "5"
+      "category": "workflows/compliance",
+      "tags": ["compliance", "ofac", "wallet", "sanctions", "aml", "treasury", "workflow"],
+      "description": "Run a wallet sanctions check and return a report-ready compliance payload for crypto payment review, treasury controls, exchange operations, and AML workflows.",
+      "bodyType": "json",
+      "inputExample": {
+        "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+        "asset": "ETH"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Crypto wallet address to screen against OFAC SDN digital currency designations."
+          },
+          "asset": {
+            "type": "string",
+            "description": "Optional asset or network ticker filter, such as ETH, USDC, XBT, TRX, ARB, or BSC."
+          }
+        },
+        "required": ["address"],
+        "additionalProperties": false
       },
       "outputExample": {
         "success": true,
         "data": {
           "query": {
-            "name": "SBERBANK",
-            "minScore": 90,
-            "limit": 5
+            "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+            "normalizedAddress": "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+            "asset": "ETH"
           },
           "summary": {
+            "status": "match",
             "matchCount": 1,
-            "exactMatchCount": 1,
+            "exactAddressMatch": true,
             "manualReviewRecommended": true
           },
           "matches": [
             {
-              "id": 18715,
-              "primaryName": "AKTSIONERNE TOVARYSTVO SBERBANK",
-              "aliases": [
-                "JOINT STOCK COMPANY SBERBANK",
-                "JSC SBERBANK"
-              ],
-              "type": "Entity",
-              "programs": [
-                "RUSSIA-EO14024",
-                "UKRAINE-EO13662"
-              ],
-              "lists": [
-                "SDN",
-                "Non-SDN"
-              ],
-              "addresses": [
-                "46 Volodymyrska street"
-              ],
-              "bestNameScore": 100,
-              "manualReviewRecommended": true
+              "entryId": "27307",
+              "profileId": "27307",
+              "identityId": "19011",
+              "entityName": "Lazarus Group",
+              "aliases": ["Hidden Cobra"],
+              "asset": "ETH",
+              "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+              "normalizedAddress": "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+              "listName": "SDN List",
+              "listedOn": "2019-09-13",
+              "measures": ["Block", "Program"],
+              "programs": ["DPRK3"],
+              "sourceType": "Digital Currency Address - ETH"
             }
           ],
           "sourceFreshness": {
-            "sdnLastUpdated": "2026-03-13T00:00:00",
-            "consolidatedLastUpdated": "2026-01-08T00:00:00"
+            "sourceUrl": "https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml",
+            "refreshedAt": "2026-04-06T02:00:00.000Z",
+            "datasetPublishedAt": "2026-04-06T02:00:00.000Z",
+            "addressCount": 2,
+            "coveredAssets": ["ETH", "XBT"]
           },
           "screeningOnly": true
         },
-        "source": "OFAC Sanctions List Service"
+        "source": "OFAC SDN Advanced XML"
+      }
+    },
+    {
+      "key": "POST /api/workflows/compliance/batch-wallet-screen",
+      "method": "POST",
+      "routePath": "/api/workflows/compliance/batch-wallet-screen",
+      "expressPath": "/api/workflows/compliance/batch-wallet-screen",
+      "resourcePath": "/api/workflows/compliance/batch-wallet-screen",
+      "canonicalPath": "/api/workflows/compliance/batch-wallet-screen",
+      "price": "0.025",
+      "category": "workflows/compliance",
+      "tags": ["compliance", "ofac", "wallet", "sanctions", "batch", "treasury", "workflow"],
+      "description": "Screen a batch of wallet addresses against OFAC SDN digital currency address designations and return per-wallet results, a workflow-safe review signal, and report-ready output.",
+      "bodyType": "json",
+      "inputExample": {
+        "addresses": [
+          "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+          "0x1111111111111111111111111111111111111111"
+        ],
+        "asset": "ETH"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "description": "List of crypto wallet addresses to screen against OFAC SDN digital currency designations.",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "asset": {
+            "type": "string",
+            "description": "Optional asset or network ticker filter, such as ETH, USDC, XBT, TRX, ARB, or BSC."
+          }
+        },
+        "required": ["addresses"],
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "success": true,
+        "data": {
+          "query": {
+            "addresses": [
+              "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+              "0x1111111111111111111111111111111111111111"
+            ],
+            "normalizedAddresses": [
+              "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+              "0x1111111111111111111111111111111111111111"
+            ],
+            "asset": "ETH"
+          },
+          "summary": {
+            "totalScreened": 2,
+            "matchCount": 1,
+            "clearCount": 1,
+            "manualReviewRecommended": true,
+            "workflowStatus": "manual_review_required"
+          },
+          "results": [
+            {
+              "query": {
+                "address": "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+                "normalizedAddress": "0x098b716b8aaf21512996dc57eb0615e2383e2f96",
+                "asset": "ETH"
+              },
+              "summary": {
+                "status": "match",
+                "matchCount": 1,
+                "exactAddressMatch": true,
+                "manualReviewRecommended": true
+              }
+            },
+            {
+              "query": {
+                "address": "0x1111111111111111111111111111111111111111",
+                "normalizedAddress": "0x1111111111111111111111111111111111111111",
+                "asset": "ETH"
+              },
+              "summary": {
+                "status": "clear",
+                "matchCount": 0,
+                "exactAddressMatch": false,
+                "manualReviewRecommended": false
+              }
+            }
+          ],
+          "sourceFreshness": {
+            "sourceUrl": "https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml",
+            "refreshedAt": "2026-04-06T02:00:00.000Z",
+            "datasetPublishedAt": "2026-04-06T02:00:00.000Z",
+            "addressCount": 2,
+            "coveredAssets": ["ETH", "XBT"]
+          },
+          "screeningOnly": true
+        },
+        "source": "OFAC SDN Advanced XML"
+      }
+    },
+    {
+      "key": "POST /api/workflows/compliance/edd-report",
+      "method": "POST",
+      "routePath": "/api/workflows/compliance/edd-report",
+      "expressPath": "/api/workflows/compliance/edd-report",
+      "resourcePath": "/api/workflows/compliance/edd-report",
+      "canonicalPath": "/api/workflows/compliance/edd-report",
+      "price": "0.09",
+      "category": "workflows/compliance",
+      "tags": ["compliance", "edd", "due-diligence", "wallet", "sanctions", "workflow"],
+      "description": "Generate an enhanced due diligence memo for a wallet set using exact-match OFAC SDN digital currency address screening, workflow-safe status labels, case metadata, and one-call json, PDF, or DOCX output.",
+      "bodyType": "json",
+      "inputExample": {
+        "subject_name": "Northwind Treasury Counterparty",
+        "case_name": "Counterparty onboarding review",
+        "review_reason": "Treasury payout review",
+        "jurisdiction": "US",
+        "requested_by": "ops@northwind.example",
+        "reference_id": "case-2026-04-07-001",
+        "output_format": "pdf",
+        "addresses": [
+          "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+          "0x1111111111111111111111111111111111111111"
+        ],
+        "asset": "ETH"
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "subject_name": {
+            "type": "string",
+            "description": "Human-readable subject or counterparty name for the memo."
+          },
+          "case_name": {
+            "type": "string",
+            "description": "Optional case or review title."
+          },
+          "review_reason": {
+            "type": "string",
+            "description": "Optional reason the EDD memo is being prepared."
+          },
+          "jurisdiction": {
+            "type": "string",
+            "description": "Optional jurisdiction or operating region for the case."
+          },
+          "requested_by": {
+            "type": "string",
+            "description": "Optional requester or owning team."
+          },
+          "reference_id": {
+            "type": "string",
+            "description": "Optional internal case or review reference."
+          },
+          "output_format": {
+            "type": "string",
+            "description": "Select json for the structured memo payload or pdf|docx for a generated artifact.",
+            "enum": ["json", "pdf", "docx"]
+          },
+          "addresses": {
+            "type": "array",
+            "description": "Wallet addresses to include in the enhanced due diligence memo.",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "asset": {
+            "type": "string",
+            "description": "Optional asset or network ticker filter, such as ETH, USDC, XBT, TRX, ARB, or BSC."
+          }
+        },
+        "required": ["subject_name", "addresses", "output_format"],
+        "additionalProperties": false
+      },
+      "outputExample": {
+        "success": true,
+        "output_format": "pdf",
+        "data": {
+          "case": {
+            "subjectName": "Northwind Treasury Counterparty",
+            "caseName": "Counterparty onboarding review",
+            "reviewReason": "Treasury payout review",
+            "jurisdiction": "US",
+            "requestedBy": "ops@northwind.example",
+            "referenceId": "case-2026-04-07-001",
+            "addresses": [
+              "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+              "0x1111111111111111111111111111111111111111"
+            ],
+            "asset": "ETH"
+          },
+          "workflowStatus": "manual_review_required",
+          "evidenceSummary": [
+            "Northwind Treasury Counterparty screening returned exact OFAC SDN digital currency address matches linked to Lazarus Group."
+          ],
+          "requiredFollowUp": [
+            "Escalate the case to a human compliance reviewer before onboarding, payout release, or funds movement."
+          ]
+        },
+        "output": {
+          "mimeType": "application/pdf"
+        },
+        "source": "OFAC SDN Advanced XML"
       }
     }
   ]

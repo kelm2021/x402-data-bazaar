@@ -14,10 +14,10 @@ const NO_CONFIG_SCHEMA = {
 
 export const SERVER_CARD = {
   serverInfo: {
-    name: "AurelianFlo MCP",
-    version: "0.1.0",
+    name: "AurelianFlo",
+    version: "0.1.1",
     description:
-      "Remote MCP server for bundled OFAC wallet screening and Monte Carlo reporting, with JSON, PDF, or DOCX output plus lower-level document generators.",
+      "Remote MCP server for compliance screening, vendor diligence, Monte Carlo reporting, and PDF or DOCX document generation.",
     homepage: `${PRODUCTION_BASE_URL}/mcp/docs`,
     iconUrl: `${PRODUCTION_BASE_URL}/icon.png`,
     icons: [

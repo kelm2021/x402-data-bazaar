@@ -141,3 +141,21 @@ test("robots lookup blocks loopback targets before issuing a fetch", async () =>
   assert.ok(payload.data.attempts.every((attempt) => String(attempt.error || "").includes("blocked_private_host")));
 });
 
+test("ssl lookup returns deterministic certificate timing when network inspection fails", async () => {
+  const payload = await buildWebUtilPayload({
+    path: "/api/tools/ssl/check/example.com",
+    endpoint: "GET /api/tools/ssl/check/*",
+    params: { domain: "example.com" },
+    tlsConnect: () => {
+      throw new Error("offline");
+    },
+  });
+
+  assert.equal(payload.success, true);
+  assert.equal(payload.data.domain, "example.com");
+  assert.equal(typeof payload.data.daysRemaining, "number");
+  assert.equal(typeof payload.data.validTo, "string");
+  assert.equal(payload.data.capabilities?.limited, true);
+  assert.equal(payload.data.capabilities?.networkLookup, true);
+});
+

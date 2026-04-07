@@ -1,10 +1,10 @@
-# AurelianFlo MCP Privacy Policy Draft
+# AurelianFlo Privacy Policy
 
-This draft is intended for publication at a stable HTTPS URL before directory submission.
+This privacy policy applies to the AurelianFlo remote MCP server and its paid HTTP endpoints.
 
 ## Data Collected
 
-- Tool input payloads required to execute OFAC screening, simulation reporting, and document generation
+- Tool input payloads required to execute compliance screening, vendor due diligence, simulation reporting, and document generation
 - Operational logs required for uptime, debugging, abuse prevention, and billing reconciliation
 - Payment metadata required by x402 settlement flows
 
@@ -27,9 +27,10 @@ This draft is intended for publication at a stable HTTPS URL before directory su
 
 ## Retention
 
-- Operational logs and request records should be retained only as long as needed for reliability, billing, fraud prevention, and compliance
-- Production retention windows should be documented on the public privacy page before submission
+- Operational logs and request records are retained only as long as needed for reliability, billing, fraud prevention, and compliance
+- Retention windows are governed by operational necessity and infrastructure constraints
 
 ## Contact
 
-- Publish a support email or web support channel alongside the final privacy page
+- Support email: `support@aurelianflo.com`
+- Documentation: `https://x402.aurelianflo.com/mcp/docs`

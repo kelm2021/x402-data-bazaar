@@ -1789,9 +1789,9 @@ test("explicit document alias routes resolve to live handlers", async () => {
   });
 });
 
-test("legacy system discovery and OpenAPI aliases resolve to live route catalogs", async () => {
+test("legacy system discovery and OpenAPI aliases resolve to curated live route catalogs", async () => {
   const app = createApp({
-    env: {},
+    env: { NODE_ENV: "production" },
     enableDebugRoutes: false,
     paymentGate: (_req, _res, next) => next(),
     mercTrustMiddleware: null,
@@ -1810,6 +1810,8 @@ test("legacy system discovery and OpenAPI aliases resolve to live route catalogs
     assert.equal(fullDiscoveryResponse.status, 200);
     assert.ok(Array.isArray(fullDiscovery.catalog));
     assert.ok(fullDiscovery.catalog.some((entry) => entry.path === "/api/tools/xlsx/generate"));
+    assert.ok(!fullDiscovery.catalog.some((entry) => entry.path === "/api/weather/current"));
+    assert.ok(!fullDiscovery.catalog.some((entry) => entry.path === "/api/tools/contract/generate"));
 
     const openApiResponse = await fetch(`${baseUrl}/api/system/openapi.json`);
     const openApi = await openApiResponse.json();
@@ -1822,12 +1824,14 @@ test("legacy system discovery and OpenAPI aliases resolve to live route catalogs
     assert.equal(fullOpenApiResponse.status, 200);
     assert.ok(fullOpenApi.paths["/api/tools/report/generate"]?.post);
     assert.ok(fullOpenApi.paths["/api/tools/xlsx/render-template"]?.post);
+    assert.ok(!fullOpenApi.paths["/api/weather/current"]);
+    assert.ok(!fullOpenApi.paths["/api/tools/contract/generate"]?.post);
   });
 });
 
-test("public discovery surfaces stay curated while system discovery exposes full generated inventory", async () => {
+test("public discovery surfaces stay curated while system discovery exposes the full allowed AurelianFlo inventory", async () => {
   const app = createApp({
-    env: {},
+    env: { NODE_ENV: "production" },
     enableDebugRoutes: false,
     paymentGate: (_req, _res, next) => next(),
     mercTrustMiddleware: null,
@@ -1848,16 +1852,14 @@ test("public discovery surfaces stay curated while system discovery exposes full
     const fullRouteKeys = new Set(fullDiscovery.catalog.map((entry) => String(entry.routeKey || "")));
     const expectedPublicRouteKeys = new Set([
       "GET /api/ofac-wallet-screen/:address",
+      "POST /api/workflows/compliance/edd-report",
+      "POST /api/workflows/compliance/batch-wallet-screen",
       "POST /api/workflows/compliance/wallet-sanctions-report",
       "GET /api/vendor-entity-brief",
       "POST /api/workflows/finance/cash-runway-forecast",
       "POST /api/workflows/finance/startup-runway-forecast",
       "POST /api/workflows/finance/pricing-plan-compare",
       "POST /api/workflows/finance/pricing-sensitivity-report",
-      "POST /api/workflows/sports/nba/championship-forecast",
-      "POST /api/workflows/sports/nfl/championship-forecast",
-      "POST /api/workflows/sports/mlb/championship-forecast",
-      "POST /api/workflows/sports/nhl/championship-forecast",
       "POST /api/workflows/vendor/risk-assessment",
       "POST /api/workflows/vendor/due-diligence-report",
       "POST /api/sim/probability",
@@ -1885,8 +1887,11 @@ test("public discovery surfaces stay curated while system discovery exposes full
     assert.ok(!publicRouteKeys.has("GET /api/tools/misc/iching"));
     assert.ok(!publicRouteKeys.has("POST /api/tools/contract/generate"));
     assert.ok(!publicRouteKeys.has("GET /api/weather/current/*"));
-    assert.ok(fullRouteKeys.has("POST /api/tools/design/icon"));
-    assert.ok(fullRouteKeys.has("GET /api/tools/misc/iching"));
+    assert.ok(fullRouteKeys.has("POST /api/workflows/vendor/risk-forecast"));
+    assert.ok(fullRouteKeys.has("POST /api/workflows/finance/pricing-scenario-forecast"));
+    assert.ok(!fullRouteKeys.has("POST /api/tools/design/icon"));
+    assert.ok(!fullRouteKeys.has("GET /api/tools/misc/iching"));
+    assert.ok(!fullRouteKeys.has("GET /api/weather/current/*"));
     assert.ok(fullDiscovery.catalog.length > publicDiscovery.catalog.length);
 
     const publicOpenApiResponse = await fetch(`${baseUrl}/openapi.json`);
@@ -1898,11 +1903,11 @@ test("public discovery surfaces stay curated while system discovery exposes full
     assert.equal(fullOpenApiResponse.status, 200);
     assert.equal(
       publicOpenApi.info.title,
-      "AurelianFlo Compliance, Simulation, and Report Generation API",
+      "AurelianFlo",
     );
-    assert.match(publicOpenApi.info.description, /vendor due diligence/i);
-    assert.match(publicOpenApi.info.description, /pricing and scenario analysis/i);
-    assert.match(publicOpenApi.info.description, /PDF, DOCX, and XLSX/i);
+    assert.match(publicOpenApi.info.description, /vendor diligence/i);
+    assert.match(publicOpenApi.info.description, /finance scenario workflows/i);
+    assert.match(publicOpenApi.info.description, /PDF, DOCX, XLSX/i);
     assert.ok(publicOpenApi.paths["/api/tools/report/generate"]?.post);
     assert.ok(publicOpenApi.paths["/api/tools/report/pdf/generate"]?.post);
     assert.ok(publicOpenApi.paths["/api/tools/report/docx/generate"]?.post);
@@ -1916,17 +1921,15 @@ test("public discovery surfaces stay curated while system discovery exposes full
     assert.ok(publicOpenApi.paths["/api/workflows/finance/startup-runway-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/finance/pricing-plan-compare"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/finance/pricing-sensitivity-report"]?.post);
-    assert.ok(publicOpenApi.paths["/api/workflows/sports/nba/championship-forecast"]?.post);
-    assert.ok(publicOpenApi.paths["/api/workflows/sports/nfl/championship-forecast"]?.post);
-    assert.ok(publicOpenApi.paths["/api/workflows/sports/mlb/championship-forecast"]?.post);
-    assert.ok(publicOpenApi.paths["/api/workflows/sports/nhl/championship-forecast"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/vendor/risk-assessment"]?.post);
     assert.ok(publicOpenApi.paths["/api/workflows/vendor/due-diligence-report"]?.post);
     assert.ok(publicOpenApi.paths["/api/sim/probability"]?.post);
     assert.ok(!publicOpenApi.paths["/api/tools/design/icon"]?.post);
     assert.ok(!publicOpenApi.paths["/api/weather/current/{param1}"]?.get);
     assert.ok(!publicOpenApi.paths["/api/tools/contract/generate"]?.post);
-    assert.ok(fullOpenApi.paths["/api/tools/design/icon"]?.post);
+    assert.ok(fullOpenApi.paths["/api/workflows/vendor/risk-forecast"]?.post);
+    assert.ok(fullOpenApi.paths["/api/workflows/finance/pricing-scenario-forecast"]?.post);
+    assert.ok(!fullOpenApi.paths["/api/tools/design/icon"]?.post);
     assert.match(
       publicOpenApi.paths["/api/workflows/compliance/wallet-sanctions-report"]?.post?.summary || "",
       /crypto payment review/i,
@@ -1960,22 +1963,20 @@ test("public OpenAPI exposes structured workflow output schemas for curated work
 
     assert.equal(publicOpenApiResponse.status, 200);
 
-    const nflWorkflowSchema =
-      publicOpenApi.paths["/api/workflows/sports/nfl/championship-forecast"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
-    const mlbWorkflowSchema =
-      publicOpenApi.paths["/api/workflows/sports/mlb/championship-forecast"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
+    const eddWorkflowSchema =
+      publicOpenApi.paths["/api/workflows/compliance/edd-report"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
+    const batchWorkflowSchema =
+      publicOpenApi.paths["/api/workflows/compliance/batch-wallet-screen"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
     const pricingWorkflowSchema =
       publicOpenApi.paths["/api/workflows/finance/pricing-plan-compare"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
     const vendorWorkflowSchema =
       publicOpenApi.paths["/api/workflows/vendor/risk-assessment"]?.post?.responses?.["200"]?.content?.["application/json"]?.schema;
 
-    assert.ok(schemaIncludesRequiredProperty(nflWorkflowSchema, "workflow_meta"));
-    assert.ok(schemaIncludesRequiredProperty(nflWorkflowSchema, "prediction"));
-    assert.ok(schemaIncludesRequiredProperty(nflWorkflowSchema, "diagnostics"));
+    assert.ok(schemaIncludesRequiredProperty(eddWorkflowSchema, "type"));
+    assert.ok(Object.prototype.hasOwnProperty.call(eddWorkflowSchema?.properties || {}, "example"));
 
-    assert.ok(schemaIncludesRequiredProperty(mlbWorkflowSchema, "workflow_meta"));
-    assert.ok(schemaIncludesRequiredProperty(mlbWorkflowSchema, "prediction"));
-    assert.ok(schemaIncludesRequiredProperty(mlbWorkflowSchema, "diagnostics"));
+    assert.ok(schemaIncludesRequiredProperty(batchWorkflowSchema, "type"));
+    assert.ok(Object.prototype.hasOwnProperty.call(batchWorkflowSchema?.properties || {}, "example"));
 
     assert.ok(schemaIncludesRequiredProperty(pricingWorkflowSchema, "workflow_meta"));
     assert.ok(schemaIncludesRequiredProperty(pricingWorkflowSchema, "summary"));
@@ -1984,236 +1985,6 @@ test("public OpenAPI exposes structured workflow output schemas for curated work
     assert.ok(schemaIncludesRequiredProperty(vendorWorkflowSchema, "workflow_meta"));
     assert.ok(schemaIncludesRequiredProperty(vendorWorkflowSchema, "summary"));
     assert.ok(schemaIncludesRequiredProperty(vendorWorkflowSchema, "vendors"));
-  });
-});
-
-test("root app publishes and serves the nba playoff workflow route", async () => {
-  const app = createApp({
-    env: {},
-    enableDebugRoutes: false,
-    paymentGate: (_req, _res, next) => next(),
-    mercTrustMiddleware: null,
-  });
-
-  await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
-    const discovery = await discoveryResponse.json();
-    assert.equal(discoveryResponse.status, 200);
-    assert.ok(
-      discovery.catalog.some(
-        (entry) => entry.routeKey === "POST /api/workflows/sports/nba/championship-forecast",
-      ),
-      "expected nba workflow route in curated discovery",
-    );
-    const openApiResponse = await fetch(`${baseUrl}/openapi.json`);
-    const openApi = await openApiResponse.json();
-    assert.equal(openApiResponse.status, 200);
-    assert.ok(openApi.paths["/api/workflows/sports/nba/championship-forecast"]?.post);
-
-    const response = await fetch(`${baseUrl}/api/workflows/sports/nba/championship-forecast`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        as_of_date: "2026-04-03",
-        league: "nba",
-        mode: "standings_snapshot",
-        field: "top_6_only",
-        inputs: {},
-        model_options: {
-          seed: 12345,
-          simulations: 10000,
-          include_report: true,
-          include_artifacts: ["xlsx"],
-        },
-      }),
-    });
-    const payload = await response.json();
-
-    assert.equal(response.status, 200);
-    assert.equal(payload.workflow_meta.workflow, "sports.championship_forecast");
-    assert.equal(payload.workflow_meta.league, "nba");
-    assert.equal(typeof payload.report, "object");
-    assert.equal(typeof payload.artifacts, "object");
-    assert.equal(payload.artifacts.xlsx.documentType, "xlsx");
-    assert.equal(typeof payload.artifacts.xlsx.artifact.contentBase64, "string");
-  });
-});
-
-test("root app publishes and serves the nfl playoff workflow route", async () => {
-  const app = createApp({
-    env: {},
-    enableDebugRoutes: false,
-    paymentGate: (_req, _res, next) => next(),
-    mercTrustMiddleware: null,
-  });
-
-  await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
-    const discovery = await discoveryResponse.json();
-    assert.equal(discoveryResponse.status, 200);
-    assert.ok(
-      discovery.catalog.some(
-        (entry) => entry.routeKey === "POST /api/workflows/sports/nfl/championship-forecast",
-      ),
-      "expected nfl workflow route in curated discovery",
-    );
-    const openApiResponse = await fetch(`${baseUrl}/openapi.json`);
-    const openApi = await openApiResponse.json();
-    assert.equal(openApiResponse.status, 200);
-    assert.ok(openApi.paths["/api/workflows/sports/nfl/championship-forecast"]?.post);
-
-    const response = await fetch(`${baseUrl}/api/workflows/sports/nfl/championship-forecast`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        as_of_date: "2026-04-03",
-        league: "nfl",
-        mode: "standings_snapshot",
-        field: "top_6_only",
-        inputs: {},
-        model_options: {
-          seed: 12345,
-          simulations: 10000,
-          include_report: true,
-          include_artifacts: ["xlsx"],
-        },
-      }),
-    });
-    const payload = await response.json();
-
-    assert.equal(response.status, 200);
-    assert.equal(payload.workflow_meta.workflow, "sports.championship_forecast");
-    assert.equal(payload.workflow_meta.league, "nfl");
-    assert.equal(typeof payload.report, "object");
-    assert.equal(typeof payload.artifacts, "object");
-    assert.equal(payload.artifacts.xlsx.documentType, "xlsx");
-    assert.equal(typeof payload.artifacts.xlsx.artifact.contentBase64, "string");
-  });
-});
-
-test("root app publishes and serves the nhl playoff workflow route", async () => {
-  const app = createApp({
-    env: {},
-    enableDebugRoutes: false,
-    paymentGate: (_req, _res, next) => next(),
-    mercTrustMiddleware: null,
-  });
-
-  await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
-    const discovery = await discoveryResponse.json();
-    assert.equal(discoveryResponse.status, 200);
-    assert.ok(
-      discovery.catalog.some(
-        (entry) => entry.routeKey === "POST /api/workflows/sports/nhl/championship-forecast",
-      ),
-      "expected nhl workflow route in curated discovery",
-    );
-    const openApiResponse = await fetch(`${baseUrl}/openapi.json`);
-    const openApi = await openApiResponse.json();
-    assert.equal(openApiResponse.status, 200);
-    assert.ok(openApi.paths["/api/workflows/sports/nhl/championship-forecast"]?.post);
-
-    const response = await fetch(`${baseUrl}/api/workflows/sports/nhl/championship-forecast`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        as_of_date: "2026-04-03",
-        league: "nhl",
-        mode: "custom_field",
-        field: "top_6_only",
-        inputs: {
-          teams: [
-            { name: "New York Rangers", abbr: "NYR", conference: "East", seed: 1, wins: 54, losses: 22, win_pct: 0.711, point_diff: 1.15, last_10: "7-3" },
-            { name: "Dallas Stars", abbr: "DAL", conference: "West", seed: 1, wins: 55, losses: 21, win_pct: 0.724, point_diff: 1.19, last_10: "8-2" },
-            { name: "Carolina Hurricanes", abbr: "CAR", conference: "East", seed: 2, wins: 52, losses: 24, win_pct: 0.684, point_diff: 0.91, last_10: "8-2" },
-            { name: "Colorado Avalanche", abbr: "COL", conference: "West", seed: 2, wins: 53, losses: 23, win_pct: 0.697, point_diff: 1.02, last_10: "7-3" }
-          ]
-        },
-        model_options: {
-          seed: 12345,
-          simulations: 10000,
-          include_report: true,
-          include_artifacts: ["xlsx"],
-        },
-      }),
-    });
-    const payload = await response.json();
-
-    assert.equal(response.status, 200);
-    assert.equal(payload.workflow_meta.workflow, "sports.championship_forecast");
-    assert.equal(payload.workflow_meta.league, "nhl");
-    assert.equal(typeof payload.report, "object");
-    assert.equal(typeof payload.artifacts, "object");
-    assert.equal(payload.artifacts.xlsx.documentType, "xlsx");
-    assert.equal(typeof payload.artifacts.xlsx.artifact.contentBase64, "string");
-  });
-});
-
-test("root app publishes and serves the mlb playoff workflow route", async () => {
-  const app = createApp({
-    env: {},
-    enableDebugRoutes: false,
-    paymentGate: (_req, _res, next) => next(),
-    mercTrustMiddleware: null,
-  });
-
-  await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`);
-    const discovery = await discoveryResponse.json();
-    assert.equal(discoveryResponse.status, 200);
-    assert.ok(
-      discovery.catalog.some(
-        (entry) => entry.routeKey === "POST /api/workflows/sports/mlb/championship-forecast",
-      ),
-      "expected mlb workflow route in curated discovery",
-    );
-    const openApiResponse = await fetch(`${baseUrl}/openapi.json`);
-    const openApi = await openApiResponse.json();
-    assert.equal(openApiResponse.status, 200);
-    assert.ok(openApi.paths["/api/workflows/sports/mlb/championship-forecast"]?.post);
-
-    const response = await fetch(`${baseUrl}/api/workflows/sports/mlb/championship-forecast`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        as_of_date: "2026-04-03",
-        league: "mlb",
-        mode: "custom_field",
-        field: "top_6_only",
-        inputs: {
-          teams: [
-            { name: "New York Yankees", abbr: "NYY", conference: "AL", seed: 1, wins: 5, losses: 1, win_pct: 0.833, point_diff: 2.33, last_10: "5-1" },
-            { name: "Detroit Tigers", abbr: "DET", conference: "AL", seed: 2, wins: 5, losses: 1, win_pct: 0.833, point_diff: 2.17, last_10: "5-1" },
-            { name: "Baltimore Orioles", abbr: "BAL", conference: "AL", seed: 3, wins: 4, losses: 2, win_pct: 0.667, point_diff: 1.5, last_10: "4-2" },
-            { name: "Toronto Blue Jays", abbr: "TOR", conference: "AL", seed: 4, wins: 4, losses: 2, win_pct: 0.667, point_diff: 1.17, last_10: "4-2" },
-            { name: "Houston Astros", abbr: "HOU", conference: "AL", seed: 5, wins: 4, losses: 2, win_pct: 0.667, point_diff: 0.83, last_10: "4-2" },
-            { name: "Seattle Mariners", abbr: "SEA", conference: "AL", seed: 6, wins: 4, losses: 2, win_pct: 0.667, point_diff: 0.67, last_10: "4-2" },
-            { name: "Los Angeles Dodgers", abbr: "LAD", conference: "NL", seed: 1, wins: 6, losses: 0, win_pct: 1, point_diff: 2.83, last_10: "6-0" },
-            { name: "San Diego Padres", abbr: "SD", conference: "NL", seed: 2, wins: 5, losses: 1, win_pct: 0.833, point_diff: 2.5, last_10: "5-1" },
-            { name: "Chicago Cubs", abbr: "CHC", conference: "NL", seed: 3, wins: 5, losses: 1, win_pct: 0.833, point_diff: 1.83, last_10: "5-1" },
-            { name: "Philadelphia Phillies", abbr: "PHI", conference: "NL", seed: 4, wins: 4, losses: 2, win_pct: 0.667, point_diff: 1.33, last_10: "4-2" },
-            { name: "San Francisco Giants", abbr: "SF", conference: "NL", seed: 5, wins: 4, losses: 2, win_pct: 0.667, point_diff: 1, last_10: "4-2" },
-            { name: "Atlanta Braves", abbr: "ATL", conference: "NL", seed: 6, wins: 4, losses: 2, win_pct: 0.667, point_diff: 0.83, last_10: "4-2" }
-          ]
-        },
-        model_options: {
-          seed: 12345,
-          simulations: 10000,
-          include_report: true,
-          include_artifacts: ["xlsx"],
-        },
-      }),
-    });
-    const payload = await response.json();
-
-    assert.equal(response.status, 200);
-    assert.equal(payload.workflow_meta.workflow, "sports.championship_forecast");
-    assert.equal(payload.workflow_meta.league, "mlb");
-    assert.equal(typeof payload.report, "object");
-    assert.equal(typeof payload.artifacts, "object");
-    assert.equal(payload.artifacts.xlsx.documentType, "xlsx");
-    assert.equal(typeof payload.artifacts.xlsx.artifact.contentBase64, "string");
   });
 });
 

@@ -1,25 +1,28 @@
-# AurelianFlo MCP
+# AurelianFlo
 
 ## Description
 
-AurelianFlo MCP is a remote MCP server for lean AurelianFlo workflows:
+AurelianFlo is a remote MCP server for compliance screening, vendor due diligence, Monte Carlo decision analysis, and formatted document output for AI agents.
 
-- bundled OFAC wallet screening plus report output
-- bundled Monte Carlo reporting plus report output
-- Premium report artifact generation in PDF and DOCX
-- lower-level Monte Carlo decision reporting
+- enhanced due diligence memos for counterparty and wallet review workflows
+- batch OFAC wallet screening with review signals
+- single-wallet OFAC screening with report output
+- Monte Carlo decision reporting
+- PDF, DOCX, and XLSX report generation
 
-This package uses `x402-mcp` for paid MCP tools and, by default, boots the repo's internal Express app with the payment gate disabled so MCP users are charged once at the MCP tool layer instead of being forced through the public HTTP payment flow again.
+This package uses `x402-mcp` for paid MCP tools and exposes a streamable HTTP MCP endpoint with a static server card at `/.well-known/mcp/server-card.json`.
 
 ## Features
 
 - `server_capabilities` as a free connection and capability check
+- `edd_report` for enhanced due diligence memos with case metadata, evidence summary, required follow-up, and JSON, PDF, or DOCX output
+- `batch_wallet_screen` for batch OFAC wallet screening with per-wallet results, review signals, and report-ready output
 - `ofac_wallet_report` for one-call wallet screening with JSON, PDF, or DOCX output
 - `ofac_wallet_screen` for exact-match OFAC wallet screening
-- `monte_carlo_report` for one-call simulation reporting with JSON, PDF, or DOCX output
+- `monte_carlo_report` for simulation reporting with JSON, PDF, or DOCX output
 - `monte_carlo_decision_report` for structured simulation reports
-- `report_pdf_generate` for premium report PDFs
-- `report_docx_generate` for premium report DOCX artifacts
+- `report_pdf_generate` for report PDFs
+- `report_docx_generate` for report DOCX artifacts
 - Streamable HTTP MCP endpoint with a static server card at `/.well-known/mcp/server-card.json`
 - AgentCash-compatible discovery lane for the canonical origin
 
@@ -62,17 +65,38 @@ What happens:
 - The server returns direct and Smithery-hosted connection modes
 - The response identifies which tools are free and which require x402 payment
 
-### Example 1: Bundled OFAC wallet screening report
+### Example 1: EDD memo workflow
+
+User prompt: `Prepare an enhanced due diligence memo for this counterparty wallet set and tell me what follow-up the reviewer still needs to complete.`
+
+What happens:
+
+- Claude calls `edd_report`
+- The server runs the live `POST /api/workflows/compliance/edd-report` workflow
+- The result returns case metadata, review status labels, evidence summary, required follow-up, and either structured JSON or a generated PDF or DOCX artifact based on `output_format`
+
+### Example 2: Batch OFAC screening workflow
+
+User prompt: `Screen these three deposit wallets for OFAC exposure and tell me which ones require manual review.`
+
+What happens:
+
+- Claude calls `batch_wallet_screen`
+- The server runs the live `POST /api/workflows/compliance/batch-wallet-screen` workflow
+- The result returns per-wallet screening results, total screened, match count, clear count, and a batch-level review signal that operations can hand off to a human reviewer
+- The structured report payload can then be rendered with `report_pdf_generate` or `report_docx_generate` for audit handoff
+
+### Example 3: Bundled OFAC wallet screening report
 
 User prompt: `Screen 0x098B716B8Aaf21512996dC57EB0615e2383E2f96 for OFAC sanctions and give me a PDF I can hand off.`
 
 What happens:
 
 - Claude calls `ofac_wallet_report`
-- The server runs the live wallet screening route and then returns either structured JSON or a premium PDF or DOCX artifact from the same screening result
+- The server runs the live wallet screening route and then returns either structured JSON or a PDF or DOCX artifact from the same screening result
 - The result includes exact hits, sanctioned entity metadata, source freshness, and the generated report output
 
-### Example 2: Direct wallet screening JSON
+### Example 4: Direct wallet screening JSON
 
 User prompt: `Screen 0x098B716B8Aaf21512996dC57EB0615e2383E2f96 and return the JSON report only.`
 
@@ -81,7 +105,7 @@ What happens:
 - Claude calls `ofac_wallet_screen`
 - The server returns exact wallet screening data plus the structured report payload for downstream use
 
-### Example 3: Bundled Monte Carlo report
+### Example 5: Bundled Monte Carlo report
 
 User prompt: `Generate a compare-style decision report for a baseline and candidate launch scenario and return a PDF.`
 
@@ -89,9 +113,9 @@ What happens:
 
 - Claude calls `monte_carlo_report`
 - The server runs the live `POST /api/sim/report` workflow
-- The response returns either structured JSON or a premium PDF or DOCX artifact from the same simulation result
+- The response returns either structured JSON or a PDF or DOCX artifact from the same simulation result
 
-### Example 4: Monte Carlo building blocks
+### Example 6: Monte Carlo building blocks
 
 User prompt: `Generate a compare-style decision report payload and then render it to DOCX.`
 
@@ -103,21 +127,24 @@ What happens:
 
 ## Privacy Policy
 
-Draft privacy policy for publication is in [submission/privacy-policy.md](C:/Users/KentEgan/claude%20projects/x402-data-bazaar/apps/aurelianflo-mcp/submission/privacy-policy.md).
+The publication-ready privacy policy is in [submission/privacy-policy.md](./submission/privacy-policy.md).
 
 ## Support
 
-Draft support details for publication are in [submission/support.md](C:/Users/KentEgan/claude%20projects/x402-data-bazaar/apps/aurelianflo-mcp/submission/support.md).
+The publication-ready support details are in [submission/support.md](./submission/support.md).
 
 ## Registry Submission
 
-Draft official MCP Registry metadata is in [submission/server.json](C:/Users/KentEgan/claude%20projects/x402-data-bazaar/apps/aurelianflo-mcp/submission/server.json).
+The official MCP Registry metadata is in [submission/server.json](./submission/server.json).
 
-Official registry publish notes are in [submission/official-registry-publish.md](C:/Users/KentEgan/claude%20projects/x402-data-bazaar/apps/aurelianflo-mcp/submission/official-registry-publish.md).
+Official registry publish notes are in [submission/official-registry-publish.md](./submission/official-registry-publish.md).
 
 ## Public Production URLs
 
 - Origin: `https://x402.aurelianflo.com`
+- API catalog: `https://x402.aurelianflo.com/api`
+- EDD route docs: `https://x402.aurelianflo.com/api/workflows/compliance/edd-report`
+- Batch route docs: `https://x402.aurelianflo.com/api/workflows/compliance/batch-wallet-screen`
 - MCP endpoint: `https://x402.aurelianflo.com/mcp`
 - Server card: `https://x402.aurelianflo.com/.well-known/mcp/server-card.json`
 - Docs: `https://x402.aurelianflo.com/mcp/docs`

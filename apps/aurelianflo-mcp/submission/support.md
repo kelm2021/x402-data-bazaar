@@ -1,21 +1,22 @@
-# AurelianFlo MCP Support Draft
+# AurelianFlo Support
 
-This draft is intended for publication at a stable HTTPS URL before directory submission.
+This support page applies to the AurelianFlo remote MCP server and its published HTTP endpoints.
 
 ## Support Channels
 
 - Support email: `support@aurelianflo.com`
-- Documentation landing page: publish the package README and submission notes at a stable HTTPS URL
-- Issue tracking: optionally publish a GitHub issues URL if you want public issue intake
+- Documentation landing page: `https://x402.aurelianflo.com/mcp/docs`
+- Issue tracking: `https://github.com/kelm2021/x402-data-bazaar/issues`
 
 ## Support Scope
 
 - Connection and configuration issues
 - Payment and settlement issues related to x402 tool calls
 - Unexpected tool failures or invalid responses
-- Questions about supported inputs for OFAC screening, simulation reporting, and document generation
+- Questions about supported inputs for compliance screening, vendor due diligence, simulation reporting, and document generation
 
 ## Response Expectations
 
 - Provide an acknowledgement channel for urgent production issues
 - Keep a documented path for reporting security issues separately from general support
+- Keep response SLAs out of this page unless they are formally committed

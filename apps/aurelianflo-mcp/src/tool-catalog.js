@@ -117,7 +117,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "server_capabilities",
     description:
-      "Free capability and connection check for AurelianFlo MCP, including direct and Smithery-hosted access modes and which tools require x402 payment.",
+      "Free capability and connection check for AurelianFlo, including direct and Smithery-hosted access modes and which tools require x402 payment.",
     price: 0,
     route: null,
     annotations: {
@@ -136,7 +136,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "ofac_wallet_report",
     description:
-      "Run exact-match OFAC wallet screening and return either the structured screening report payload or a premium PDF or DOCX artifact in one paid call.",
+      "Run exact-match OFAC wallet screening and return either the structured screening payload or a PDF or DOCX artifact.",
     price: 0.205,
     route: {
       method: "GET",
@@ -144,7 +144,7 @@ export const MCP_TOOL_DEFINITIONS = [
     },
     annotations: {
       title: "OFAC Wallet Screen Report",
-      destructiveHint: true,
+      readOnlyHint: true,
     },
     required: ["address", "output_format"],
     inputSchema: {
@@ -237,9 +237,180 @@ export const MCP_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "batch_wallet_screen",
+    description:
+      "Screen a batch of wallet addresses against OFAC SDN digital currency address designations, returning per-wallet results plus a batch-level proceed-or-pause decision and report-ready output.",
+    price: 0.025,
+    route: {
+      method: "POST",
+      pathTemplate: "/api/workflows/compliance/batch-wallet-screen",
+    },
+    annotations: {
+      title: "Batch Wallet Screen",
+      readOnlyHint: true,
+    },
+    required: ["addresses"],
+    inputSchema: {
+      type: "object",
+      properties: {
+        addresses: {
+          type: "array",
+          minItems: 1,
+          maxItems: 100,
+          items: {
+            type: "string",
+            minLength: 10,
+          },
+          description: "Wallet addresses to screen against OFAC SDN digital currency designations.",
+        },
+        asset: {
+          type: "string",
+          minLength: 2,
+          description: "Optional asset or network ticker filter such as ETH, USDC, XBT, TRX, ARB, or BSC.",
+        },
+      },
+      required: ["addresses"],
+      additionalProperties: false,
+    },
+    zodShape: {
+      addresses: z
+        .array(
+          z
+            .string()
+            .min(10)
+            .describe("Wallet address to screen against OFAC SDN digital currency designations."),
+        )
+        .min(1)
+        .max(100)
+        .describe("Wallet addresses to screen against OFAC SDN digital currency designations."),
+      asset: z
+        .string()
+        .min(2)
+        .describe("Optional asset or network ticker filter such as ETH, USDC, XBT, TRX, ARB, or BSC.")
+        .optional(),
+    },
+    inputExample: {
+      addresses: [
+        "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+        "0x1111111111111111111111111111111111111111",
+      ],
+      asset: "ETH",
+    },
+  },
+  {
+    name: "edd_report",
+    description:
+      "Generate an enhanced due diligence memo for a wallet set using exact-match OFAC screening, evidence summary, required follow-up, and JSON, PDF, or DOCX output.",
+    price: 0.09,
+    route: {
+      method: "POST",
+      pathTemplate: "/api/workflows/compliance/edd-report",
+    },
+    annotations: {
+      title: "EDD Report",
+      readOnlyHint: true,
+    },
+    required: ["subject_name", "addresses", "output_format"],
+    inputSchema: {
+      type: "object",
+      properties: {
+        subject_name: {
+          type: "string",
+          minLength: 2,
+          description: "Human-readable subject or counterparty name for the memo.",
+        },
+        case_name: {
+          type: "string",
+          description: "Optional case or review title shown in the memo.",
+        },
+        review_reason: {
+          type: "string",
+          description: "Optional reason the EDD memo is being prepared.",
+        },
+        jurisdiction: {
+          type: "string",
+          description: "Optional jurisdiction or operating region for the case.",
+        },
+        requested_by: {
+          type: "string",
+          description: "Optional requester, owner, or reviewing team.",
+        },
+        reference_id: {
+          type: "string",
+          description: "Optional internal case or review reference.",
+        },
+        output_format: {
+          type: "string",
+          enum: ["json", "pdf", "docx"],
+          description: "Select json for the structured memo payload or pdf|docx for a generated artifact.",
+        },
+        addresses: {
+          type: "array",
+          minItems: 1,
+          maxItems: 100,
+          items: {
+            type: "string",
+            minLength: 10,
+          },
+          description: "Wallet addresses to include in the enhanced due diligence memo.",
+        },
+        asset: {
+          type: "string",
+          minLength: 2,
+          description: "Optional asset or network ticker filter such as ETH, USDC, XBT, TRX, ARB, or BSC.",
+        },
+      },
+      required: ["subject_name", "addresses", "output_format"],
+      additionalProperties: false,
+    },
+    zodShape: {
+      subject_name: z
+        .string()
+        .min(2)
+        .describe("Human-readable subject or counterparty name for the memo."),
+      case_name: z.string().describe("Optional case or review title shown in the memo.").optional(),
+      review_reason: z.string().describe("Optional reason the EDD memo is being prepared.").optional(),
+      jurisdiction: z.string().describe("Optional jurisdiction or operating region for the case.").optional(),
+      requested_by: z.string().describe("Optional requester, owner, or reviewing team.").optional(),
+      reference_id: z.string().describe("Optional internal case or review reference.").optional(),
+      output_format: z
+        .enum(["json", "pdf", "docx"])
+        .describe("Select json for the structured memo payload or pdf|docx for a generated artifact."),
+      addresses: z
+        .array(
+          z
+            .string()
+            .min(10)
+            .describe("Wallet address to include in the enhanced due diligence memo."),
+        )
+        .min(1)
+        .max(100)
+        .describe("Wallet addresses to include in the enhanced due diligence memo."),
+      asset: z
+        .string()
+        .min(2)
+        .describe("Optional asset or network ticker filter such as ETH, USDC, XBT, TRX, ARB, or BSC.")
+        .optional(),
+    },
+    inputExample: {
+      subject_name: "Northwind Treasury Counterparty",
+      case_name: "Counterparty onboarding review",
+      review_reason: "Treasury payout review",
+      jurisdiction: "US",
+      requested_by: "ops@northwind.example",
+      reference_id: "case-2026-04-07-001",
+      output_format: "pdf",
+      addresses: [
+        "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
+        "0x1111111111111111111111111111111111111111",
+      ],
+      asset: "ETH",
+    },
+  },
+  {
     name: "monte_carlo_report",
     description:
-      "Run a supported Monte Carlo workflow and return either the structured report payload or a premium PDF or DOCX artifact in one paid call.",
+      "Run a supported Monte Carlo workflow and return either the structured report payload or a PDF or DOCX artifact.",
     price: 0.29,
     route: {
       method: "POST",
@@ -247,7 +418,7 @@ export const MCP_TOOL_DEFINITIONS = [
     },
     annotations: {
       title: "Monte Carlo Report",
-      destructiveHint: true,
+      readOnlyHint: true,
     },
     required: ["analysis_type", "request", "output_format"],
     inputSchema: {
@@ -410,7 +581,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "report_pdf_generate",
     description:
-      "Generate a premium PDF artifact from the shared AurelianFlo report model.",
+      "Generate a PDF artifact from structured report tables, metrics, and summary content.",
     price: 0.2,
     route: {
       method: "POST",
@@ -418,7 +589,7 @@ export const MCP_TOOL_DEFINITIONS = [
     },
     annotations: {
       title: "Report PDF Generate",
-      destructiveHint: true,
+      readOnlyHint: true,
     },
     required: ["report_meta", "tables"],
     inputSchema: sharedReportInputSchema,
@@ -440,7 +611,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "report_docx_generate",
     description:
-      "Generate a premium DOCX artifact from the shared AurelianFlo report model.",
+      "Generate a DOCX artifact from structured report tables, metrics, and summary content.",
     price: 0.16,
     route: {
       method: "POST",
@@ -448,7 +619,7 @@ export const MCP_TOOL_DEFINITIONS = [
     },
     annotations: {
       title: "Report DOCX Generate",
-      destructiveHint: true,
+      readOnlyHint: true,
     },
     required: ["report_meta", "tables"],
     inputSchema: sharedReportInputSchema,

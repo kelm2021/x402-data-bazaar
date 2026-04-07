@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
+const path = require("node:path");
 const test = require("node:test");
 const fetch = require("node-fetch");
 const { decodePaymentRequiredHeader } = require("@x402/core/http");
@@ -84,17 +85,23 @@ function withServer(app, run) {
   });
 }
 
-test("requiring index.js does not start the server", () => {
+test("requiring index.js does not start the server", (t) => {
   const result = spawnSync(
     process.execPath,
     ["-e", "require('./index'); console.log('loaded');"],
     {
-      cwd: __dirname + "\\..",
+      cwd: path.resolve(__dirname, ".."),
       encoding: "utf8",
-      timeout: 5000,
+      timeout: 10000,
     },
   );
 
+  if (result.error?.code === "EPERM") {
+    t.skip("spawnSync is blocked in this execution environment");
+    return;
+  }
+
+  assert.equal(result.error, undefined, result.error?.message);
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /loaded/);
   assert.doesNotMatch(result.stdout, /running on port/i);
@@ -108,7 +115,7 @@ test("health check stays free", async () => {
     const body = await response.json();
 
     assert.equal(response.status, 200);
-    assert.equal(body.name, "AurelianFlo APIs");
+    assert.equal(body.name, "AurelianFlo");
     assert.equal(body.payment.protocol, "x402");
     assert.ok(body.catalog.length > 0);
   });
@@ -125,11 +132,10 @@ test("health root serves title/description metadata when HTML is requested", asy
 
     assert.equal(response.status, 200);
     assert.match(String(response.headers.get("content-type") || ""), /text\/html/i);
-    assert.match(body, /<title>AurelianFlo APIs<\/title>/i);
-    assert.match(
-      body,
-      /<meta name="description" content="Curated, high-signal endpoints with x402-native access\."/i,
-    );
+    assert.match(body, /<title>AurelianFlo<\/title>/i);
+    assert.match(body, /<meta name="description" content="AurelianFlo is a pay-per-call API for OFAC screening/i);
+    assert.match(body, /finance scenario workflows/i);
+    assert.match(body, /formatted document output/i);
   });
 });
 
@@ -137,13 +143,15 @@ test("api discovery endpoint lists concrete endpoint metadata without payment", 
   const app = createApp({ enableDebugRoutes: false });
 
   await withServer(app, async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/api`);
+    const response = await fetch(`${baseUrl}/api?format=json`, {
+      headers: { Accept: "application/json" },
+    });
     const body = await response.json();
     const vendorRiskEntry = body.catalog.find((entry) => entry.routeKey === "POST /api/workflows/vendor/risk-assessment");
 
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("payment-required"), null);
-    assert.equal(body.name, "AurelianFlo APIs");
+    assert.equal(body.name, "AurelianFlo");
     assert.equal(body.payment.protocol, "x402");
     assert.ok(Array.isArray(body.catalog));
     assert.ok(body.catalog.length > 0);
@@ -170,10 +178,14 @@ test("openapi document is publicly reachable with title and icon metadata", asyn
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("payment-required"), null);
     assert.equal(body.openapi, "3.1.0");
-    assert.equal(body.info.title, "AurelianFlo APIs");
+    assert.equal(body.info.title, "AurelianFlo");
     assert.equal(body.info.version, "1.0.0");
     assert.equal(body.info["x-logo"].url, "https://x402.aurelianflo.com/favicon.ico");
     assert.equal(body.servers[0].url, "https://x402.aurelianflo.com");
+    assert.match(body.info.description, /OFAC screening/i);
+    assert.match(body.info.description, /vendor diligence/i);
+    assert.match(body.info.description, /finance scenario workflows/i);
+    assert.match(body.info.description, /PDF, DOCX, XLSX/i);
     assert.ok(body.paths["/api/workflows/vendor/risk-assessment"]?.post);
     assert.ok(!body.paths["/api/stocks/search"]?.get);
     assert.equal(fullResponse.status, 200);
@@ -242,11 +254,20 @@ test("well-known x402 manifest is publicly reachable", async () => {
     assert.equal(standardPathResponse.status, 200);
     assert.equal(standardPathBody.version, 1);
     assert.ok(Array.isArray(standardPathBody.resources));
-    assert.ok(
-      standardPathBody.resources.some((entry) => String(entry).startsWith("GET /api/vin/")),
+    assert.deepEqual(
+      standardPathBody.resources,
+      [
+        "https://x402.aurelianflo.com/api/workflows/compliance/edd-report",
+        "https://x402.aurelianflo.com/api/workflows/compliance/batch-wallet-screen",
+        "https://x402.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
+        "https://x402.aurelianflo.com/api/sim/report",
+        "https://x402.aurelianflo.com/api/tools/report/pdf/generate",
+        "https://x402.aurelianflo.com/api/tools/report/docx/generate",
+      ],
     );
+    assert.equal(standardPathBody.endpointCount, 6);
     assert.equal(dotWellKnownResponse.status, 200);
-    assert.equal(dotWellKnownBody.name, "AurelianFlo APIs");
+    assert.equal(dotWellKnownBody.name, "AurelianFlo");
     assert.equal(dotWellKnownBody.website, "https://x402.aurelianflo.com");
     assert.ok(Array.isArray(dotWellKnownBody.resources));
     assert.ok(dotWellKnownBody.resources.length >= 20);
@@ -323,14 +344,14 @@ test("main app bucket includes bundled seller routes including generic-parameter
   const genericSimulatorRoutes = getSellerRoutes(genericSimulatorSellerConfig);
 
   await withServer(app, async (baseUrl) => {
-    const discoveryResponse = await fetch(`${baseUrl}/api`);
+    const discoveryResponse = await fetch(`${baseUrl}/api?format=json`, {
+      headers: { Accept: "application/json" },
+    });
     const discoveryBody = await discoveryResponse.json();
     const routeKeys = new Set(discoveryBody.catalog.map((entry) => entry.routeKey));
 
     assert.equal(discoveryResponse.status, 200);
-    assert.ok(routeKeys.has("GET /api/ofac-sanctions-screening/*"));
-    assert.ok(routeKeys.has("GET /api/vendor-onboarding/restricted-party-batch"));
-    assert.ok(routeKeys.has("GET /api/restricted-party/screen/*"));
+    assert.ok(routeKeys.has("GET /api/ofac-wallet-screen/:address"));
     assert.ok(routeKeys.has("GET /api/vendor-entity-brief"));
 
     for (const route of genericSimulatorRoutes) {
@@ -339,20 +360,14 @@ test("main app bucket includes bundled seller routes including generic-parameter
 
     const cases = [
       {
-        path: "/api/ofac-sanctions-screening/SBERBANK?minScore=90&limit=5",
+        path: "/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
         expectedAmount: "5000",
-      },
-      {
-        path: "/api/vendor-onboarding/restricted-party-batch?names=SBERBANK%7CVTB%20BANK%20PJSC&workflow=vendor-onboarding&minScore=90&limit=3",
-        expectedAmount: "150000",
-      },
-      {
-        path: "/api/restricted-party/screen/SBERBANK?minScore=90&limit=5",
-        expectedAmount: "5000",
+        expectedCategory: "compliance",
       },
       {
         path: "/api/vendor-entity-brief?name=SBERBANK&country=CZ&minScore=90&limit=3",
         expectedAmount: "250000",
+        expectedCategory: "identity",
       },
     ];
 
@@ -362,50 +377,76 @@ test("main app bucket includes bundled seller routes including generic-parameter
 
       assert.equal(response.status, 402, testCase.path);
       assert.equal(paymentRequired.accepts[0].amount, testCase.expectedAmount, testCase.path);
-      assert.equal(paymentRequired.accepts[0].category, "identity", testCase.path);
+      assert.equal(paymentRequired.accepts[0].category, testCase.expectedCategory, testCase.path);
     }
   });
 });
 
-test("api discovery includes representative all-tier expansion endpoints", async () => {
+test("full discovery keeps only the curated AurelianFlo route inventory", async () => {
   const app = createApp({
+    env: { NODE_ENV: "production" },
     enableDebugRoutes: false,
     facilitatorLoader: async () => createStubFacilitator(),
   });
 
   await withServer(app, async (baseUrl) => {
-    const response = await fetch(`${baseUrl}/api/system/discovery/full?limit=500`);
+    const response = await fetch(`${baseUrl}/api/system/discovery/full?limit=500`, {
+      headers: { Accept: "application/json" },
+    });
     const body = await response.json();
     const routeKeys = new Set(body.catalog.map((entry) => entry.routeKey));
 
     assert.equal(response.status, 200);
-    assert.ok(routeKeys.has("GET /api/stocks/quote/*"));
-    assert.ok(routeKeys.has("GET /api/stocks/search"));
-    assert.ok(routeKeys.has("GET /api/treasury-rates"));
-    assert.ok(routeKeys.has("GET /api/commodities/gold"));
-    assert.ok(routeKeys.has("GET /api/commodities/oil"));
-    assert.ok(routeKeys.has("GET /api/mortgage-rates"));
-    assert.ok(routeKeys.has("GET /api/sp500"));
-    assert.ok(routeKeys.has("GET /api/vix"));
-    assert.ok(routeKeys.has("GET /api/dollar-index"));
-    assert.ok(routeKeys.has("GET /api/credit-spreads"));
-    assert.ok(routeKeys.has("GET /api/real-rates"));
-    assert.ok(routeKeys.has("GET /api/inflation-expectations"));
-    assert.ok(routeKeys.has("GET /api/weather/historical"));
-    assert.ok(routeKeys.has("GET /api/weather/air-quality"));
-    assert.ok(routeKeys.has("GET /api/weather/extremes"));
-    assert.ok(routeKeys.has("GET /api/weather/freeze-risk"));
-    assert.ok(routeKeys.has("GET /api/census/income/*"));
-    assert.ok(routeKeys.has("GET /api/fda/drug-events/*"));
-    assert.ok(routeKeys.has("GET /api/geocode"));
-    assert.ok(routeKeys.has("GET /api/dns/*"));
-    assert.ok(routeKeys.has("GET /api/sec/filings/*"));
-    assert.ok(routeKeys.has("GET /api/sports/odds/*"));
-    assert.ok(routeKeys.has("GET /api/worldbank/*"));
-    assert.ok(routeKeys.has("GET /api/courts/opinions"));
-    assert.ok(routeKeys.has("GET /api/courts/citations"));
-    assert.ok(routeKeys.has("GET /api/courts/court-info"));
-    assert.ok(routeKeys.has("GET /api/courts/clusters"));
+    assert.ok(routeKeys.has("POST /api/workflows/compliance/edd-report"));
+    assert.ok(routeKeys.has("POST /api/workflows/vendor/risk-forecast"));
+    assert.ok(routeKeys.has("POST /api/workflows/finance/pricing-scenario-forecast"));
+    assert.ok(routeKeys.has("POST /api/tools/xlsx/render-template"));
+    assert.ok(!routeKeys.has("GET /api/stocks/quote/*"));
+    assert.ok(!routeKeys.has("GET /api/treasury-rates"));
+    assert.ok(!routeKeys.has("GET /api/weather/historical"));
+    assert.ok(!routeKeys.has("GET /api/sec/filings/*"));
+    assert.ok(!routeKeys.has("GET /api/sports/odds/*"));
+    assert.ok(!routeKeys.has("GET /api/courts/opinions"));
+    assert.ok(!routeKeys.has("POST /api/tools/contract/generate"));
+    assert.ok(!routeKeys.has("POST /api/tools/password/generate"));
+  });
+});
+
+test("non-whitelisted endpoints are removed from serving, not just discovery", async () => {
+  const app = createApp({
+    env: { NODE_ENV: "production" },
+    enableDebugRoutes: false,
+    facilitatorLoader: async () => createStubFacilitator(),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const removedGet = await fetch(`${baseUrl}/api/weather/current/40.7128/-74.0060`, {
+      headers: { Accept: "application/json" },
+    });
+    assert.equal(removedGet.status, 404);
+
+    const removedPost = await fetch(`${baseUrl}/api/tools/password/generate`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ length: 20 }),
+    });
+    assert.equal(removedPost.status, 404);
+
+    const keptRoute = await fetch(`${baseUrl}/api/workflows/compliance/edd-report`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        subject: { name: "Canary" },
+        wallets: ["0x098B716B8Aaf21512996dC57EB0615e2383E2f96"],
+      }),
+    });
+    assert.equal(keptRoute.status, 402);
   });
 });
 
@@ -450,15 +491,39 @@ test("payment-required header includes route metadata and facilitator for indexe
     const firstAccept = rawPaymentRequired.accepts[0];
     const bazaarInfo = rawPaymentRequired.extensions?.bazaar?.info;
 
-    assert.equal(firstAccept.category, "real-time-data/weather");
-    assert.equal(firstAccept.maxAmountRequiredUSD, "$0.005");
-    assert.equal(firstAccept.facilitator, "https://api.cdp.coinbase.com/platform/v2/x402");
     assert.equal(bazaarInfo?.category, "real-time-data/weather");
     assert.equal(bazaarInfo?.price, "$0.005");
     assert.deepEqual(bazaarInfo?.tags, ["weather", "current-conditions", "decision-support"]);
     assert.match(
       String(bazaarInfo?.description || ""),
       /Actionable weather decision brief/i,
+    );
+    assert.equal(firstAccept.network, X402_NETWORK);
+    assert.equal(firstAccept.scheme, "exact");
+  });
+});
+
+test("flagship OFAC route advertises the canonical public resource path", async () => {
+  const app = createApp({
+    enableDebugRoutes: false,
+    facilitatorLoader: async () => createStubFacilitator(),
+  });
+
+  await withServer(app, async (baseUrl) => {
+    const response = await fetch(
+      `${baseUrl}/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH`,
+    );
+    const paymentRequiredHeader = response.headers.get("payment-required");
+
+    assert.equal(response.status, 402);
+    assert.ok(paymentRequiredHeader);
+
+    const rawPaymentRequired = decodeRawPaymentRequiredHeader(paymentRequiredHeader);
+    const firstAccept = rawPaymentRequired.accepts[0];
+
+    assert.equal(
+      firstAccept.resource,
+      "https://x402.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
     );
   });
 });

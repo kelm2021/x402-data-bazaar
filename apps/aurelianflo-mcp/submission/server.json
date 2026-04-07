@@ -1,13 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.aurelianflo/core",
-  "title": "AurelianFlo MCP",
-  "description": "Remote MCP server for OFAC screening, due diligence, Monte Carlo forecasts, and report generation.",
+  "title": "AurelianFlo",
+  "description": "Remote MCP server for compliance screening, vendor due diligence, Monte Carlo reports, and PDF, DOCX, or XLSX output.",
   "repository": {
     "url": "https://github.com/kelm2021/x402-data-bazaar",
-    "source": "github"
+    "source": "github",
+    "subfolder": "apps/aurelianflo-mcp"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "remotes": [
     {
       "type": "streamable-http",
