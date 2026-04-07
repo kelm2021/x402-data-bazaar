@@ -161,7 +161,7 @@
       "price": "0.025",
       "category": "workflows/compliance",
       "tags": ["compliance", "ofac", "wallet", "sanctions", "batch", "treasury", "workflow"],
-      "description": "Screen a batch of wallet addresses against OFAC SDN digital currency address designations and return per-wallet results, a workflow-safe review signal, and report-ready output.",
+      "description": "Screen a batch of wallet addresses against OFAC SDN digital currency address designations and return per-wallet results, a batch-level proceed-or-pause decision, and structured output.",
       "bodyType": "json",
       "inputExample": {
         "addresses": [
@@ -261,7 +261,7 @@
       "price": "0.09",
       "category": "workflows/compliance",
       "tags": ["compliance", "edd", "due-diligence", "wallet", "sanctions", "workflow"],
-      "description": "Generate an enhanced due diligence memo for a wallet set using exact-match OFAC SDN digital currency address screening, workflow-safe status labels, case metadata, and one-call json, PDF, or DOCX output.",
+      "description": "Generate an enhanced due diligence memo for a wallet set using exact-match OFAC SDN digital currency address screening, status labels for compliance review, case metadata, and JSON, PDF, or DOCX output.",
       "bodyType": "json",
       "inputExample": {
         "subject_name": "Northwind Treasury Counterparty",

@@ -123,7 +123,7 @@ const SIM_ENDPOINT_SUMMARIES = {
     "Blend multiple weighted scenario components into a single outcome",
   "/api/sim/optimize": "Search bounded parameter ranges to maximize objective value",
   "/api/sim/report":
-    "Wrap any simulation result in a structured decision report with executive summary, headline metrics, workbook-ready tables, and the raw result payload",
+    "Wrap any simulation result in a structured decision report with executive summary, headline metrics, spreadsheet-friendly tables, and the raw result payload",
 };
 const SIM_ENDPOINT_COMPOSABILITY = {
   "/api/sim/probability": {
@@ -153,7 +153,7 @@ const SIM_ENDPOINT_COMPOSABILITY = {
   "/api/sim/batch-probability": {
     pattern: "portfolio-or-screening",
     description:
-      "Bundle many labeled scenarios into one paid call to score, calibrate, rank, and shortlist options before deeper analysis. Each scenario result includes calibrated distributions and risk metrics for side-by-side risk ranking.",
+      "Bundle many labeled scenarios into one request to score, calibrate, rank, and shortlist options before deeper analysis. Each scenario result includes calibrated distributions and risk metrics for side-by-side risk ranking.",
     example_sources: [
       {
         endpoint: "/api/stocks/screener",
@@ -273,7 +273,7 @@ const SIM_ENDPOINT_COMPOSABILITY = {
   "/api/sim/report": {
     pattern: "simulation-to-report",
     description:
-      "Run any supported simulation workflow and immediately transform the result into a reusable analyst payload. The report response includes an executive summary, headline metrics, workbook-ready tables, and the underlying raw result for downstream export or audit.",
+      "Run any supported simulation workflow and immediately transform the result into a reusable analyst payload. The report response includes an executive summary, headline metrics, spreadsheet-friendly tables, and the underlying raw result for downstream export or audit.",
     example_sources: [
       {
         endpoint: "/api/sim/compare",
@@ -1068,7 +1068,7 @@ const DOCUMENT_ARTIFACT_RESPONSE_SCHEMA = {
 
 const GENERATED_DOCUMENT_ROUTE_OVERRIDES = {
   "POST /api/tools/report/generate": {
-    description: "Generate a premium styled report PDF from the shared report model or a legacy report payload with title, summary, sections, and headline metrics.",
+    description: "Generate a styled report PDF from the shared report model or a legacy report payload with title, summary, sections, and headline metrics.",
     inputExample: {
       report_meta: { report_type: "ops-brief", title: "Weekly Ops Brief", author: "AurelianFlo" },
       executive_summary: [
@@ -1092,7 +1092,7 @@ const GENERATED_DOCUMENT_ROUTE_OVERRIDES = {
     outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
   },
   "POST /api/tools/docx/generate": {
-    description: "Generate a premium direct DOCX from structured sections, markdown, or HTML content, or from the shared report model.",
+    description: "Generate a DOCX from structured sections, markdown, or HTML content, or from the shared report model.",
     inputExample: {
       report_meta: { report_type: "partner-brief", title: "Partner Brief", author: "AurelianFlo" },
       executive_summary: ["Partner scope is defined and ready for review."],
@@ -1113,7 +1113,7 @@ const GENERATED_DOCUMENT_ROUTE_OVERRIDES = {
     outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
   },
   "POST /api/tools/xlsx/generate": {
-    description: "Generate a premium direct XLSX workbook from structured sheets, markdown tables, HTML tables, or the shared report model.",
+    description: "Generate an XLSX workbook from structured sheets, markdown tables, HTML tables, or the shared report model.",
     inputExample: {
       report_meta: { report_type: "data-workbook", title: "Weekly Ops Workbook", author: "AurelianFlo" },
       executive_summary: ["Workbook rows are generated from the shared report model."],
@@ -1149,11 +1149,11 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
     aliasPath: "/api/tools/report/pdf/generate",
     override: {
       price: "0.2",
-      description: "Generate a premium styled PDF report from the shared report model or a legacy report payload.",
+      description: "Generate a styled PDF report from the shared report model or a legacy report payload.",
       inputExample: GENERATED_DOCUMENT_ROUTE_OVERRIDES["POST /api/tools/report/generate"].inputExample,
       inputSchema: GENERATED_DOCUMENT_ROUTE_OVERRIDES["POST /api/tools/report/generate"].inputSchema,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "pdf", "report", "premium"],
+      tags: ["documents", "pdf", "report", "formatted"],
     },
   },
   {
@@ -1162,7 +1162,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
     aliasPath: "/api/tools/report/docx/generate",
     override: {
       price: "0.16",
-      description: "Generate a premium report DOCX from the shared report model with report-aware structure and styling.",
+      description: "Generate a report DOCX from the shared report model with report-aware structure and styling.",
       inputExample: {
         report_meta: { report_type: "board-update", title: "Board Update", author: "AurelianFlo" },
         executive_summary: ["Highlights are ready for review."],
@@ -1176,7 +1176,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
       },
       inputSchema: SHARED_REPORT_INPUT_SCHEMA,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "docx", "report", "premium"],
+      tags: ["documents", "docx", "report", "formatted"],
     },
   },
   {
@@ -1185,7 +1185,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
     aliasPath: "/api/tools/report/xlsx/generate",
     override: {
       price: "0.16",
-      description: "Generate a premium report XLSX workbook from the shared report model with workbook-ready tabs and tables.",
+      description: "Generate a report XLSX workbook from the shared report model with spreadsheet-friendly tabs and tables.",
       inputExample: {
         report_meta: { report_type: "ops-workbook", title: "Ops Workbook", author: "AurelianFlo" },
         executive_summary: ["Workbook rows are derived from the shared report model."],
@@ -1198,7 +1198,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
       },
       inputSchema: SHARED_REPORT_INPUT_SCHEMA,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "xlsx", "report", "premium"],
+      tags: ["documents", "xlsx", "report", "formatted"],
     },
   },
   {
@@ -1215,7 +1215,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
       },
       inputSchema: MAX_FIDELITY_PDF_INPUT_SCHEMA,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "pdf", "html", "premium", "max-fidelity"],
+      tags: ["documents", "pdf", "html", "formatted", "max-fidelity"],
     },
   },
   {
@@ -1235,7 +1235,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
       },
       inputSchema: MAX_FIDELITY_DOCX_INPUT_SCHEMA,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "docx", "template", "premium", "max-fidelity"],
+      tags: ["documents", "docx", "template", "formatted", "max-fidelity"],
     },
   },
   {
@@ -1257,7 +1257,7 @@ const GENERATED_DOCUMENT_ROUTE_ALIASES = [
       },
       inputSchema: MAX_FIDELITY_XLSX_INPUT_SCHEMA,
       outputSchema: DOCUMENT_ARTIFACT_RESPONSE_SCHEMA,
-      tags: ["documents", "xlsx", "template", "premium", "max-fidelity"],
+      tags: ["documents", "xlsx", "template", "formatted", "max-fidelity"],
     },
   },
 ];
@@ -1278,7 +1278,7 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     sequence: "01",
     title: "EDD memo",
     summary:
-      "Turn a wallet set plus case metadata into a workflow-safe enhanced due diligence memo with evidence, follow-up, and reviewer handoff fields.",
+      "Turn a wallet set plus case metadata into an enhanced due diligence memo with evidence, follow-up, and reviewer handoff fields.",
     proof:
       "Best when operations or compliance needs an audit-ready memo without pretending the system is providing legal approval or denial.",
   },
@@ -1287,7 +1287,7 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     sequence: "02A",
     title: "Batch wallet screening",
     summary:
-      "Screen a wallet set in one paid call, then hand the result to operations or compliance as a single review packet.",
+      "Screen a wallet set in one request, then hand the result to operations or compliance as a single review packet.",
     proof:
       "Returns matched and clear wallet counts, per-wallet results, source freshness, and a structured report payload for audit-ready PDF or DOCX rendering.",
   },
@@ -1296,7 +1296,7 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     sequence: "02B",
     title: "OFAC wallet screening",
     summary:
-      "Screen a wallet address before funds move. This is the fastest exact-match OFAC check when operations needs a workflow-safe review signal on one address.",
+      "Screen a wallet address before funds move. This is the fastest exact-match OFAC check when operations needs a clear review signal on one address.",
     proof:
       "Returns exact hit or clear status, sanctioned entity metadata, source freshness, and a structured report payload ready for PDF or DOCX rendering.",
   },
@@ -1305,7 +1305,7 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     sequence: "02",
     title: "Monte Carlo decision report",
     summary:
-      "Turn any supported simulation workflow into an analyst-ready report with executive summary, headline metrics, and workbook-ready tables.",
+      "Turn any supported simulation workflow into an analyst-ready report with executive summary, headline metrics, and spreadsheet-friendly tables.",
     proof:
       "Best when the decision depends on scenarios, uncertainty, or tradeoffs instead of a deterministic compliance result.",
   },
@@ -1314,7 +1314,7 @@ const FLAGSHIP_ROUTE_EDITORIAL = {
     sequence: "03A",
     title: "Report PDF generation",
     summary:
-      "Render the wallet-screening report payload into a premium PDF artifact for circulation, approvals, and audit handoff.",
+      "Render the wallet-screening report payload into a formatted PDF artifact for circulation, approvals, and audit handoff.",
     proof:
       "Best for final distribution when the report needs a fixed layout and a clean presentation layer.",
   },
@@ -1467,7 +1467,7 @@ const ROUTE_DISCOVERY_OVERRIDES = {
   },
   "POST /api/sim/report": {
     description:
-      "Generate a structured Monte Carlo decision report with executive summary, headline metrics, ranked scenarios, and workbook-ready tables for finance, strategy, or operations review.",
+      "Generate a structured Monte Carlo decision report with executive summary, headline metrics, ranked scenarios, and spreadsheet-friendly tables for finance, strategy, or operations review.",
     tags: ["monte-carlo", "decision-report", "finance", "strategy", "operations", "reporting"],
   },
   "POST /api/workflows/vendor/risk-assessment": {
@@ -1512,7 +1512,7 @@ const ROUTE_DISCOVERY_OVERRIDES = {
   },
   "POST /api/tools/report/xlsx/generate": {
     description:
-      "Generate a report-oriented XLSX workbook from a shared report model with tabs and tables for analysis handoff, finance modeling, and workbook-ready exports.",
+      "Generate a report-oriented XLSX workbook from a shared report model with tabs and tables for analysis handoff, finance modeling, and spreadsheet-friendly exports.",
     tags: ["xlsx-report", "finance-modeling", "analysis-handoff", "workbook-export"],
   },
 };
@@ -6100,7 +6100,7 @@ function createAurelianFloMcpDocsHandler() {
     const html = buildMcpDocHtml({
       title: "AurelianFlo",
       summary:
-        "Remote MCP server for OFAC screening, vendor diligence, Monte Carlo reporting, finance scenario workflows, and document output. Start with server_capabilities and use the direct origin for paid execution.",
+        "Pay-per-call MCP tools for OFAC screening, vendor diligence, Monte Carlo reporting, finance scenario workflows, and document output. Start with server_capabilities and use the direct origin for paid execution.",
       links: [
         { label: "MCP Endpoint", value: `${baseUrl}/mcp`, href: `${baseUrl}/mcp` },
         {

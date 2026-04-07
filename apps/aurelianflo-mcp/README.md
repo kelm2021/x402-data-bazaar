@@ -16,15 +16,15 @@ This package uses `x402-mcp` for paid MCP tools and exposes a streamable HTTP MC
 
 - `server_capabilities` as a free connection and capability check
 - `edd_report` for enhanced due diligence memos with case metadata, evidence summary, required follow-up, and JSON, PDF, or DOCX output
-- `batch_wallet_screen` for batch OFAC wallet screening with per-wallet results, review signals, and report-ready output
-- `ofac_wallet_report` for one-call wallet screening with JSON, PDF, or DOCX output
+- `batch_wallet_screen` for batch OFAC wallet screening with per-wallet results, review signals, and structured output
+- `ofac_wallet_report` for bundled wallet screening with JSON, PDF, or DOCX output
 - `ofac_wallet_screen` for exact-match OFAC wallet screening
 - `monte_carlo_report` for simulation reporting with JSON, PDF, or DOCX output
 - `monte_carlo_decision_report` for structured simulation reports
 - `report_pdf_generate` for report PDFs
 - `report_docx_generate` for report DOCX artifacts
 - Streamable HTTP MCP endpoint with a static server card at `/.well-known/mcp/server-card.json`
-- AgentCash-compatible discovery lane for the canonical origin
+- AgentCash-compatible discovery flow for the production origin
 
 ## Setup
 
@@ -72,7 +72,7 @@ User prompt: `Prepare an enhanced due diligence memo for this counterparty walle
 What happens:
 
 - Claude calls `edd_report`
-- The server runs the live `POST /api/workflows/compliance/edd-report` workflow
+- The server runs the live enhanced due diligence workflow
 - The result returns case metadata, review status labels, evidence summary, required follow-up, and either structured JSON or a generated PDF or DOCX artifact based on `output_format`
 
 ### Example 2: Batch OFAC screening workflow
@@ -82,7 +82,7 @@ User prompt: `Screen these three deposit wallets for OFAC exposure and tell me w
 What happens:
 
 - Claude calls `batch_wallet_screen`
-- The server runs the live `POST /api/workflows/compliance/batch-wallet-screen` workflow
+- The server runs the live batch wallet screening workflow
 - The result returns per-wallet screening results, total screened, match count, clear count, and a batch-level review signal that operations can hand off to a human reviewer
 - The structured report payload can then be rendered with `report_pdf_generate` or `report_docx_generate` for audit handoff
 
@@ -112,7 +112,7 @@ User prompt: `Generate a compare-style decision report for a baseline and candid
 What happens:
 
 - Claude calls `monte_carlo_report`
-- The server runs the live `POST /api/sim/report` workflow
+- The server runs the live simulation report workflow
 - The response returns either structured JSON or a PDF or DOCX artifact from the same simulation result
 
 ### Example 6: Monte Carlo building blocks
@@ -179,7 +179,7 @@ Windows note:
 
 ## AgentCash Lane
 
-Keep the existing AgentCash stdio flow alongside this MCP server for auto-discovery and HTTP payment handling against the canonical origin:
+Keep the existing AgentCash stdio flow alongside this MCP server for auto-discovery and HTTP payment handling against the production origin:
 
 ```bash
 npx agentcash install --client codex

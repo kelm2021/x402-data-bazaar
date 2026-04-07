@@ -1,48 +1,32 @@
-# Restricted Party Screen
+# AurelianFlo
 
-Paid x402 API for OFAC restricted-party screening support in agentic commerce workflows.
+Paid x402 API for enhanced due diligence memos, batch wallet screening, and exact-match OFAC wallet checks in agentic commerce workflows.
 
 ## Why This Exists
 
-This app is the first focused revenue wedge in the rebuild plan. It is designed to answer a narrow but valuable question for an agent:
+This app is the compliance-focused screening service in the AurelianFlo stack. It is designed to answer two buyer jobs:
 
-- does this counterparty look like a potential OFAC match that needs human review
+- screen a wallet or wallet set against OFAC SDN digital currency address designations
+- produce a reviewable compliance memo without pretending to provide legal advice or compliance clearance
 
-It does not provide legal advice or compliance clearance.
+## Primary Routes
 
-## Hero Route
+- `POST /api/workflows/compliance/edd-report`
+  Primary buyer-facing route. Takes case metadata plus wallet addresses and returns an enhanced due diligence memo as `json`, `pdf`, or `docx`.
+- `POST /api/workflows/compliance/batch-wallet-screen`
+  Lower-priced route for screening a wallet set and returning structured batch results plus artifact hints.
+- `GET /api/ofac-wallet-screen/:address`
+  Single-wallet primitive for exact-match OFAC screening with structured report payloads.
+- `POST /api/workflows/compliance/wallet-sanctions-report`
+  Single-wallet workflow wrapper that returns a structured compliance payload.
 
-- `GET /api/ofac-sanctions-screening/:name`
-
-Example:
-
-- `/api/ofac-sanctions-screening/SBERBANK?minScore=90&limit=5`
-
-Compatibility alias:
-
-- `GET /api/restricted-party/screen/:name`
-
-Batch route:
-
-- `GET /api/vendor-onboarding/restricted-party-batch`
-
-Returns:
-
-- grouped potential matches
-- aliases
-- sanctions programs
-- source lists
-- addresses
-- source freshness
-- manual review signal
-
-The batch route is designed for vendor onboarding and payout-review workflows. It screens up to 25 counterparties in one paid call, stays cheap enough to use as a workflow utility, and returns a batch-level proceed-or-pause recommendation.
+These routes use public OFAC SDN advanced XML data, exact wallet-address matching, source freshness metadata, and explicit human-review language. They do not provide behavioral AML scoring, cluster analysis, or legal approval decisions.
 
 ## Agent Distribution
 
 This app now supports two practical access patterns for agents:
 
-- direct x402 payment to the hero route
+- direct x402 payment to the primary route
 - repeat access via SIWX after a wallet has already paid for the route path
 
 There is also a free integration surface for MCP clients:
@@ -56,11 +40,11 @@ That endpoint returns:
 - prompt templates for Codex, Claude Code, or Gemini style clients
 - SIWX support details for repeat access
 
-The root health endpoint `/` now includes the same MCP and SIWX metadata in a lighter summary form, with the OFAC-specific route as the canonical path that agents should prefer.
+The root health endpoint `/` now includes the same MCP and SIWX metadata in a lighter summary form, with the EDD and wallet-screening routes represented in the catalog.
 
-For higher-value buyer flows, the Payments MCP helper also advertises the vendor-onboarding batch route with copy-paste prompts.
+For higher-value buyer flows, the Payments MCP helper can point agents to the screening primitives and the memo workflow.
 
-For the operator playbook, see [docs/restricted-party-mcp-playbook.md](/C:/Users/KentEgan/claude projects/x402-data-bazaar/docs/restricted-party-mcp-playbook.md).
+For the operator playbook, see [docs/restricted-party-mcp-playbook.md](../../docs/restricted-party-mcp-playbook.md).
 
 ## Local Commands
 
@@ -82,7 +66,7 @@ cmd /c npm run dev
 
 ## Required Environment
 
-See [.env.example](/C:/Users/KentEgan/claude projects/x402-data-bazaar/apps/restricted-party-screen/.env.example).
+See [.env.example](./.env.example).
 
 For production payment and shared metrics, set:
 

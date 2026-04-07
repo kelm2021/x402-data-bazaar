@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { SERVER_CARD } from "../src/server-card.js";
+import { buildServerCapabilitiesPayload } from "../src/server-capabilities.js";
 
 test("server card exposes the bundled compliance workflow plus sim and document tools", () => {
   assert.deepEqual(
@@ -33,6 +34,8 @@ test("server card marks the server as unauthenticated and statically scannable",
   assert.equal(SERVER_CARD.capabilities.prompts, true);
   assert.equal(SERVER_CARD.serverInfo.icons[0].src, "https://x402.aurelianflo.com/icon.png");
   assert.doesNotMatch(SERVER_CARD.serverInfo.description, /wallet screening primitives|premium/i);
+  assert.doesNotMatch(SERVER_CARD.serverInfo.description, /remote mcp server/i);
+  assert.doesNotMatch(SERVER_CARD.authentication.description, /by the server itself/i);
 });
 
 test("server card publishes typed input schemas for tool discovery", () => {
@@ -90,4 +93,14 @@ test("server card publishes prompt templates for the main workflows", () => {
     SERVER_CARD.prompts.find((prompt) => prompt.name === "wallet_ofac_screening_brief").arguments[0].description,
     /screen/i,
   );
+});
+
+test("server capabilities copy avoids stale jargon in first-connect guidance", () => {
+  const payload = buildServerCapabilitiesPayload("https://x402.aurelianflo.com");
+  const summaries = payload.recommendedFlows.map((flow) => String(flow.summary || ""));
+
+  assert.ok(summaries.length > 0);
+  for (const summary of summaries) {
+    assert.doesNotMatch(summary, /workflow-safe|lower-level|one paid call|one-call|single-call/i);
+  }
 });

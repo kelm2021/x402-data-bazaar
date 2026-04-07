@@ -239,7 +239,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "batch_wallet_screen",
     description:
-      "Screen a batch of wallet addresses against OFAC SDN digital currency address designations, returning per-wallet results plus a batch-level proceed-or-pause decision and report-ready output.",
+      "Screen a batch of wallet addresses against OFAC SDN digital currency address designations, returning per-wallet results plus a batch-level proceed-or-pause decision and structured output.",
     price: 0.025,
     route: {
       method: "POST",
@@ -500,7 +500,7 @@ export const MCP_TOOL_DEFINITIONS = [
   {
     name: "monte_carlo_decision_report",
     description:
-      "Generate a structured decision report from any supported Monte Carlo workflow, including executive summary, headline metrics, and workbook-ready tables.",
+      "Generate a structured decision report from any supported Monte Carlo workflow, including executive summary, headline metrics, and spreadsheet-friendly tables.",
     price: 0.09,
     route: {
       method: "POST",

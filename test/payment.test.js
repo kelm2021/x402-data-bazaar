@@ -136,6 +136,7 @@ test("health root serves title/description metadata when HTML is requested", asy
     assert.match(body, /<meta name="description" content="AurelianFlo is a pay-per-call API for OFAC screening/i);
     assert.match(body, /finance scenario workflows/i);
     assert.match(body, /formatted document output/i);
+    assert.doesNotMatch(body, /workflow-safe|one paid call|premium PDF artifact|workbook-ready/i);
   });
 });
 

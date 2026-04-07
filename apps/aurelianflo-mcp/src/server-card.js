@@ -17,7 +17,7 @@ export const SERVER_CARD = {
     name: "AurelianFlo",
     version: "0.1.1",
     description:
-      "Remote MCP server for compliance screening, vendor diligence, Monte Carlo reporting, and PDF or DOCX document generation.",
+      "Pay-per-call MCP tools for compliance screening, vendor diligence, Monte Carlo decision analysis, and document output.",
     homepage: `${PRODUCTION_BASE_URL}/mcp/docs`,
     iconUrl: `${PRODUCTION_BASE_URL}/icon.png`,
     icons: [
@@ -31,7 +31,7 @@ export const SERVER_CARD = {
   authentication: {
     required: false,
     schemes: [],
-    description: "No end-user OAuth or API key is required by the server itself.",
+    description: "No end-user OAuth or API key is required for the direct origin.",
   },
   configSchema: NO_CONFIG_SCHEMA,
   security: {

@@ -1946,6 +1946,18 @@ test("public discovery surfaces stay curated while system discovery exposes the 
       publicOpenApi.paths["/api/tools/pdf/generate"]?.post?.summary || "",
       /client deliverables/i,
     );
+    assert.doesNotMatch(
+      publicOpenApi.paths["/api/workflows/compliance/edd-report"]?.post?.summary || "",
+      /workflow-safe/i,
+    );
+    assert.doesNotMatch(
+      publicOpenApi.paths["/api/tools/report/pdf/generate"]?.post?.summary || "",
+      /premium|workbook-ready/i,
+    );
+    assert.doesNotMatch(
+      publicOpenApi.paths["/api/tools/report/xlsx/generate"]?.post?.summary || "",
+      /premium|workbook-ready/i,
+    );
   });
 });
 

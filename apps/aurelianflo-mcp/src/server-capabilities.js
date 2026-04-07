@@ -4,6 +4,10 @@ const PRODUCTION_BASE_URL = String(process.env.PUBLIC_BASE_URL || "https://x402.
   .trim()
   .replace(/\s+/g, "")
   .replace(/\/+$/, "");
+const SMITHERY_GATEWAY_URL = String(process.env.SMITHERY_GATEWAY_URL || "https://core--aurelianflo.run.tools")
+  .trim()
+  .replace(/\s+/g, "")
+  .replace(/\/+$/, "");
 
 function getToolTitle(tool) {
   return tool.annotations?.title || tool.name;
@@ -38,8 +42,8 @@ export function buildServerCapabilitiesPayload(baseUrl = PRODUCTION_BASE_URL) {
 
   return {
     server: {
-      name: "AurelianFlo MCP",
-      version: "0.1.0",
+      name: "AurelianFlo",
+      version: "0.1.1",
       endpoint: `${normalizedBaseUrl}/mcp`,
       serverCard: `${normalizedBaseUrl}/.well-known/mcp/server-card.json`,
       docs: `${normalizedBaseUrl}/mcp/docs`,
@@ -65,30 +69,44 @@ export function buildServerCapabilitiesPayload(baseUrl = PRODUCTION_BASE_URL) {
       {
         id: "smithery_hosted",
         label: "Smithery-hosted gateway",
-        url: "https://core--aurelianflo.run.tools",
+        url: SMITHERY_GATEWAY_URL,
         auth: "smithery-oauth",
       },
     ],
     recommendedFlows: [
       {
+        id: "batch_wallet_screening",
+        label: "Batch wallet screening",
+        tools: ["batch_wallet_screen", "report_pdf_generate", "report_docx_generate"],
+        outputFormats: ["json", "pdf", "docx"],
+        summary: "Screen multiple wallets in one request, get a batch-level proceed-or-pause decision, then render the structured result to PDF or DOCX if needed.",
+      },
+      {
+        id: "edd_memo",
+        label: "EDD memo",
+        tools: ["edd_report"],
+        outputFormats: ["json", "pdf", "docx"],
+        summary: "Generate an enhanced due diligence memo with case metadata, evidence summary, required follow-up, and JSON, PDF, or DOCX output.",
+      },
+      {
         id: "wallet_screening_bundle",
         label: "Wallet screening bundle",
         tools: ["ofac_wallet_report"],
         outputFormats: ["json", "pdf", "docx"],
-        summary: "Single-call compliance workflow for exact-match OFAC wallet screening and a structured report or document artifact.",
+        summary: "Compliance workflow for exact-match OFAC wallet screening with structured JSON or document output.",
       },
       {
         id: "simulation_bundle",
         label: "Simulation bundle",
         tools: ["monte_carlo_report"],
         outputFormats: ["json", "pdf", "docx"],
-        summary: "Single-call decision-analysis lane for Monte Carlo reports with json, PDF, or DOCX output.",
+        summary: "Monte Carlo reporting workflow with JSON, PDF, or DOCX output.",
       },
       {
         id: "simulation_building_blocks",
         label: "Simulation building blocks",
         tools: ["monte_carlo_decision_report", "report_pdf_generate", "report_docx_generate"],
-        summary: "Lower-level report payload plus artifact generators for clients that want to control each step.",
+        summary: "Structured report payload plus artifact generators for clients that want to render each step separately.",
       },
     ],
     tools: {

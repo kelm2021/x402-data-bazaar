@@ -137,6 +137,7 @@ test("tool catalog includes parameter descriptions for directory indexing", () =
   assert.match(byName.get("ofac_wallet_screen").inputSchema.properties.address.description, /wallet/i);
   assert.match(byName.get("batch_wallet_screen").inputSchema.properties.addresses.description, /wallet/i);
   assert.equal(byName.get("batch_wallet_screen").inputSchema.properties.addresses.type, "array");
+  assert.doesNotMatch(byName.get("batch_wallet_screen").description, /report-ready output/i);
   assert.match(byName.get("edd_report").inputSchema.properties.subject_name.description, /subject|counterparty/i);
   assert.equal(byName.get("edd_report").inputSchema.properties.addresses.type, "array");
   assert.deepEqual(byName.get("edd_report").inputSchema.properties.output_format.enum, ["json", "pdf", "docx"]);
