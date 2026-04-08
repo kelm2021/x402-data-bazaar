@@ -544,6 +544,16 @@ function buildXlsxBuffer(title, lines, body) {
 }
 
 function buildDeterministicFallbackBuffer(type, descriptor, error) {
+  if (type === "pdf") {
+    const fallbackLines = [
+      "AURELIANFLO DOSSIER",
+      descriptor.endpoint ? `Endpoint: ${descriptor.endpoint}` : null,
+      ...(Array.isArray(descriptor.preview) ? descriptor.preview : []),
+      `Reason: ${readString(error && error.message, "fallback")}`,
+    ].filter(Boolean);
+    return buildPdfBuffer(readString(descriptor.title, "Report PDF"), fallbackLines);
+  }
+
   const payload = {
     type,
     title: descriptor.title,
@@ -735,6 +745,7 @@ async function buildDocumentArtifact(contextInput) {
   let errorMessage = null;
   let degradationReason = null;
   let engine = docType;
+  let fallbackProducedBinary = false;
 
   try {
     if (hasStructuredReport && docType === "xlsx" && context.path.includes("/report/")) {
@@ -838,7 +849,21 @@ async function buildDocumentArtifact(contextInput) {
   } catch (error) {
     mode = "fallback";
     errorMessage = readString(error && error.message, "artifact generation failure");
+    console.error("document_artifact_generation_failed", {
+      path: context.path,
+      endpoint: context.endpoint,
+      docType,
+      lane,
+      engine,
+      message: error && error.message ? String(error.message) : "artifact generation failure",
+      stack: error && error.stack ? String(error.stack) : null,
+    });
     binaryBuffer = buildDeterministicFallbackBuffer(docType, context, error);
+    fallbackProducedBinary = docType === "pdf" && Buffer.isBuffer(binaryBuffer) && binaryBuffer.toString("latin1", 0, 4) === "%PDF";
+    if (fallbackProducedBinary) {
+      mode = "real-binary-fallback";
+      degradationReason = errorMessage;
+    }
     engine = `${engine}-fallback`;
   }
 
@@ -871,10 +896,10 @@ async function buildDocumentArtifact(contextInput) {
         engine,
         requestedEngine,
         mode,
-        realBinary: mode === "real-binary",
+        realBinary: mode === "real-binary" || mode === "real-binary-fallback",
         usedFallback: mode !== "real-binary",
-        degraded,
-        degradationReason: degraded ? degradationReason : null,
+        degraded: degraded || fallbackProducedBinary,
+        degradationReason: degraded || fallbackProducedBinary ? degradationReason : null,
       },
     },
   };

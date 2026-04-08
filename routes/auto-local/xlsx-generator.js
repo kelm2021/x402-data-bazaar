@@ -687,7 +687,7 @@ function writeDataSheets(workbook, sheets) {
 function createWorkbook(payload) {
   const workbook = new ExcelJS.Workbook();
   const company = payload.company && typeof payload.company === "object" ? payload.company : {};
-  workbook.creator = company.name || "Meridian Doc-Gen";
+  workbook.creator = company.name || "AurelianFlo";
   workbook.created = new Date();
   return workbook;
 }

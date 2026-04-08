@@ -7003,6 +7003,15 @@ function createHealthHandler(routes = routeConfig, options = {}) {
     const catalog = buildCatalogEntries(routes);
     const metadata = getOriginMetadata(env);
     if (shouldRenderHealthHtml(req)) {
+      const host = String(req.get("x-forwarded-host") || req.get("host") || "")
+        .split(",")[0]
+        .trim()
+        .toLowerCase();
+
+      if (host === "x402.aurelianflo.com") {
+        return res.redirect(307, "https://aurelianflo.com");
+      }
+
       const html = buildOriginLandingHtml({
         title: metadata.title,
         description: metadata.description,

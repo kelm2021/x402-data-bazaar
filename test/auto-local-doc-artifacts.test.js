@@ -797,6 +797,9 @@ test("buildDocumentArtifact ingests shared report model directly into report PDF
 
   assert.equal(payload.success, true);
   assert.equal(payload.data.documentType, "pdf");
+  assert.equal(payload.data.capabilities.selected.realBinary, true);
+  assert.equal(payload.data.capabilities.selected.usedFallback, false);
+  assert.notEqual(payload.data.capabilities.selected.engine, "pdf-fallback");
 
   const bytes = decodeArtifactBuffer(payload);
   const asText = bytes.toString("latin1");
@@ -845,6 +848,74 @@ test("buildDocumentArtifact renders premium report metadata and metrics from the
   assert.match(normalized, /percent/);
   assert.match(normalized, /incidents/);
   assert.match(normalized, /count/);
+});
+
+test("buildDocumentArtifact keeps enhanced due diligence reports on the premium compliance PDF lane", async () => {
+  const payload = await buildDocumentArtifact({
+    path: "/api/tools/report/pdf/generate",
+    endpoint: "POST /api/tools/report/pdf/generate",
+    body: buildStructuredReport({
+      reportMeta: {
+        report_type: "enhanced-due-diligence",
+        title: "Enhanced Due Diligence Memo",
+        author: "AurelianFlo",
+        date: "2026-04-08T00:00:00.000Z",
+        version: "v1.0",
+      },
+      executiveSummary: [
+        "Enhanced due diligence memo prepared after screening 1 wallet.",
+        "This memo records the screening evidence and reviewer handoff fields.",
+      ],
+      headlineMetrics: [
+        createHeadlineMetric("Workflow status", "screening_complete_no_exact_match", "label"),
+        createHeadlineMetric("Total screened", 1, "count"),
+        createHeadlineMetric("Match count", 0, "count"),
+      ],
+      tables: {
+        case_metadata: createTable(
+          ["subject_name", "case_name", "review_reason", "jurisdiction", "requested_by"],
+          [{
+            subject_name: "Public Example Wallet",
+            case_name: "Live AurelianFlo EDD Demo PDF",
+            review_reason: "Demonstrate paid EDD report tool behavior with PDF output",
+            jurisdiction: "US",
+            requested_by: "Codex",
+          }],
+        ),
+        screening_results: createTable(
+          ["screened_address", "normalized_address", "asset_filter", "screening_status", "match_count"],
+          [{
+            screened_address: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+            normalized_address: "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+            asset_filter: "ETH",
+            screening_status: "clear",
+            match_count: 0,
+          }],
+        ),
+        source_freshness: createTable(
+          ["source_url", "refreshed_at", "dataset_published_at", "address_count", "covered_assets"],
+          [{
+            source_url: "https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml",
+            refreshed_at: "2026-04-07T06:26:58.819Z",
+            dataset_published_at: "2026-04-03T14:17:12.000Z",
+            address_count: 772,
+            covered_assets: "ARB, BCH, BSC, ETH, USDC",
+          }],
+        ),
+      },
+    }),
+  });
+
+  assert.equal(payload.success, true);
+  const extracted = extractPdfText(decodeArtifactBuffer(payload));
+  const normalized = normalizePdfSearchText(extracted);
+  assert.doesNotMatch(normalized, /aurelianflodossier/);
+  assert.match(extracted, /Enhanced Due Diligence Memo/);
+  assert.match(normalized, /headlinemetrics/);
+  assert.match(normalized, /casemetadata/);
+  assert.match(extracted, /Screening[\s\S]*Results/);
+  assert.match(extracted, /Source[\s\S]*Freshness/);
+  assert.match(normalized, /workflowstatus/);
 });
 
 test("buildDocumentArtifact renders legacy report payloads into styled report PDFs", async () => {
@@ -998,4 +1069,41 @@ test("buildDocumentArtifact supports explicit template XLSX route", async () => 
 
   const workbook = await readWorkbook(payload);
   assert.ok(workbook.getWorksheet("Revenue Tracker"));
+});
+
+test("buildDocumentArtifact preserves a real PDF artifact when report rendering throws", async () => {
+  const pdfGeneratorsPath = require.resolve("../routes/auto-local/pdf-generators");
+  const docArtifactsPath = require.resolve("../routes/auto-local/doc-artifacts");
+  const pdfGenerators = require(pdfGeneratorsPath);
+  const originalGenerateReportPdfBuffer = pdfGenerators.generateReportPdfBuffer;
+
+  pdfGenerators.generateReportPdfBuffer = async () => {
+    throw new Error("forced pdf failure");
+  };
+  delete require.cache[docArtifactsPath];
+
+  try {
+    const { buildDocumentArtifact: buildFreshDocumentArtifact } = require("../routes/auto-local/doc-artifacts");
+    const payload = await buildFreshDocumentArtifact({
+      path: "/api/tools/report/generate",
+      endpoint: "POST /api/tools/report/generate",
+      body: buildSharedReportFixture(),
+    });
+
+    assert.equal(payload.success, true);
+    assert.equal(payload.data.documentType, "pdf");
+    assert.equal(payload.data.capabilities.selected.realBinary, true);
+    assert.equal(payload.data.capabilities.selected.usedFallback, true);
+    assert.equal(payload.data.capabilities.selected.mode, "real-binary-fallback");
+
+    const bytes = decodeArtifactBuffer(payload);
+    assert.match(bytes.toString("latin1"), /^%PDF/);
+    const extracted = extractPdfText(bytes);
+    assert.match(extracted, /AURELIANFLO DOSSIER/i);
+    assert.match(extracted, /forced pdf failure/i);
+  } finally {
+    pdfGenerators.generateReportPdfBuffer = originalGenerateReportPdfBuffer;
+    delete require.cache[docArtifactsPath];
+    require("../routes/auto-local/doc-artifacts");
+  }
 });
