@@ -1,6 +1,6 @@
 {
   "packageName": "generic-parameter-simulator",
-  "payTo": "0x35D5C3C750712A63e5c64f83042566df5D8EF751",
+  "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
   "serviceName": "Generic Parameter Simulator",
   "serviceDescription": "Paid x402 API for generic Monte Carlo simulation workflows. Agents can estimate probabilities, compare scenarios, run sensitivity analyses, generate forecasts, compose multi-model outcomes, and optimize parameters.",
   "baseUrl": "https://api.aurelianflo.com",

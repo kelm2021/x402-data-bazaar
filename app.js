@@ -65,7 +65,7 @@ const {
 } = require("./lib/aurelianflo-surface");
 const WELL_KNOWN_X402_AURELIAN = require("./well-known-x402-aurelian.json");
 
-const PAY_TO = "0x35D5C3C750712A63e5c64f83042566df5D8EF751";
+const PAY_TO = "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d";
 const X402_NETWORK = "eip155:8453";
 const DEFAULT_TIMEOUT_SECONDS = 60;
 const DEFAULT_402INDEX_VERIFICATION_HASH =
