@@ -79,7 +79,7 @@ const DEFAULT_TIMEOUT_SECONDS = 60;
 const DEFAULT_402INDEX_VERIFICATION_HASH =
   "d7b41bc2cde9060ab7842783aa2747acb31f78c53d7d879047cf762a1a3063ea";
 const CANONICAL_BASE_URL = String(
-  process.env.PUBLIC_BASE_URL || "https://x402.aurelianflo.com",
+  process.env.PUBLIC_BASE_URL || "https://api.aurelianflo.com",
 )
   .trim()
   .replace(/\/+$/, "");
@@ -6155,7 +6155,7 @@ function createAurelianFloMcpDocsHandler() {
         {
           heading: "Connection modes",
           items: [
-            "Direct origin: https://x402.aurelianflo.com/mcp",
+            "Direct origin: https://api.aurelianflo.com/mcp",
             "Smithery-hosted gateway: https://core--aurelianflo.run.tools",
             "Transport: streamable HTTP MCP.",
             "Payment: x402 with USDC on Base.",
@@ -6164,7 +6164,7 @@ function createAurelianFloMcpDocsHandler() {
         {
           heading: "Direct origin",
           items: [
-            "Direct origin: codex mcp add aurelianflo --url https://x402.aurelianflo.com/mcp",
+            "Direct origin: codex mcp add aurelianflo --url https://api.aurelianflo.com/mcp",
             "Use the origin directly for paid execution.",
             "Use the origin directly when the client does not implement Smithery's hosted OAuth flow.",
           ],
@@ -6178,7 +6178,7 @@ function createAurelianFloMcpDocsHandler() {
             "Use server_capabilities first on the Smithery-hosted connection.",
             "The bundled compliance workflows are exposed as edd_report, batch_wallet_screen, and ofac_wallet_report.",
             "The bundled simulation workflow is exposed as monte_carlo_report.",
-            "Paid execution is currently available through the direct origin at https://x402.aurelianflo.com/mcp.",
+            "Paid execution is currently available through the direct origin at https://api.aurelianflo.com/mcp.",
             "OAuth-capable clients should follow the Smithery authorization URL when the hosted gateway returns auth_required.",
             "If Smithery's Windows client installer handoff fails, add the hosted gateway or the direct origin with codex mcp add ... --url ... instead of relying on --client codex.",
           ],
@@ -7002,12 +7002,35 @@ function createHealthHandler(routes = routeConfig, options = {}) {
   return function healthHandler(req, res) {
     const catalog = buildCatalogEntries(routes);
     const metadata = getOriginMetadata(env);
-    if (shouldRenderHealthHtml(req)) {
-      const host = String(req.get("x-forwarded-host") || req.get("host") || "")
-        .split(",")[0]
-        .trim()
-        .toLowerCase();
+    const baseUrl = getRequestBaseUrl(req);
+    const host = String(req.get("x-forwarded-host") || req.get("host") || "")
+      .split(",")[0]
+      .trim()
+      .toLowerCase();
+    const isApiSurfaceHost = host === "api.aurelianflo.com";
 
+    const jsonPayload = {
+      title: metadata.title,
+      name: metadata.title,
+      description: metadata.description,
+      version: "1.0.0",
+      endpoints: catalog.length,
+      baseUrl,
+      links: {
+        discovery: `${baseUrl}/api?format=json`,
+        openapi: `${baseUrl}/openapi.json`,
+        mcp: `${baseUrl}/mcp`,
+        serverCard: `${baseUrl}/.well-known/mcp/server-card.json`,
+      },
+      catalog,
+      payment: { network: "Base", currency: "USDC", protocol: "x402" },
+    };
+
+    if (isApiSurfaceHost) {
+      return res.json(jsonPayload);
+    }
+
+    if (shouldRenderHealthHtml(req)) {
       if (host === "x402.aurelianflo.com") {
         return res.redirect(307, "https://aurelianflo.com");
       }
@@ -7015,21 +7038,13 @@ function createHealthHandler(routes = routeConfig, options = {}) {
       const html = buildOriginLandingHtml({
         title: metadata.title,
         description: metadata.description,
-        baseUrl: getRequestBaseUrl(req),
+        baseUrl,
         endpointCount: catalog.length,
       });
       return res.type("text/html; charset=utf-8").send(html);
     }
 
-    res.json({
-      title: metadata.title,
-      name: metadata.title,
-      description: metadata.description,
-      version: "1.0.0",
-      endpoints: catalog.length,
-      catalog,
-      payment: { network: "Base", currency: "USDC", protocol: "x402" },
-    });
+    res.json(jsonPayload);
   };
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const BASE_URL = process.env.FINANCE_WORKFLOW_CANARY_BASE_URL || "https://x402.aurelianflo.com";
+const BASE_URL = process.env.FINANCE_WORKFLOW_CANARY_BASE_URL || "https://api.aurelianflo.com";
 const MAX_AMOUNT_USD_MICROS = Number(process.env.FINANCE_WORKFLOW_CANARY_MAX_USD_MICROS || 250000);
 const SEED = Number(process.env.FINANCE_WORKFLOW_CANARY_SEED || 20260403);
 const SELF_TAG_HEADER_NAME = "x-metrics-source";

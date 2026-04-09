@@ -80,5 +80,5 @@
 ## Next registry update
 
 - Candidate version: `0.1.2`
-- Trigger:
-  any further human-facing metadata, title, description, icon, or repository changes after the `0.1.1` uniformity release.
+- Planned metadata refresh:
+  move the remote endpoint from `https://x402.aurelianflo.com/mcp` to `https://api.aurelianflo.com/mcp`, keep repository provenance at `https://github.com/kelm2021/aurelianflo`, and refresh the shortened registry description plus docs/privacy/support links to the `api` host.

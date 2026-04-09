@@ -3,7 +3,7 @@
   "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
   "serviceName": "Finance Workflows",
   "serviceDescription": "Paid x402 APIs for task-shaped finance forecasting workflows and export-ready reports.",
-  "baseUrl": "https://x402.aurelianflo.com",
+  "baseUrl": "https://api.aurelianflo.com",
   "port": 4050,
   "network": "eip155:8453",
   "routes": [

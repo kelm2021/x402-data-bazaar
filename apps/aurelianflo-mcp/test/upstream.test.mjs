@@ -16,13 +16,13 @@ test("bundled OFAC wallet report tool still targets the wallet-screen route and 
       asset: "ETH",
       output_format: "pdf",
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "GET");
   assert.equal(
     request.url,
-    "https://x402.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH&output_format=pdf",
+    "https://api.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH&output_format=pdf",
   );
   assert.equal(request.body, undefined);
 });
@@ -34,13 +34,13 @@ test("OFAC wallet tool becomes a GET request with path and query params", () => 
       address: "0x098B716B8Aaf21512996dC57EB0615e2383E2f96",
       asset: "ETH",
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "GET");
   assert.equal(
     request.url,
-    "https://x402.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
+    "https://api.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
   );
   assert.equal(request.body, undefined);
 });
@@ -55,13 +55,13 @@ test("batch wallet screening tool becomes a POST request with a JSON body", () =
       ],
       asset: "ETH",
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "POST");
   assert.equal(
     request.url,
-    "https://x402.aurelianflo.com/api/workflows/compliance/batch-wallet-screen",
+    "https://api.aurelianflo.com/api/workflows/compliance/batch-wallet-screen",
   );
   assert.deepEqual(JSON.parse(request.body), {
     addresses: [
@@ -89,13 +89,13 @@ test("EDD report tool becomes a POST request with case metadata and wallet input
       ],
       asset: "ETH",
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "POST");
   assert.equal(
     request.url,
-    "https://x402.aurelianflo.com/api/workflows/compliance/edd-report",
+    "https://api.aurelianflo.com/api/workflows/compliance/edd-report",
   );
   assert.deepEqual(JSON.parse(request.body), {
     subject_name: "Northwind Treasury Counterparty",
@@ -124,11 +124,11 @@ test("decision report tool becomes a POST request with a JSON body", () => {
         candidate: { parameters: { demand_signal: 0.78 } },
       },
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "POST");
-  assert.equal(request.url, "https://x402.aurelianflo.com/api/sim/report");
+  assert.equal(request.url, "https://api.aurelianflo.com/api/sim/report");
   assert.deepEqual(JSON.parse(request.body), {
     analysis_type: "compare",
     title: "Candidate vs baseline decision memo",
@@ -151,11 +151,11 @@ test("bundled simulation report tool preserves output selection in the JSON body
         candidate: { parameters: { demand_signal: 0.78 } },
       },
     },
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
   assert.equal(request.method, "POST");
-  assert.equal(request.url, "https://x402.aurelianflo.com/api/sim/report");
+  assert.equal(request.url, "https://api.aurelianflo.com/api/sim/report");
   assert.deepEqual(JSON.parse(request.body), {
     analysis_type: "compare",
     title: "Candidate vs baseline decision memo",
@@ -182,16 +182,16 @@ test("document tools preserve the shared report payload", () => {
   const pdfRequest = buildUpstreamRequest(
     getTool("report_pdf_generate"),
     payload,
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
   const docxRequest = buildUpstreamRequest(
     getTool("report_docx_generate"),
     payload,
-    "https://x402.aurelianflo.com",
+    "https://api.aurelianflo.com",
   );
 
-  assert.equal(pdfRequest.url, "https://x402.aurelianflo.com/api/tools/report/pdf/generate");
+  assert.equal(pdfRequest.url, "https://api.aurelianflo.com/api/tools/report/pdf/generate");
   assert.deepEqual(JSON.parse(pdfRequest.body), payload);
-  assert.equal(docxRequest.url, "https://x402.aurelianflo.com/api/tools/report/docx/generate");
+  assert.equal(docxRequest.url, "https://api.aurelianflo.com/api/tools/report/docx/generate");
   assert.deepEqual(JSON.parse(docxRequest.body), payload);
 });

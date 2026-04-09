@@ -1,10 +1,10 @@
 {
   "name": "aurelianflo-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "description": "AurelianFlo MCP server for EDD memos, OFAC wallet screening, document output, and retained Monte Carlo reports.",
-  "homepage": "https://x402.aurelianflo.com/mcp/docs",
+  "homepage": "https://api.aurelianflo.com/mcp/docs",
   "repository": {
     "type": "git",
     "url": "https://github.com/kelm2021/aurelianflo.git",

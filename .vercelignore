@@ -1,0 +1,6 @@
+.next
+outputs
+web/node_modules
+web/.next
+.backend.env.production
+.web.env.production

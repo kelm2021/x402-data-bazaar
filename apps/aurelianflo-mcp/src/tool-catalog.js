@@ -44,6 +44,7 @@ const reportTableInputSchema = {
       description: "Table row objects keyed by column name.",
       items: {
         type: "object",
+        description: "Single table row keyed by column name.",
         additionalProperties: true,
       },
     },
@@ -72,7 +73,9 @@ const sharedReportShape = {
   tables: z.record(
     z.object({
       columns: z.array(z.string().describe("Ordered table column label.")).describe("Ordered table column labels."),
-      rows: z.array(z.record(z.any()).describe("Table row object keyed by column name.")).describe("Table row objects keyed by column name."),
+      rows: z
+        .array(z.record(z.any()).describe("Single table row keyed by column name."))
+        .describe("Table row objects keyed by column name."),
     }),
   ).describe("Named tables rendered into the report artifact."),
   export_artifacts: z.record(z.any()).describe("Optional prior export metadata carried alongside the report payload.").optional(),

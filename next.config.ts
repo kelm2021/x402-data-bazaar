@@ -27,6 +27,11 @@ const backendTraceIncludes = [
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
+  async rewrites() {
+    return [
+      { source: "/icon.png", destination: "/aurelianflo-icon.png" },
+    ];
+  },
   serverExternalPackages: [
     "@resvg/resvg-js",
     "@resvg/resvg-js-win32-x64-msvc",

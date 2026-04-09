@@ -18,6 +18,12 @@ const DEFAULT_PAYMENT_CONFIG = {
   },
   network: "base",
 };
+const DEFAULT_PUBLIC_BASE_URL = String(process.env.PUBLIC_BASE_URL || "https://api.aurelianflo.com")
+  .trim()
+  .replace(/\s+/g, "")
+  .replace(/\/+$/, "");
+const DEFAULT_ICON_URL = `${DEFAULT_PUBLIC_BASE_URL}/aurelianflo-icon.png`;
+const DEFAULT_DOCS_URL = `${DEFAULT_PUBLIC_BASE_URL}/mcp/docs`;
 
 function buildToolResult(tool, payload) {
   return {
@@ -214,14 +220,14 @@ export function createAurelianFloExpressMcpHandler(options = {}) {
       const server = new McpServer(
         {
           name: "AurelianFlo",
-          version: "0.1.1",
+          version: "0.1.2",
           icons: [
             {
-              src: "https://x402.aurelianflo.com/icon.png",
+              src: DEFAULT_ICON_URL,
               mimeType: "image/png",
             },
           ],
-          websiteUrl: "https://x402.aurelianflo.com/mcp/docs",
+          websiteUrl: DEFAULT_DOCS_URL,
         },
         {},
       );

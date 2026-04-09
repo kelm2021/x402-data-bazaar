@@ -1,0 +1,71 @@
+html {
+  background: #0f1116;
+  color: #f5f7fb;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-manrope), system-ui, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(207, 169, 84, 0.14), transparent 24%),
+    linear-gradient(180deg, #12151d 0%, #0f1116 100%);
+}
+
+a {
+  color: inherit;
+}
+
+.api-shell {
+  width: min(760px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 72px 0 96px;
+}
+
+.api-eyebrow {
+  display: inline-block;
+  color: #d4a84b;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  margin-bottom: 18px;
+}
+
+.api-title {
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 0.95;
+}
+
+.api-copy {
+  margin: 18px 0 0;
+  max-width: 56ch;
+  color: rgba(245, 247, 251, 0.78);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.api-links {
+  display: grid;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.api-link {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.api-link span {
+  font-weight: 700;
+}
+
+.api-link code {
+  color: rgba(212, 168, 75, 0.95);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.92rem;
+}

@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
-const BASE = 'https://x402.aurelianflo.com';
+const BASE = 'https://api.aurelianflo.com';
 const SELF_TAG_HEADER_NAME = 'x-metrics-source';
 const SELF_TAG_HEADER_VALUE = 'self';
 

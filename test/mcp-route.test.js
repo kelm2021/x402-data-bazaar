@@ -129,13 +129,13 @@ test("root app exposes MCP info and public docs pages", async () => {
     assert.match(mcpPayload.privacy, /\/mcp\/privacy$/);
     assert.match(mcpPayload.support, /\/mcp\/support$/);
     assert.equal(mcpPayload.prompts.length, 4);
-    assert.equal(mcpPayload.icons[0].src.endsWith("/icon.png"), true);
+    assert.equal(mcpPayload.icons[0].src.endsWith("/aurelianflo-icon.png"), true);
 
     const docsResponse = await fetch(`${baseUrl}/mcp/docs`);
     const docsHtml = await docsResponse.text();
     assert.equal(docsResponse.status, 200);
     assert.match(docsHtml, /<title>AurelianFlo<\/title>/);
-    assert.match(docsHtml, /codex mcp add aurelianflo --url https:\/\/x402\.aurelianflo\.com\/mcp/);
+    assert.match(docsHtml, /codex mcp add aurelianflo --url https:\/\/api\.aurelianflo\.com\/mcp/);
     assert.match(docsHtml, /aurelianflo-core/);
     assert.match(docsHtml, /batch_wallet_screen/);
     assert.match(docsHtml, /edd_report/);
@@ -208,7 +208,7 @@ test("root app serves a core-only x402 well-known manifest", async () => {
 
     assert.equal(response.status, 200);
     assert.equal(payload.version, 1);
-    assert.match(payload.website || payload.website === undefined ? String(payload.website ?? "https://x402.aurelianflo.com") : "", /aurelianflo/i);
+    assert.equal(payload.website, "https://aurelianflo.com");
     assert.ok(Array.isArray(payload.resources));
     assert.deepEqual(
       payload.resources.map((resource) => new URL(resource).pathname),

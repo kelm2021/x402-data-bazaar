@@ -1,2 +1,11 @@
-export { generateMetadata, generateStaticParams } from "../../../web/src/app/services/[slug]/page";
-export { default } from "../../../web/src/app/services/[slug]/page";
+import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+
+export function generateStaticParams() {
+  return [];
+}
+
+export default function ServiceDetailPage() {
+  redirect("/api?format=json");
+}

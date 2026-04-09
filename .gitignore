@@ -1,9 +1,14 @@
 node_modules/
+.next/
 .vercel/
 .playwright-cli/
 tmp/
 tmp-*
 tmp-*/
+tmp-*.json
+tmp-*.html
+tmp-*.log
+tmp-*.txt
 .tmp_public_base_url.txt
 tmp_api_new_domain.json
 /docs/remote-codex-runner/runner-refresh-stage/

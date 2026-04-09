@@ -2,17 +2,17 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.aurelianflo/core",
   "title": "AurelianFlo",
-  "description": "Pay-per-call MCP tools for EDD memos, OFAC screening, document output, and retained Monte Carlo reports.",
+  "description": "Remote MCP server for EDD memos, OFAC screening, Monte Carlo reports, and document output.",
   "repository": {
     "url": "https://github.com/kelm2021/aurelianflo",
     "source": "github",
     "subfolder": "apps/aurelianflo-mcp"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://x402.aurelianflo.com/mcp"
+      "url": "https://api.aurelianflo.com/mcp"
     }
   ]
 }

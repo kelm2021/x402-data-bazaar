@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
-const BASE_URL = process.env.SIM_CANARY_BASE_URL || "https://x402.aurelianflo.com";
+const BASE_URL = process.env.SIM_CANARY_BASE_URL || "https://api.aurelianflo.com";
 const MAX_AMOUNT_USD_MICROS = Number(process.env.SIM_CANARY_MAX_USD_MICROS || 100000);
 const SEED = Number(process.env.SIM_CANARY_SEED || 20260403);
 const SELF_TAG_HEADER_NAME = "x-metrics-source";

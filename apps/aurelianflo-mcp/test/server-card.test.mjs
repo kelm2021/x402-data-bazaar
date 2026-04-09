@@ -20,19 +20,22 @@ test("server card exposes the bundled compliance workflow plus sim and document 
     ],
   );
   assert.equal(SERVER_CARD.serverInfo.name, "AurelianFlo");
-  assert.equal(SERVER_CARD.serverInfo.version, "0.1.1");
+  assert.equal(SERVER_CARD.serverInfo.version, "0.1.2");
 });
 
 test("server card marks the server as unauthenticated and statically scannable", () => {
   assert.equal(SERVER_CARD.authentication.required, false);
   assert.deepEqual(SERVER_CARD.authentication.schemes, []);
   assert.equal(SERVER_CARD.configSchema.type, "object");
-  assert.deepEqual(SERVER_CARD.configSchema.properties, {});
+  assert.equal(SERVER_CARD.configSchema.properties.public_base_url.default, "https://api.aurelianflo.com");
+  assert.equal(SERVER_CARD.configSchema.properties.smithery_gateway_url.default, "https://core--aurelianflo.run.tools");
+  assert.deepEqual(SERVER_CARD.configSchema.properties.preferred_transport.enum, ["direct_origin", "smithery_hosted"]);
+  assert.deepEqual(SERVER_CARD.configSchema.properties.network.enum, ["base"]);
   assert.equal(SERVER_CARD.security.userAuthenticationRequired, false);
   assert.equal(SERVER_CARD.security.paymentRequired, true);
   assert.deepEqual(SERVER_CARD.resources, []);
   assert.equal(SERVER_CARD.capabilities.prompts, true);
-  assert.equal(SERVER_CARD.serverInfo.icons[0].src, "https://x402.aurelianflo.com/icon.png");
+  assert.equal(SERVER_CARD.serverInfo.icons[0].src, "https://api.aurelianflo.com/aurelianflo-icon.png");
   assert.doesNotMatch(SERVER_CARD.serverInfo.description, /wallet screening primitives|premium/i);
   assert.doesNotMatch(SERVER_CARD.serverInfo.description, /remote mcp server/i);
   assert.doesNotMatch(SERVER_CARD.authentication.description, /by the server itself/i);
@@ -73,6 +76,10 @@ test("server card publishes typed input schemas for tool discovery", () => {
   ]);
   assert.equal(pdfTool.inputSchema.properties.tables.type, "object");
   assert.equal(pdfTool.inputSchema.required.includes("report_meta"), true);
+  assert.equal(
+    pdfTool.inputSchema.properties.tables.additionalProperties.properties.rows.items.description,
+    "Single table row keyed by column name.",
+  );
 });
 
 test("server card publishes prompt templates for the main workflows", () => {
@@ -96,7 +103,7 @@ test("server card publishes prompt templates for the main workflows", () => {
 });
 
 test("server capabilities copy avoids stale jargon in first-connect guidance", () => {
-  const payload = buildServerCapabilitiesPayload("https://x402.aurelianflo.com");
+  const payload = buildServerCapabilitiesPayload("https://api.aurelianflo.com");
   const summaries = payload.recommendedFlows.map((flow) => String(flow.summary || ""));
 
   assert.ok(summaries.length > 0);

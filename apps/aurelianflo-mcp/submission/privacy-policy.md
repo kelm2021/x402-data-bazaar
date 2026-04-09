@@ -33,4 +33,4 @@ This privacy policy applies to the AurelianFlo remote MCP server and its paid HT
 ## Contact
 
 - Support email: `support@aurelianflo.com`
-- Documentation: `https://x402.aurelianflo.com/mcp/docs`
+- Documentation: `https://api.aurelianflo.com/mcp/docs`

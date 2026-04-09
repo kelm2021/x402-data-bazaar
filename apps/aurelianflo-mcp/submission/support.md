@@ -5,7 +5,7 @@ This support page applies to the AurelianFlo remote MCP server and its published
 ## Support Channels
 
 - Support email: `support@aurelianflo.com`
-- Documentation landing page: `https://x402.aurelianflo.com/mcp/docs`
+- Documentation landing page: `https://api.aurelianflo.com/mcp/docs`
 - Issue tracking: `https://github.com/kelm2021/aurelianflo/issues`
 
 ## Support Scope

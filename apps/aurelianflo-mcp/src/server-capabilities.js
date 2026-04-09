@@ -1,6 +1,6 @@
 import { MCP_TOOL_DEFINITIONS } from "./tool-catalog.js";
 
-const PRODUCTION_BASE_URL = String(process.env.PUBLIC_BASE_URL || "https://x402.aurelianflo.com")
+const PRODUCTION_BASE_URL = String(process.env.PUBLIC_BASE_URL || "https://api.aurelianflo.com")
   .trim()
   .replace(/\s+/g, "")
   .replace(/\/+$/, "");
@@ -8,6 +8,7 @@ const SMITHERY_GATEWAY_URL = String(process.env.SMITHERY_GATEWAY_URL || "https:/
   .trim()
   .replace(/\s+/g, "")
   .replace(/\/+$/, "");
+const ICON_PATH = "/aurelianflo-icon.png";
 
 function getToolTitle(tool) {
   return tool.annotations?.title || tool.name;
@@ -43,13 +44,13 @@ export function buildServerCapabilitiesPayload(baseUrl = PRODUCTION_BASE_URL) {
   return {
     server: {
       name: "AurelianFlo",
-      version: "0.1.1",
+      version: "0.1.2",
       endpoint: `${normalizedBaseUrl}/mcp`,
       serverCard: `${normalizedBaseUrl}/.well-known/mcp/server-card.json`,
       docs: `${normalizedBaseUrl}/mcp/docs`,
       privacy: `${normalizedBaseUrl}/mcp/privacy`,
       support: `${normalizedBaseUrl}/mcp/support`,
-      icon: `${normalizedBaseUrl}/icon.png`,
+      icon: `${normalizedBaseUrl}${ICON_PATH}`,
     },
     transport: "streamable-http",
     payment: {

@@ -1,2 +1,7 @@
-export { metadata } from "../../web/src/app/server-card/page";
-export { default } from "../../web/src/app/server-card/page";
+import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
+
+export default function ServerCardPage() {
+  redirect("/.well-known/mcp/server-card.json");
+}

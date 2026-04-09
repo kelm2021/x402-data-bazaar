@@ -3,7 +3,7 @@
   "payTo": "0x348Df429BD49A7506128c74CE1124A81B4B7dC9d",
   "serviceName": "AurelianFlo",
   "serviceDescription": "AurelianFlo vendor onboarding and counterparty due-diligence briefs using GLEIF entity data plus OFAC sanctions screening.",
-  "baseUrl": "https://x402.aurelianflo.com",
+  "baseUrl": "https://api.aurelianflo.com",
   "port": 3000,
   "network": "eip155:8453",
   "route": {

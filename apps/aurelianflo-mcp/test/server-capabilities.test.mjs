@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { buildServerCapabilitiesPayload } from "../src/server-capabilities.js";
 
 test("server capabilities advertises batch wallet screening as a first-class paid workflow", () => {
-  const payload = buildServerCapabilitiesPayload("https://x402.aurelianflo.com");
+  const payload = buildServerCapabilitiesPayload("https://api.aurelianflo.com");
   const batchFlow = payload.recommendedFlows.find((flow) => flow.id === "batch_wallet_screening");
   const eddFlow = payload.recommendedFlows.find((flow) => flow.id === "edd_memo");
   const paidBatchTool = payload.tools.paid.find((tool) => tool.name === "batch_wallet_screen");

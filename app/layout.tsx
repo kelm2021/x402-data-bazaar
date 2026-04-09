@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import "../web/src/app/globals.css";
+import "./globals.css";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -10,21 +10,28 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "AurelianFlo - Compliance APIs for the agent era",
+  metadataBase: new URL("https://api.aurelianflo.com"),
+  title: "AurelianFlo API",
   description:
-    "Pay-per-call compliance API. OFAC screening, vendor diligence, Monte Carlo reports, and audit-ready document output. No subscription. Works with Claude via MCP.",
+    "Machine-readable API surface for AurelianFlo. Discovery, OpenAPI, MCP, and x402-backed endpoints.",
+  icons: {
+    icon: "/aurelianflo-icon.png",
+    shortcut: "/aurelianflo-icon.png",
+    apple: "/aurelianflo-icon.png",
+  },
   openGraph: {
     type: "website",
-    url: "https://aurelianflo.com",
-    title: "AurelianFlo - Compliance APIs for the agent era",
+    url: "https://api.aurelianflo.com",
+    title: "AurelianFlo API",
     description:
-      "Pay-per-call compliance API for compliance teams, fintech operators, and AI agents.",
+      "Machine-readable API surface for AurelianFlo.",
+    images: ["/aurelianflo-icon.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AurelianFlo - Compliance APIs for the agent era",
-    description:
-      "Pay-per-call compliance API for compliance teams, fintech operators, and AI agents.",
+    title: "AurelianFlo API",
+    description: "Machine-readable API surface for AurelianFlo.",
+    images: ["/aurelianflo-icon.png"],
   },
 };
 

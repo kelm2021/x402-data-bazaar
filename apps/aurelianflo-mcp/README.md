@@ -46,7 +46,7 @@ Environment variables:
 
 Two supported access modes are available:
 
-- Direct origin: `https://x402.aurelianflo.com/mcp`
+- Direct origin: `https://api.aurelianflo.com/mcp`
 - Smithery-hosted gateway: `https://core--aurelianflo.run.tools`
 
 The direct origin does not require end-user OAuth authentication. Payment authorization is handled per tool through x402.
@@ -141,22 +141,23 @@ Official registry publish notes are in [submission/official-registry-publish.md]
 
 ## Public Production URLs
 
-- Origin: `https://x402.aurelianflo.com`
-- API catalog: `https://x402.aurelianflo.com/api`
-- EDD route docs: `https://x402.aurelianflo.com/api/workflows/compliance/edd-report`
-- Batch route docs: `https://x402.aurelianflo.com/api/workflows/compliance/batch-wallet-screen`
-- MCP endpoint: `https://x402.aurelianflo.com/mcp`
-- Server card: `https://x402.aurelianflo.com/.well-known/mcp/server-card.json`
-- Docs: `https://x402.aurelianflo.com/mcp/docs`
-- Privacy: `https://x402.aurelianflo.com/mcp/privacy`
-- Support: `https://x402.aurelianflo.com/mcp/support`
+- UI: `https://www.aurelianflo.com`
+- API origin: `https://api.aurelianflo.com`
+- API catalog: `https://api.aurelianflo.com/api`
+- EDD route docs: `https://api.aurelianflo.com/api/workflows/compliance/edd-report`
+- Batch route docs: `https://api.aurelianflo.com/api/workflows/compliance/batch-wallet-screen`
+- MCP endpoint: `https://api.aurelianflo.com/mcp`
+- Server card: `https://api.aurelianflo.com/.well-known/mcp/server-card.json`
+- Docs: `https://api.aurelianflo.com/mcp/docs`
+- Privacy: `https://api.aurelianflo.com/mcp/privacy`
+- Support: `https://api.aurelianflo.com/mcp/support`
 
 ## Codex Setup
 
 Recommended direct install:
 
 ```bash
-codex mcp add aurelianflo --url https://x402.aurelianflo.com/mcp
+codex mcp add aurelianflo --url https://api.aurelianflo.com/mcp
 ```
 
 Smithery listing:
@@ -183,11 +184,11 @@ Keep the existing AgentCash stdio flow alongside this MCP server for auto-discov
 
 ```bash
 npx agentcash install --client codex
-npx agentcash discover https://x402.aurelianflo.com
+npx agentcash discover https://api.aurelianflo.com
 ```
 
 Verified locally on April 5, 2026:
 
 - `npx agentcash` starts the AgentCash MCP server
 - `npx agentcash install --client <client>` installs the stdio MCP config
-- `npx agentcash discover https://x402.aurelianflo.com` discovers the live AurelianFlo origin
+- `npx agentcash discover https://api.aurelianflo.com` discovers the live AurelianFlo origin

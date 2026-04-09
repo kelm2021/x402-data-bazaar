@@ -3,15 +3,15 @@
   "name": "AurelianFlo",
   "description": "AurelianFlo is a pay-per-call API for EDD memos, OFAC wallet screening, and PDF, DOCX, and XLSX document generation over x402.",
   "operator": "AurelianFlo",
-  "website": "https://x402.aurelianflo.com",
-  "discovery": "https://x402.aurelianflo.com/api",
+  "website": "https://aurelianflo.com",
+  "discovery": "https://api.aurelianflo.com/api",
   "resources": [
-    "https://x402.aurelianflo.com/api/workflows/compliance/edd-report",
-    "https://x402.aurelianflo.com/api/workflows/compliance/batch-wallet-screen",
-    "https://x402.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
-    "https://x402.aurelianflo.com/api/tools/report/pdf/generate",
-    "https://x402.aurelianflo.com/api/tools/report/docx/generate",
-    "https://x402.aurelianflo.com/api/tools/report/xlsx/generate"
+    "https://api.aurelianflo.com/api/workflows/compliance/edd-report",
+    "https://api.aurelianflo.com/api/workflows/compliance/batch-wallet-screen",
+    "https://api.aurelianflo.com/api/ofac-wallet-screen/0x098B716B8Aaf21512996dC57EB0615e2383E2f96?asset=ETH",
+    "https://api.aurelianflo.com/api/tools/report/pdf/generate",
+    "https://api.aurelianflo.com/api/tools/report/docx/generate",
+    "https://api.aurelianflo.com/api/tools/report/xlsx/generate"
   ],
   "instructions": "# AurelianFlo\n\nAurelianFlo is a pay-per-call API for AI agents and operations teams that need enhanced due diligence memos, OFAC wallet screening, and formatted document output.\n\n## Primary Surface\n- EDD memos for counterparty and wallet review workflows\n- Batch and single-wallet OFAC screening\n- Report PDF, DOCX, and XLSX output for audit handoff\n\n## Retained Secondary Routes\n- Simulation, vendor, and finance workflows remain live by direct URL\n- They are intentionally excluded from primary discovery until they earn a separate product narrative\n\n## Payment\nUSDC on Base via x402. Paid endpoints return `402 Payment Required` with machine-readable settlement instructions until payment is attached.\n\n## Discovery\nUse `GET /api` for the buyer-facing catalog. The primary discovery surfaces stay compliance-first."
 }
