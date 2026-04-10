@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://aurelianflo.com"),
   title: "AurelianFlo - Compliance APIs for the agent era",
   description:
-    "Pay-per-call compliance API. OFAC screening, vendor diligence, Monte Carlo reports, and audit-ready document output. No subscription. Works with Claude via MCP.",
+    "Pay-per-call compliance API. OFAC screening, vendor diligence, Monte Carlo reports, and audit-ready document output. No subscription. Works with Claude Connectors and MCP-compatible clients.",
   icons: {
     icon: "/aurelianflo-icon.png",
     shortcut: "/aurelianflo-icon.png",

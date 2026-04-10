@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { Nav } from '@/components/nav';
 
 export const metadata: Metadata = {
-  title: 'Integration Guide — AurelianFlo',
-  description: 'How to integrate AurelianFlo APIs: x402 payment flow, curl examples, MCP setup, and reference links.',
+  title: 'Integration Guide - AurelianFlo',
+  description:
+    'How to integrate AurelianFlo APIs: x402 payment flow, curl examples, Claude Connectors setup, generic MCP client setup, and reference links.',
 };
 
 const restQuickStart = `import { fetch402 } from 'x402-fetch';
@@ -22,16 +23,13 @@ const response = await fetch402(
 const result = await response.json();
 console.log(result.sanctioned, result.matches);`;
 
-const mcpConfig = `{
+const claudeServerUrl = 'https://api.aurelianflo.com/mcp';
+
+const genericMcpClientJson = `{
   "mcpServers": {
     "aurelianflo": {
       "type": "http",
-      "url": "https://api.aurelianflo.com/mcp",
-      "payment": {
-        "protocol": "x402",
-        "network": "eip155:8453",
-        "asset": "USDC"
-      }
+      "url": "https://api.aurelianflo.com/mcp"
     }
   }
 }`;
@@ -46,11 +44,20 @@ export default function DocsPage() {
             <span className="page-header-badge">Docs</span>
           </div>
           <h1 className="page-header-title">Integration Guide</h1>
-          <p className="page-header-desc">Connect to AurelianFlo APIs via REST or MCP. All calls settle in USDC on Base using the x402 payment protocol — no API keys, no subscriptions.</p>
+          <p className="page-header-desc">
+            Connect to AurelianFlo APIs via REST or MCP. All calls settle in USDC on Base using the x402 payment
+            protocol - no API keys, no subscriptions.
+          </p>
           <div className="page-header-links">
-            <a href="/openapi" className="page-link">OpenAPI Reference →</a>
-            <a href="/server-card" className="page-link">MCP Server Card →</a>
-            <a href="/services" className="page-link">Service Catalog →</a>
+            <a href="/openapi" className="page-link">
+              OpenAPI Reference →
+            </a>
+            <a href="/server-card" className="page-link">
+              MCP Server Card →
+            </a>
+            <a href="/services" className="page-link">
+              Service Catalog →
+            </a>
           </div>
         </header>
 
@@ -61,7 +68,7 @@ export default function DocsPage() {
               <div className="flow-num">1</div>
               <div>
                 <strong>Client sends request</strong>
-                <span>Your app (or Claude) calls the endpoint normally — no auth header needed.</span>
+                <span>Your app (or Claude) calls the endpoint normally - no auth header needed.</span>
               </div>
             </div>
             <div className="flow-step">
@@ -75,7 +82,10 @@ export default function DocsPage() {
               <div className="flow-num">3</div>
               <div>
                 <strong>Client settles on-chain</strong>
-                <span>The x402 client library signs and submits a USDC transfer on Base (eip155:8453) to <span className="inline-code">0x348Df429BD49A7506128c74CE1124A81B4B7dC9d</span>.</span>
+                <span>
+                  The x402 client library signs and submits a USDC transfer on Base (eip155:8453) to{' '}
+                  <span className="inline-code">0x348Df429BD49A7506128c74CE1124A81B4B7dC9d</span>.
+                </span>
               </div>
             </div>
             <div className="flow-step">
@@ -89,7 +99,7 @@ export default function DocsPage() {
         </div>
 
         <div className="docs-section">
-          <div className="docs-section-title">Quick start — REST</div>
+          <div className="docs-section-title">Quick start - REST</div>
           <p className="docs-body" style={{ marginBottom: '16px' }}>
             Use <span className="inline-code">x402-fetch</span> (or any x402-compatible client) to handle payment automatically:
           </p>
@@ -97,17 +107,30 @@ export default function DocsPage() {
         </div>
 
         <div className="docs-section">
-          <div className="docs-section-title">MCP setup — Claude Desktop</div>
+          <div className="docs-section-title">Claude Setup</div>
           <p className="docs-body" style={{ marginBottom: '16px' }}>
-            Add this to your <span className="inline-code">claude_desktop_config.json</span> to connect Claude to all 9 AurelianFlo tools:
+            In Claude, go to Customize &gt; Connectors and add this server URL to connect AurelianFlo tools:
           </p>
-          <pre className="code-block">{mcpConfig}</pre>
+          <pre className="code-block">{claudeServerUrl}</pre>
+          <p className="docs-body">
+            Claude Desktop does not use <span className="inline-code">claude_desktop_config.json</span> for remote MCP
+            servers.
+          </p>
+        </div>
+
+        <div className="docs-section">
+          <div className="docs-section-title">Generic MCP Client JSON</div>
+          <pre className="code-block">{genericMcpClientJson}</pre>
+          <p className="docs-body">
+            Use this JSON only for MCP clients that support direct remote HTTP MCP configuration.
+          </p>
         </div>
 
         <div className="docs-section">
           <div className="docs-section-title">Authentication</div>
           <p className="docs-body">
-            No API keys. No accounts. Payment is authentication. Every paid call settles USDC directly to the recipient address on Base:<br />
+            No API keys or end-user OAuth are required. Paid calls still settle in USDC on Base to the recipient address below:
+            <br />
             <span className="inline-code">0x348Df429BD49A7506128c74CE1124A81B4B7dC9d</span>
           </p>
         </div>
@@ -123,7 +146,7 @@ export default function DocsPage() {
             <a href="/server-card" className="ref-card">
               <span className="ref-badge">MCP</span>
               <div className="ref-name">MCP Server Card</div>
-              <p className="ref-desc">9 tools, 4 prompts, and connection instructions for Claude and other MCP clients.</p>
+              <p className="ref-desc">9 tools, 4 prompts, and setup instructions for Claude Connectors and MCP-compatible clients.</p>
             </a>
             <a href="/services" className="ref-card">
               <span className="ref-badge">REST</span>
@@ -141,9 +164,15 @@ export default function DocsPage() {
         <footer className="inner-footer">
           <span className="footer-brand">AurelianFlo</span>
           <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="/services" className="footer-link">Services</a>
-            <a href="/openapi" className="footer-link">OpenAPI</a>
-            <a href="/server-card" className="footer-link">MCP</a>
+            <a href="/services" className="footer-link">
+              Services
+            </a>
+            <a href="/openapi" className="footer-link">
+              OpenAPI
+            </a>
+            <a href="/server-card" className="footer-link">
+              MCP
+            </a>
           </div>
         </footer>
       </main>

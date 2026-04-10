@@ -3,7 +3,7 @@ import { Nav } from '@/components/nav';
 
 export const metadata: Metadata = {
   title: 'AurelianFlo — Compliance APIs for the agent era',
-  description: 'Pay-per-call compliance API. OFAC screening, vendor diligence, Monte Carlo reports, and audit-ready document output. No subscription. Works with Claude via MCP.',
+  description: 'Pay-per-call compliance API. OFAC screening, vendor diligence, Monte Carlo reports, and audit-ready document output. No subscription. Works with Claude Connectors and MCP-compatible clients.',
   alternates: { types: { 'application/json': 'https://api.aurelianflo.com/api?format=json' } },
 };
 
@@ -23,8 +23,8 @@ const services = [
 const connectLinks = [
   { badge: 'REST', name: 'Service Catalog', desc: 'All 8 endpoints with pricing and schemas.', href: '/services' },
   { badge: 'JSON', name: 'OpenAPI Reference', desc: 'Full API spec with parameters, schemas, and response shapes.', href: '/openapi' },
-  { badge: 'MCP', name: 'MCP Server Card', desc: '9 tools, 4 prompts, connection guide for Claude and MCP clients.', href: '/server-card' },
-  { badge: 'DOCS', name: 'Integration Guide', desc: 'x402 payment flow, curl examples, and MCP setup.', href: '/docs' },
+  { badge: 'MCP', name: 'MCP Server Card', desc: '9 tools, 4 prompts, setup guide for Claude Connectors and MCP-compatible clients.', href: '/server-card' },
+  { badge: 'DOCS', name: 'Integration Guide', desc: 'x402 payment flow, curl examples, Claude Connectors setup, and generic MCP client setup.', href: '/docs' },
 ] as const;
 
 export default async function HomePage() {
@@ -49,7 +49,7 @@ export default async function HomePage() {
               <div className="stat-cell"><div className="stat-value gold">{endpointCount}</div><div className="stat-label">Paid routes</div></div>
               <div className="stat-cell"><div className="stat-value">4</div><div className="stat-label">Output formats</div></div>
               <div className="stat-cell"><div className="stat-value">x402</div><div className="stat-label">Payment protocol</div></div>
-              <div className="stat-cell"><div className="stat-value">MCP</div><div className="stat-label">Claude-native</div></div>
+              <div className="stat-cell"><div className="stat-value">MCP</div><div className="stat-label">Claude Connectors</div></div>
             </div>
           </div>
         </section>
